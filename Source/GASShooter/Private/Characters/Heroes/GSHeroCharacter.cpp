@@ -1,12 +1,12 @@
 // Copyright 2019 Dan Kestranek.
 
 
-#include "GSHeroCharacter.h"
-#include "GSAbilitySystemComponent.h"
-#include "GSAttributeSetBase.h"
-#include "GSPlayerController.h"
-#include "GSPlayerState.h"
+#include "Characters/Heroes/GSHeroCharacter.h"
+#include "Characters/Abilities/GSAbilitySystemComponent.h"
+#include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Player/GSPlayerController.h"
+#include "Player/GSPlayerState.h"
 
 AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {

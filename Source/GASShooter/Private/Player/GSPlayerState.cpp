@@ -1,9 +1,9 @@
 // Copyright 2019 Dan Kestranek.
 
 
-#include "GSPlayerState.h"
-#include "GSAbilitySystemComponent.h"
-#include "GSAttributeSetBase.h"
+#include "Player/GSPlayerState.h"
+#include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
+#include "Characters/Abilities/GSAbilitySystemComponent.h"
 
 AGSPlayerState::AGSPlayerState()
 {

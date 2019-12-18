@@ -1,5 +1,5 @@
 // Copyright 2019 Dan Kestranek.
 
 
-#include "GSAbilitySystemComponent.h"
+#include "Characters/Abilities/GSAbilitySystemComponent.h"
 

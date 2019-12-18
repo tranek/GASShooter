@@ -1,10 +1,10 @@
 // Copyright 2019 Dan Kestranek.
 
 
-#include "GSCharacterMovementComponent.h"
+#include "Characters/GSCharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
+#include "Characters/GSCharacterBase.h"
 #include "GameplayTagContainer.h"
-#include "GSCharacterBase.h"
 
 UGSCharacterMovementComponent::UGSCharacterMovementComponent()
 {

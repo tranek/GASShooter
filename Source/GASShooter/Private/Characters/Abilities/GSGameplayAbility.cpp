@@ -1,7 +1,7 @@
 // Copyright 2019 Dan Kestranek.
 
 
-#include "GSGameplayAbility.h"
+#include "Characters/Abilities/GSGameplayAbility.h"
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
 

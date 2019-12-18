@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayTagContainer.h"
-#include "GASShooter.h"
+#include "GASShooter/GASShooter.h"
 #include "GSCharacterBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterBaseHitReactDelegate, EGSHitReactDirection, Direction);

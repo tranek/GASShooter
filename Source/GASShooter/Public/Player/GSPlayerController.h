@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "GSCharacterBase.h"
+#include "Characters/GSCharacterBase.h"
 #include "GSPlayerController.generated.h"
 
 /**

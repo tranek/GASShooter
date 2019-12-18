@@ -1,7 +1,7 @@
 // Copyright 2019 Dan Kestranek.
 
 
-#include "GSHeroAIController.h"
+#include "AI/GSHeroAIController.h"
 
 AGSHeroAIController::AGSHeroAIController()
 {

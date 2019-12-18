@@ -1,12 +1,12 @@
 // Copyright 2019 Dan Kestranek.
 
 
-#include "GSAttributeSetBase.h"
+#include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
+#include "Characters/GSCharacterBase.h"
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
-#include "GSCharacterBase.h"
-#include "GSPlayerController.h"
-#include "UnrealNetwork.h"
+#include "Net/UnrealNetwork.h"
+#include "Player/GSPlayerController.h"
 
 UGSAttributeSetBase::UGSAttributeSetBase()
 {

@@ -1,11 +1,11 @@
 // Copyright 2019 Dan Kestranek.
 
 
-#include "GSCharacterBase.h"
+#include "Characters/GSCharacterBase.h"
+#include "Characters/Abilities/GSAbilitySystemComponent.h"
+#include "Characters/Abilities/GSGameplayAbility.h"
+#include "Characters/GSCharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "GSAbilitySystemComponent.h"
-#include "GSCharacterMovementComponent.h"
-#include "GSGameplayAbility.h"
 
 // Sets default values
 AGSCharacterBase::AGSCharacterBase(const class FObjectInitializer& ObjectInitializer) :

@@ -1,7 +1,7 @@
 // Copyright 2019 Dan Kestranek.
 
 
-#include "GSPlayerController.h"
+#include "Player/GSPlayerController.h"
 
 void AGSPlayerController::CreateHUD()
 {

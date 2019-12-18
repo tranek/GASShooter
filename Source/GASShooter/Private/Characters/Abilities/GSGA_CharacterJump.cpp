@@ -1,9 +1,9 @@
 // Copyright 2019 Dan Kestranek.
 
 
-#include "GSGA_CharacterJump.h"
-#include "GASShooter.h"
-#include "GSCharacterBase.h"
+#include "Characters/Abilities/GSGA_CharacterJump.h"
+#include "Characters/GSCharacterBase.h"
+#include "GASShooter/GASShooter.h"
 
 UGSGA_CharacterJump::UGSGA_CharacterJump()
 {
