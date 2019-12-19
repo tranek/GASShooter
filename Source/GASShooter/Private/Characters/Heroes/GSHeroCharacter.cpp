@@ -28,9 +28,8 @@ void AGSHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis("Turn", this, &AGSHeroCharacter::Turn);
 	PlayerInputComponent->BindAxis("TurnRate", this, &AGSHeroCharacter::TurnRate);
 
-	// Bind to AbilitySystemComponent
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
-		FString("CancelTarget"), FString("EGDAbilityInputID"), static_cast<int32>(EGSAbilityInputID::Confirm), static_cast<int32>(EGSAbilityInputID::Cancel)));
+	// Bind player input to the AbilitySystemComponent. Also called in OnRep_PlayerState because of a potential race condition.
+	BindASCInput();
 }
 
 // Server only
@@ -188,6 +187,9 @@ void AGSHeroCharacter::OnRep_PlayerState()
 		// Refresh ASC Actor Info for clients. Server will be refreshed by its AI/PlayerController when it possesses a new Actor.
 		AbilitySystemComponent->RefreshAbilityActorInfo();
 
+		// Bind player input to the AbilitySystemComponent. Also called in SetupPlayerInputComponent because of a potential race condition.
+		BindASCInput();
+
 		// Set the AttributeSetBase for convenience attribute functions
 		AttributeSetBase = PS->GetAttributeSetBase();
 
@@ -215,5 +217,16 @@ void AGSHeroCharacter::OnRep_PlayerState()
 		SetHealth(GetMaxHealth());
 		SetMana(GetMaxMana());
 		SetStamina(GetMaxStamina());
+	}
+}
+
+void AGSHeroCharacter::BindASCInput()
+{
+	if (!ASCInputBound && IsValid(AbilitySystemComponent) && IsValid(InputComponent))
+	{
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
+			FString("CancelTarget"), FString("EGSAbilityInputID"), static_cast<int32>(EGSAbilityInputID::Confirm), static_cast<int32>(EGSAbilityInputID::Cancel)));
+
+		ASCInputBound = true;
 	}
 }
