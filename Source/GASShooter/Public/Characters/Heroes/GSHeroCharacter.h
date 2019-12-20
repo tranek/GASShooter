@@ -23,12 +23,30 @@ public:
 	// Only called on the Server. Calls before Server's AcknowledgePossession.
 	virtual void PossessedBy(AController* NewController) override;
 
+	virtual void Restart() override;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|Camera")
 	float BaseTurnRate = 45.0f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|Camera")
 	float BaseLookUpRate = 45.0f;
+
+	// Default to first person
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
+	bool IsFirstPersonPerspective = true;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "GASShooter|Camera")
+	class USpringArmComponent* ThirdPersonCameraBoom;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "GASShooter|Camera")
+	class UCameraComponent* ThirdPersonCamera;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "GASShooter|Camera")
+	class UCameraComponent* FirstPersonCamera;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	USkeletalMeshComponent* FirstPersonMesh;
 
 	bool ASCInputBound = false;
 
@@ -52,6 +70,12 @@ protected:
 
 	// Mouse + Gamepad
 	void MoveRight(float Value);
+
+	// Toggles between perspectives
+	void TogglePerspective();
+
+	// Sets the perspective
+	void SetPerspective(bool Is1PPerspective);
 
 	// Creates and initializes the floating status bar for heroes.
 	// Safe to call many times because it checks to make sure it only executes once.

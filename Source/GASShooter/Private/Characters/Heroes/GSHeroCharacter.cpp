@@ -2,15 +2,32 @@
 
 
 #include "Characters/Heroes/GSHeroCharacter.h"
+#include "Camera/CameraComponent.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Player/GSPlayerController.h"
 #include "Player/GSPlayerState.h"
 
 AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	//TODO
+	ThirdPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("CameraBoom"));
+	ThirdPersonCameraBoom->SetupAttachment(RootComponent);
+	ThirdPersonCameraBoom->bUsePawnControlRotation = true;
+	ThirdPersonCameraBoom->SetRelativeLocation(FVector(0, 80, 68.492264));
+
+	ThirdPersonCamera = CreateDefaultSubobject<UCameraComponent>(FName("FollowCamera"));
+	ThirdPersonCamera->SetupAttachment(ThirdPersonCameraBoom);
+	ThirdPersonCamera->FieldOfView = 80.0f;
+
+	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(FName("FirstPersonCamera"));
+	FirstPersonCamera->SetupAttachment(RootComponent);
+	FirstPersonCamera->bUsePawnControlRotation = true;
+
+	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonMesh"));
+	FirstPersonMesh->SetupAttachment(FirstPersonCamera);
+	FirstPersonMesh->CastShadow = false;
 }
 
 // Called to bind functionality to input
@@ -19,14 +36,14 @@ void AGSHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AGSHeroCharacter::MoveForward);
-	PlayerInputComponent->BindAxis("MoveBackward", this, &AGSHeroCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AGSHeroCharacter::MoveRight);
-	PlayerInputComponent->BindAxis("MoveLeft", this, &AGSHeroCharacter::MoveRight);
 
 	PlayerInputComponent->BindAxis("LookUp", this, &AGSHeroCharacter::LookUp);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AGSHeroCharacter::LookUpRate);
 	PlayerInputComponent->BindAxis("Turn", this, &AGSHeroCharacter::Turn);
 	PlayerInputComponent->BindAxis("TurnRate", this, &AGSHeroCharacter::TurnRate);
+
+	PlayerInputComponent->BindAction("TogglePerspective", IE_Pressed, this, &AGSHeroCharacter::TogglePerspective);
 
 	// Bind player input to the AbilitySystemComponent. Also called in OnRep_PlayerState because of a potential race condition.
 	BindASCInput();
@@ -77,6 +94,15 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 		SetMana(GetMaxMana());
 		SetStamina(GetMaxStamina());
 	}
+}
+
+void AGSHeroCharacter::Restart()
+{
+	Super::Restart();
+
+	//UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), ACTOR_ROLE_FSTRING);
+
+	SetPerspective(IsFirstPersonPerspective);
 }
 
 /**
@@ -140,6 +166,39 @@ void AGSHeroCharacter::MoveForward(float Value)
 void AGSHeroCharacter::MoveRight(float Value)
 {
 	AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), Value);
+}
+
+void AGSHeroCharacter::TogglePerspective()
+{
+	IsFirstPersonPerspective = !IsFirstPersonPerspective;
+	SetPerspective(IsFirstPersonPerspective);
+}
+
+void AGSHeroCharacter::SetPerspective(bool Is1PPerspective)
+{
+	// To swap cameras, deactivate current camera (defaults to ThirdPersonCamera), activate desired camera, and call PlayerController->SetViewTarget() on self
+	AGSPlayerController* PC = GetController<AGSPlayerController>();
+	if (PC && PC->IsLocalPlayerController())
+	{
+		if (Is1PPerspective)
+		{
+			ThirdPersonCamera->Deactivate();
+			FirstPersonCamera->Activate();
+			PC->SetViewTarget(this);
+
+			GetMesh()->SetVisibility(false, true);
+			FirstPersonMesh->SetVisibility(true, true);
+		}
+		else
+		{
+			FirstPersonCamera->Deactivate();
+			ThirdPersonCamera->Activate();
+			PC->SetViewTarget(this);
+
+			GetMesh()->SetVisibility(true, true);
+			FirstPersonMesh->SetVisibility(false, true);
+		}
+	}
 }
 
 void AGSHeroCharacter::InitializeFloatingStatusBar()

@@ -2,6 +2,7 @@
 
 
 #include "Characters/GSCharacterBase.h"
+#include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "Characters/GSCharacterMovementComponent.h"
@@ -14,6 +15,7 @@ AGSCharacterBase::AGSCharacterBase(const class FObjectInitializer& ObjectInitial
 	PrimaryActorTick.bCanEverTick = false;
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Overlap);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
 	bAlwaysRelevant = true;
 
@@ -37,7 +39,7 @@ bool AGSCharacterBase::IsAlive() const
 
 int32 AGSCharacterBase::GetAbilityLevel(EGSAbilityInputID AbilityID) const
 {
-	//TOOD
+	//TODO
 	return 1;
 }
 
@@ -116,50 +118,82 @@ int32 AGSCharacterBase::GetCharacterLevel() const
 
 float AGSCharacterBase::GetHealth() const
 {
-	//TODO
+	if (IsValid(AttributeSetBase))
+	{
+		return AttributeSetBase->GetHealth();
+	}
+
 	return 0.0f;
 }
 
 float AGSCharacterBase::GetMaxHealth() const
 {
-	//TODO
+	if (IsValid(AttributeSetBase))
+	{
+		return AttributeSetBase->GetMaxHealth();
+	}
+	
 	return 0.0f;
 }
 
 float AGSCharacterBase::GetMana() const
 {
-	//TODO
+	if (IsValid(AttributeSetBase))
+	{
+		return AttributeSetBase->GetMana();
+	}
+
 	return 0.0f;
 }
 
 float AGSCharacterBase::GetMaxMana() const
 {
-	//TODO
+	if (IsValid(AttributeSetBase))
+	{
+		return AttributeSetBase->GetMaxMana();
+	}
+
 	return 0.0f;
 }
 
 float AGSCharacterBase::GetStamina() const
 {
-	//TODO
+	if (IsValid(AttributeSetBase))
+	{
+		return AttributeSetBase->GetStamina();
+	}
+
 	return 0.0f;
 }
 
 float AGSCharacterBase::GetMaxStamina() const
 {
-	//TODO
+	if (IsValid(AttributeSetBase))
+	{
+		return AttributeSetBase->GetMaxStamina();
+	}
+
 	return 0.0f;
 }
 
 float AGSCharacterBase::GetMoveSpeed() const
 {
-	//TODO
-	return 600.0f;
+	if (IsValid(AttributeSetBase))
+	{
+		return AttributeSetBase->GetMoveSpeed();
+	}
+
+	return 0.0f;
 }
 
 float AGSCharacterBase::GetMoveSpeedBaseValue() const
 {
-	//TODO
-	return 600.0f;
+	if (IsValid(AttributeSetBase))
+	{
+		return AttributeSetBase->GetMoveSpeedAttribute().GetGameplayAttributeData(AttributeSetBase)->GetBaseValue();
+	}
+
+	return 0.0f;
 }
 
 // Called when the game starts or when spawned
@@ -233,15 +267,24 @@ void AGSCharacterBase::AddStartupEffects()
 
 void AGSCharacterBase::SetHealth(float Health)
 {
-	//TODO
+	if (IsValid(AttributeSetBase))
+	{
+		AttributeSetBase->SetHealth(Health);
+	}
 }
 
 void AGSCharacterBase::SetMana(float Mana)
 {
-	//TODO
+	if (IsValid(AttributeSetBase))
+	{
+		AttributeSetBase->SetMana(Mana);
+	}
 }
 
 void AGSCharacterBase::SetStamina(float Stamina)
 {
-	//TODO
+	if (IsValid(AttributeSetBase))
+	{
+		AttributeSetBase->SetStamina(Stamina);
+	}
 }
