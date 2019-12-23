@@ -19,7 +19,6 @@ AGSCharacterBase::AGSCharacterBase(const class FObjectInitializer& ObjectInitial
 
 	bAlwaysRelevant = true;
 
-	//TODO move this into GASShooter since multiple files look for these tags
 	// Cache tags
 	HitDirectionFrontTag = FGameplayTag::RequestGameplayTag(FName("Effect.HitReact.Front"));
 	HitDirectionBackTag = FGameplayTag::RequestGameplayTag(FName("Effect.HitReact.Back"));
