@@ -42,6 +42,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSCharacter")
 	virtual int32 GetAbilityLevel(EGSAbilityInputID AbilityID) const;
 
+	// Removes all CharacterAbilities. Can only be called by the Server. Removing on the Server will remove from Client too.
+	virtual void RemoveCharacterAbilities();
+
 	UFUNCTION(BlueprintCallable)
 	EGSHitReactDirection GetHitReactDirection(const FVector& ImpactPoint);
 
@@ -49,6 +52,11 @@ public:
 	virtual void PlayHitReact(FGameplayTag HitDirection, AActor* DamageCauser);
 	virtual void PlayHitReact_Implementation(FGameplayTag HitDirection, AActor* DamageCauser);
 	virtual bool PlayHitReact_Validate(FGameplayTag HitDirection, AActor* DamageCauser);
+
+	virtual void Die();
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSCharacter")
+	virtual void FinishDying();
 
 
 	/**
@@ -89,6 +97,8 @@ protected:
 	FGameplayTag HitDirectionBackTag;
 	FGameplayTag HitDirectionRightTag;
 	FGameplayTag HitDirectionLeftTag;
+	FGameplayTag DeadTag;
+	FGameplayTag EffectRemoveOnDeathTag;
 	
 	// Reference to the ASC. It will live on the PlayerState or here if the character doesn't have a PlayerState.
 	UPROPERTY()
@@ -97,6 +107,13 @@ protected:
 	// Reference to the AttributeSetBase. It will live on the PlayerState or here if the character doesn't have a PlayerState.
 	UPROPERTY()
 	class UGSAttributeSetBase* AttributeSetBase;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSCharacter")
+	FText CharacterName;
+
+	// Death Animation
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|Animation")
+	UAnimMontage* DeathMontage;
 
 	// Default abilities for this Character. These will be removed on Character death and regiven if Character respawns.
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|Abilities")

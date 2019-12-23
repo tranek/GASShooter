@@ -14,4 +14,19 @@ class GASSHOOTER_API AGASShooterGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 	
+public:
+	AGASShooterGameModeBase();
+
+	void HeroDied(AController* Controller);
+
+protected:
+	float RespawnDelay;
+
+	TSubclassOf<class AGSHeroCharacter> HeroClass;
+
+	AActor* EnemySpawnPoint;
+
+	virtual void BeginPlay() override;
+
+	void RespawnHero(AController* Controller);
 };

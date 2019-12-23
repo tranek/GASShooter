@@ -8,6 +8,7 @@
 #include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GASShooter/GASShooterGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Player/GSPlayerController.h"
@@ -31,15 +32,26 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 
 	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonMesh"));
 	FirstPersonMesh->SetupAttachment(FirstPersonCamera);
+	FirstPersonMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	FirstPersonMesh->SetCollisionProfileName(FName("NoCollision"));
 	FirstPersonMesh->CastShadow = false;
 	FirstPersonMesh->SetVisibility(false, true);
 
+	// Makes sure that the animations play on the Server so that we can use bone and socket transforms
+	// to do things like spawning projectiles and other FX.
+	//GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPoseAndRefreshBones;
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionProfileName(FName("NoCollision"));
 	GetMesh()->bCastHiddenShadow = true;
 
 	ThirdPersonWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("ThirdPersonWeaponMesh"));
+	ThirdPersonWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	ThirdPersonWeaponMesh->SetCollisionProfileName(FName("NoCollision"));
 	ThirdPersonWeaponMesh->bCastHiddenShadow = true;
 	
 	FirstPersonWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonWeaponMesh"));
+	FirstPersonWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	FirstPersonWeaponMesh->SetCollisionProfileName(FName("NoCollision"));
 	FirstPersonWeaponMesh->CastShadow = false;
 	FirstPersonWeaponMesh->SetVisibility(false, true);
 
@@ -114,9 +126,8 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 
 		// Respawn specific things that won't affect first possession.
 
-		//TODO
 		// Forcibly set the DeadTag count to 0
-		//AbilitySystemComponent->SetTagMapCount(DeadTag, 0);
+		AbilitySystemComponent->SetTagMapCount(DeadTag, 0);
 
 		// Set Health/Mana/Stamina to their max. This is only necessary for *Respawn*.
 		SetHealth(GetMaxHealth());
@@ -129,14 +140,35 @@ void AGSHeroCharacter::Restart()
 {
 	Super::Restart();
 
-	//UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), ACTOR_ROLE_FSTRING);
-
 	SetPerspective(IsFirstPersonPerspective);
 }
 
 UGSFloatingStatusBarWidget* AGSHeroCharacter::GetFloatingStatusBar()
 {
 	return UIFloatingStatusBar;
+}
+
+void AGSHeroCharacter::Die()
+{
+	// Go into third person for death animation
+	SetPerspective(false);
+
+	Super::Die();
+}
+
+void AGSHeroCharacter::FinishDying()
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		AGASShooterGameModeBase* GM = Cast<AGASShooterGameModeBase>(GetWorld()->GetAuthGameMode());
+
+		if (GM)
+		{
+			GM->HeroDied(GetController());
+		}
+	}
+
+	Super::FinishDying();
 }
 
 /**
@@ -154,8 +186,6 @@ void AGSHeroCharacter::BeginPlay()
 	InitializeFloatingStatusBar();
 
 	//TODO
-	//GunComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName("GunSocket"));
-
 	//StartingCameraBoomArmLength = CameraBoom->TargetArmLength;
 	//StartingCameraBoomLocation = CameraBoom->GetRelativeLocation();
 }
@@ -211,12 +241,18 @@ void AGSHeroCharacter::TurnRate(float Value)
 
 void AGSHeroCharacter::MoveForward(float Value)
 {
-	AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), Value);
+	if (IsAlive())
+	{
+		AddMovementInput(UKismetMathLibrary::GetForwardVector(FRotator(0, GetControlRotation().Yaw, 0)), Value);
+	}
 }
 
 void AGSHeroCharacter::MoveRight(float Value)
 {
-	AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), Value);
+	if (IsAlive())
+	{
+		AddMovementInput(UKismetMathLibrary::GetRightVector(FRotator(0, GetControlRotation().Yaw, 0)), Value);
+	}
 }
 
 void AGSHeroCharacter::TogglePerspective()
@@ -272,6 +308,12 @@ void AGSHeroCharacter::InitializeFloatingStatusBar()
 		return;
 	}
 
+	// Need a valid PlayerState
+	if (!GetPlayerState())
+	{
+		return;
+	}
+
 	// Setup UI for Locally Owned Players only, not AI or the server's copy of the PlayerControllers
 	AGSPlayerController* PC = Cast<AGSPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if (PC && PC->IsLocalPlayerController())
@@ -286,6 +328,7 @@ void AGSHeroCharacter::InitializeFloatingStatusBar()
 				// Setup the floating status bar
 				UIFloatingStatusBar->SetHealthPercentage(GetHealth() / GetMaxHealth());
 				UIFloatingStatusBar->SetManaPercentage(GetMana() / GetMaxMana());
+				UIFloatingStatusBar->OwningCharacter = this;
 			}
 		}
 	}
@@ -327,9 +370,8 @@ void AGSHeroCharacter::OnRep_PlayerState()
 
 		// Respawn specific things that won't affect first possession.
 
-		//TODO
 		// Forcibly set the DeadTag count to 0
-		//AbilitySystemComponent->SetTagMapCount(DeadTag, 0);
+		AbilitySystemComponent->SetTagMapCount(DeadTag, 0);
 
 		// Set Health/Mana/Stamina to their max. This is only necessary for *Respawn*.
 		SetHealth(GetMaxHealth());

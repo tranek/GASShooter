@@ -27,6 +27,10 @@ public:
 
 	class UGSFloatingStatusBarWidget* GetFloatingStatusBar();
 
+	virtual void Die() override;
+
+	virtual void FinishDying() override;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|Camera")
 	float BaseTurnRate = 45.0f;
