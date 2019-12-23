@@ -25,6 +25,8 @@ public:
 
 	virtual void Restart() override;
 
+	class UGSFloatingStatusBarWidget* GetFloatingStatusBar();
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|Camera")
 	float BaseTurnRate = 45.0f;
@@ -48,10 +50,27 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	USkeletalMeshComponent* FirstPersonMesh;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	USkeletalMeshComponent* ThirdPersonWeaponMesh;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	USkeletalMeshComponent* FirstPersonWeaponMesh;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|UI")
+	TSubclassOf<class UGSFloatingStatusBarWidget> UIFloatingStatusBarClass;
+
+	UPROPERTY()
+	class UGSFloatingStatusBarWidget* UIFloatingStatusBar;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "GASShooter|UI")
+	class UWidgetComponent* UIFloatingStatusBarComponent;
+
 	bool ASCInputBound = false;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void PostInitializeComponents() override;
 
 	// Mouse
 	void LookUp(float Value);

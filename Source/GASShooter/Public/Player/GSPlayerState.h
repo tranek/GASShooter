@@ -8,6 +8,8 @@
 #include "GameplayEffectTypes.h"
 #include "GSPlayerState.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FGSOnGameplayAttributeValueChangedDelegate, FGameplayAttribute, Attribute, float, NewValue, float, OldValue);
+
 /**
  * 
  */
@@ -86,6 +88,66 @@ protected:
 	UPROPERTY()
 	class UGSAttributeSetBase* AttributeSetBase;
 
+	// Attribute changed delegate handles
+	FDelegateHandle HealthChangedDelegateHandle;
+	/*
+	FDelegateHandle MaxHealthChangedDelegateHandle;
+	FDelegateHandle HealthRegenRateChangedDelegateHandle;
+	FDelegateHandle ManaChangedDelegateHandle;
+	FDelegateHandle MaxManaChangedDelegateHandle;
+	FDelegateHandle ManaRegenRateChangedDelegateHandle;
+	FDelegateHandle StaminaChangedDelegateHandle;
+	FDelegateHandle MaxStaminaChangedDelegateHandle;
+	FDelegateHandle StaminaRegenRateChangedDelegateHandle;
+	FDelegateHandle XPChangedDelegateHandle;
+	FDelegateHandle GoldChangedDelegateHandle;
+	FDelegateHandle CharacterLevelChangedDelegateHandle;
+	*/
+
+	/*
+	// Attribute changed delegates for Blueprint
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSPlayerState|Attributes")
+	FGSOnGameplayAttributeValueChangedDelegate OnHealthAttributeChanged;
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSPlayerState|Attributes")
+	FGSOnGameplayAttributeValueChangedDelegate OnMaxHealthAttributeChanged;
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSPlayerState|Attributes")
+	FGSOnGameplayAttributeValueChangedDelegate OnHealthRegenRateAttributeChanged;
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSPlayerState|Attributes")
+	FGSOnGameplayAttributeValueChangedDelegate OnManaAttributeChanged;
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSPlayerState|Attributes")
+	FGSOnGameplayAttributeValueChangedDelegate OnMaxManaAttributeChanged;
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSPlayerState|Attributes")
+	FGSOnGameplayAttributeValueChangedDelegate OnManaRegenRateAttributeChanged;
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSPlayerState|Attributes")
+	FGSOnGameplayAttributeValueChangedDelegate OnStaminaAttributeChanged;
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSPlayerState|Attributes")
+	FGSOnGameplayAttributeValueChangedDelegate OnMaxStaminaAttributeChanged;
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSPlayerState|Attributes")
+	FGSOnGameplayAttributeValueChangedDelegate OnStaminaRegenRateAttributeChanged;
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSPlayerState|Attributes")
+	FGSOnGameplayAttributeValueChangedDelegate OnXPAttributeChanged;
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSPlayerState|Attributes")
+	FGSOnGameplayAttributeValueChangedDelegate OnGoldAttributeChanged;
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSPlayerState|Attributes")
+	FGSOnGameplayAttributeValueChangedDelegate OnCharacterLevelAttributeChanged;
+	*/
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	// Attribute changed callbacks
+	virtual void HealthChanged(const FOnAttributeChangeData& Data);
+	/*
+	virtual void MaxHealthChanged(const FOnAttributeChangeData& Data);
+	virtual void HealthRegenRateChanged(const FOnAttributeChangeData& Data);
+	virtual void ManaChanged(const FOnAttributeChangeData& Data);
+	virtual void MaxManaChanged(const FOnAttributeChangeData& Data);
+	virtual void ManaRegenRateChanged(const FOnAttributeChangeData& Data);
+	virtual void StaminaChanged(const FOnAttributeChangeData& Data);
+	virtual void MaxStaminaChanged(const FOnAttributeChangeData& Data);
+	virtual void StaminaRegenRateChanged(const FOnAttributeChangeData& Data);
+	virtual void XPChanged(const FOnAttributeChangeData& Data);
+	virtual void GoldChanged(const FOnAttributeChangeData& Data);
+	virtual void CharacterLevelChanged(const FOnAttributeChangeData& Data);
+	*/
 };

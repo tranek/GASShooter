@@ -14,4 +14,13 @@ class GASSHOOTER_API UGSFloatingStatusBarWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetHealthPercentage(float HealthPercentage);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetManaPercentage(float ManaPercentage);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetCharacterName(const FText& NewName);
 };

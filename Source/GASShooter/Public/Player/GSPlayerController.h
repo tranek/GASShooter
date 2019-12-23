@@ -18,6 +18,8 @@ class GASSHOOTER_API AGSPlayerController : public APlayerController
 public:
 	void CreateHUD();
 
+	class UGSHUDWidget* GetGSHUD();
+
 	UFUNCTION(Client, Reliable, WithValidation)
 	void ShowDamageNumber(float DamageAmount, AGSCharacterBase* TargetCharacter);
 	void ShowDamageNumber_Implementation(float DamageAmount, AGSCharacterBase* TargetCharacter);
@@ -28,4 +30,16 @@ public:
 	void SetRespawnCountdown(float RespawnTimeRemaining);
 	void SetRespawnCountdown_Implementation(float RespawnTimeRemaining);
 	bool SetRespawnCountdown_Validate(float RespawnTimeRemaining);
+
+protected:
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|UI")
+	TSubclassOf<class UGSHUDWidget> UIHUDWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite, Category = "GASShooter|UI")
+	class UGSHUDWidget* UIHUDWidget;
+
+	// Server only
+	virtual void OnPossess(APawn* InPawn) override;
+
+	virtual void OnRep_PlayerState() override;
 };

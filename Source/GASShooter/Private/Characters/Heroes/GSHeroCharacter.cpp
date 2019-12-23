@@ -2,20 +2,24 @@
 
 
 #include "Characters/Heroes/GSHeroCharacter.h"
+#include "AI/GSHeroAIController.h"
 #include "Camera/CameraComponent.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
+#include "Components/WidgetComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Player/GSPlayerController.h"
 #include "Player/GSPlayerState.h"
+#include "UI/GSFloatingStatusBarWidget.h"
 
 AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	ThirdPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("CameraBoom"));
 	ThirdPersonCameraBoom->SetupAttachment(RootComponent);
 	ThirdPersonCameraBoom->bUsePawnControlRotation = true;
-	ThirdPersonCameraBoom->SetRelativeLocation(FVector(0, 80, 68.492264));
+	ThirdPersonCameraBoom->SetRelativeLocation(FVector(0, 60, 68.492264));
 
 	ThirdPersonCamera = CreateDefaultSubobject<UCameraComponent>(FName("FollowCamera"));
 	ThirdPersonCamera->SetupAttachment(ThirdPersonCameraBoom);
@@ -28,6 +32,31 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	FirstPersonMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonMesh"));
 	FirstPersonMesh->SetupAttachment(FirstPersonCamera);
 	FirstPersonMesh->CastShadow = false;
+	FirstPersonMesh->SetVisibility(false, true);
+
+	GetMesh()->bCastHiddenShadow = true;
+
+	ThirdPersonWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("ThirdPersonWeaponMesh"));
+	ThirdPersonWeaponMesh->bCastHiddenShadow = true;
+	
+	FirstPersonWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonWeaponMesh"));
+	FirstPersonWeaponMesh->CastShadow = false;
+	FirstPersonWeaponMesh->SetVisibility(false, true);
+
+	UIFloatingStatusBarComponent = CreateDefaultSubobject<UWidgetComponent>(FName("UIFloatingStatusBarComponent"));
+	UIFloatingStatusBarComponent->SetupAttachment(RootComponent);
+	UIFloatingStatusBarComponent->SetRelativeLocation(FVector(0, 0, 120));
+	UIFloatingStatusBarComponent->SetWidgetSpace(EWidgetSpace::Screen);
+	UIFloatingStatusBarComponent->SetDrawSize(FVector2D(500, 500));
+
+	UIFloatingStatusBarClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("/Game/GASShooter/UI/UI_FloatingStatusBar_Hero.UI_FloatingStatusBar_Hero_C"));
+	if (!UIFloatingStatusBarClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s() Failed to find UIFloatingStatusBarClass. If it was moved, please update the reference location in C++."), TEXT(__FUNCTION__));
+	}
+
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	AIControllerClass = AGSHeroAIController::StaticClass();
 }
 
 // Called to bind functionality to input
@@ -105,6 +134,11 @@ void AGSHeroCharacter::Restart()
 	SetPerspective(IsFirstPersonPerspective);
 }
 
+UGSFloatingStatusBarWidget* AGSHeroCharacter::GetFloatingStatusBar()
+{
+	return UIFloatingStatusBar;
+}
+
 /**
 * On the Server, Possession happens before BeginPlay.
 * On the Client, BeginPlay happens before Possession.
@@ -124,6 +158,23 @@ void AGSHeroCharacter::BeginPlay()
 
 	//StartingCameraBoomArmLength = CameraBoom->TargetArmLength;
 	//StartingCameraBoomLocation = CameraBoom->GetRelativeLocation();
+}
+
+void AGSHeroCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	if (GetMesh() && ThirdPersonWeaponMesh)
+	{
+		ThirdPersonWeaponMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("WeaponPoint"));
+		ThirdPersonWeaponMesh->SetRelativeRotation(FRotator(0, 0, -90.0f));
+	}
+
+	if (FirstPersonMesh && FirstPersonWeaponMesh)
+	{
+		FirstPersonWeaponMesh->AttachToComponent(FirstPersonMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("WeaponPoint"));
+		FirstPersonWeaponMesh->SetRelativeRotation(FRotator(0, 0, -90.0f));
+	}
 }
 
 void AGSHeroCharacter::LookUp(float Value)
@@ -174,13 +225,13 @@ void AGSHeroCharacter::TogglePerspective()
 	SetPerspective(IsFirstPersonPerspective);
 }
 
-void AGSHeroCharacter::SetPerspective(bool Is1PPerspective)
+void AGSHeroCharacter::SetPerspective(bool InIsFirstPersonPerspective)
 {
 	// To swap cameras, deactivate current camera (defaults to ThirdPersonCamera), activate desired camera, and call PlayerController->SetViewTarget() on self
 	AGSPlayerController* PC = GetController<AGSPlayerController>();
 	if (PC && PC->IsLocalPlayerController())
 	{
-		if (Is1PPerspective)
+		if (InIsFirstPersonPerspective)
 		{
 			ThirdPersonCamera->Deactivate();
 			FirstPersonCamera->Activate();
@@ -188,6 +239,9 @@ void AGSHeroCharacter::SetPerspective(bool Is1PPerspective)
 
 			GetMesh()->SetVisibility(false, true);
 			FirstPersonMesh->SetVisibility(true, true);
+
+			// Move third person mesh back so that the shadow doesn't look disconnected
+			GetMesh()->AddLocalOffset(FVector(0.0f, -100.0f, 0.0f));
 		}
 		else
 		{
@@ -195,30 +249,36 @@ void AGSHeroCharacter::SetPerspective(bool Is1PPerspective)
 			ThirdPersonCamera->Activate();
 			PC->SetViewTarget(this);
 
-			GetMesh()->SetVisibility(true, true);
 			FirstPersonMesh->SetVisibility(false, true);
+			GetMesh()->SetVisibility(true, true);
+
+			// Reset the third person mesh
+			GetMesh()->AddLocalOffset(FVector(0.0f, 100.0f, 0.0f));
 		}
 	}
 }
 
 void AGSHeroCharacter::InitializeFloatingStatusBar()
 {
-	//TODO
-
-	/*
 	// Only create once
-	if (UIFloatingStatusBar || !AbilitySystemComponent.IsValid())
+	if (UIFloatingStatusBar || !IsValid(AbilitySystemComponent))
+	{
+		return;
+	}
+
+	// Don't create for locally controlled player. We could add a game setting to toggle this later.
+	if (IsPlayerControlled() && IsLocallyControlled())
 	{
 		return;
 	}
 
 	// Setup UI for Locally Owned Players only, not AI or the server's copy of the PlayerControllers
-	AGDPlayerController* PC = Cast<AGDPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	AGSPlayerController* PC = Cast<AGSPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	if (PC && PC->IsLocalPlayerController())
 	{
 		if (UIFloatingStatusBarClass)
 		{
-			UIFloatingStatusBar = CreateWidget<UGDFloatingStatusBarWidget>(PC, UIFloatingStatusBarClass);
+			UIFloatingStatusBar = CreateWidget<UGSFloatingStatusBarWidget>(PC, UIFloatingStatusBarClass);
 			if (UIFloatingStatusBar && UIFloatingStatusBarComponent)
 			{
 				UIFloatingStatusBarComponent->SetWidget(UIFloatingStatusBar);
@@ -229,7 +289,6 @@ void AGSHeroCharacter::InitializeFloatingStatusBar()
 			}
 		}
 	}
-	*/
 }
 
 // Client only
