@@ -123,6 +123,12 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 
 		InitializeFloatingStatusBar();
 
+		// If player is host on listen server, the floating status bar would have been created for them from BeginPlay before player possession, hide it
+		if (IsLocallyControlled() && IsPlayerControlled() && UIFloatingStatusBarComponent && UIFloatingStatusBar)
+		{
+			UIFloatingStatusBarComponent->SetVisibility(false, true);
+		}
+
 
 		// Respawn specific things that won't affect first possession.
 
