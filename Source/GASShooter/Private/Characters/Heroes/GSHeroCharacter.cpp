@@ -352,7 +352,7 @@ void AGSHeroCharacter::OnRep_PlayerState()
 		// Set the ASC for clients. Server does this in PossessedBy.
 		AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(PS->GetAbilitySystemComponent());
 
-		// Init ASC Actor Info for clients. Server will init its AI/PlayerController when it possesses a new Actor.
+		// Init ASC Actor Info for clients. Server will init its ASC when it possesses a new Actor.
 		AbilitySystemComponent->InitAbilityActorInfo(PS, this);
 
 		// Bind player input to the AbilitySystemComponent. Also called in SetupPlayerInputComponent because of a potential race condition.
