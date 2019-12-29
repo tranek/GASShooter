@@ -79,6 +79,10 @@ public:
 
 	virtual void NotifyAbilityEnded(FGameplayAbilitySpecHandle Handle, UGameplayAbility* Ability, bool bWasCancelled) override;
 
+	// Version of function in AbilitySystemGlobals that returns correct type
+	static UGSAbilitySystemComponent* GetAbilitySystemComponentFromActor(const AActor* Actor, bool LookForComponent = false);
+
+
 	// ----------------------------------------------------------------------------------------------------------------
 	//	AnimMontage Support for multiple USkeletalMeshComponents on the AvatarActor. Only one ability can be animating at a time though?
 	// ----------------------------------------------------------------------------------------------------------------	

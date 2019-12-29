@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
+#include "Characters/Abilities/GSAbilityTypes.h"
 #include "GASShooter/GASShooter.h"
 #include "GSGameplayAbility.generated.h"
 
@@ -55,9 +56,31 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability")
 	bool ActivateAbilityOnGranted = false;
 
+	// Map of gameplay tags to gameplay effect containers
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GameplayEffects")
+	TMap<FGameplayTag, FGSGameplayEffectContainer> EffectContainerMap;
+
 	// If an ability is marked as 'ActivateAbilityOnGranted', activate them immediately when given here
 	// Epic's comment: Projects may want to initiate passives or do other "BeginPlay" type of logic here.
 	virtual void OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	FGameplayAbilityTargetDataHandle MakeGameplayAbilityTargetDataHandleFromActorArray(const TArray<AActor*> TargetActors);
+
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	FGameplayAbilityTargetDataHandle MakeGameplayAbilityTargetDataHandleFromHitResults(const TArray<FHitResult> HitResults);
+
+	// Make gameplay effect container spec to be applied later, using the passed in container
+	UFUNCTION(BlueprintCallable, Category = Ability, meta = (AutoCreateRefTerm = "EventData"))
+	virtual FGSGameplayEffectContainerSpec MakeEffectContainerSpecFromContainer(const FGSGameplayEffectContainer& Container, const FGameplayEventData& EventData, int32 OverrideGameplayLevel = -1);
+
+	// Search for and make a gameplay effect container spec to be applied later, from the EffectContainerMap
+	UFUNCTION(BlueprintCallable, Category = Ability, meta = (AutoCreateRefTerm = "EventData"))
+	virtual FGSGameplayEffectContainerSpec MakeEffectContainerSpec(FGameplayTag ContainerTag, const FGameplayEventData& EventData, int32 OverrideGameplayLevel = -1);
+
+	// Applies a gameplay effect container spec that was previously created
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	virtual TArray<FActiveGameplayEffectHandle> ApplyEffectContainerSpec(const FGSGameplayEffectContainerSpec& ContainerSpec);
 
 
 	// --------------------------------------

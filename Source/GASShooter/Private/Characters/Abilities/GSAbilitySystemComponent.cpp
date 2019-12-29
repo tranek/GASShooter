@@ -2,6 +2,7 @@
 
 
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "Animation/AnimInstance.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "Net/UnrealNetwork.h"
@@ -62,6 +63,11 @@ void UGSAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle Ha
 
 	// If AnimatingAbility ended, clear the pointer
 	ClearAnimatingAbilityForAllMeshes(Ability);
+}
+
+UGSAbilitySystemComponent* UGSAbilitySystemComponent::GetAbilitySystemComponentFromActor(const AActor* Actor, bool LookForComponent)
+{
+	return Cast<UGSAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor, LookForComponent));
 }
 
 float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatingAbility, USkeletalMeshComponent* InMesh, FGameplayAbilityActivationInfo ActivationInfo, UAnimMontage* NewAnimMontage, float InPlayRate, FName StartSectionName)
