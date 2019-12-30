@@ -148,7 +148,7 @@ void AGSHeroCharacter::Restart()
 
 	if (IsLocallyControlled() && IsPlayerControlled())
 	{
-		//bIsFirstPersonPerspective = true;
+		bIsFirstPersonPerspective = true;
 	}
 
 	SetPerspective(bIsFirstPersonPerspective);
