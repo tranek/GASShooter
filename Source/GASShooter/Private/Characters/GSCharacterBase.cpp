@@ -46,7 +46,7 @@ int32 AGSCharacterBase::GetAbilityLevel(EGSAbilityInputID AbilityID) const
 
 void AGSCharacterBase::RemoveCharacterAbilities()
 {
-	if (GetLocalRole() != ROLE_Authority || !IsValid(AbilitySystemComponent) || !AbilitySystemComponent->CharacterAbilitiesGiven)
+	if (GetLocalRole() != ROLE_Authority || !IsValid(AbilitySystemComponent) || !AbilitySystemComponent->bCharacterAbilitiesGiven)
 	{
 		return;
 	}
@@ -67,7 +67,7 @@ void AGSCharacterBase::RemoveCharacterAbilities()
 		AbilitySystemComponent->ClearAbility(AbilitiesToRemove[i]);
 	}
 
-	AbilitySystemComponent->CharacterAbilitiesGiven = false;
+	AbilitySystemComponent->bCharacterAbilitiesGiven = false;
 }
 
 EGSHitReactDirection AGSCharacterBase::GetHitReactDirection(const FVector& ImpactPoint)
@@ -269,7 +269,7 @@ void AGSCharacterBase::BeginPlay()
 void AGSCharacterBase::AddCharacterAbilities()
 {
 	// Grant abilities, but only on the server	
-	if (GetLocalRole() != ROLE_Authority || !IsValid(AbilitySystemComponent) || AbilitySystemComponent->CharacterAbilitiesGiven)
+	if (GetLocalRole() != ROLE_Authority || !IsValid(AbilitySystemComponent) || AbilitySystemComponent->bCharacterAbilitiesGiven)
 	{
 		return;
 	}
@@ -280,7 +280,7 @@ void AGSCharacterBase::AddCharacterAbilities()
 			FGameplayAbilitySpec(StartupAbility, GetAbilityLevel(StartupAbility.GetDefaultObject()->AbilityID), static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
 	}
 
-	AbilitySystemComponent->CharacterAbilitiesGiven = true;
+	AbilitySystemComponent->bCharacterAbilitiesGiven = true;
 }
 
 void AGSCharacterBase::InitializeAttributes()
@@ -309,7 +309,7 @@ void AGSCharacterBase::InitializeAttributes()
 
 void AGSCharacterBase::AddStartupEffects()
 {
-	if (GetLocalRole() != ROLE_Authority || !IsValid(AbilitySystemComponent) || AbilitySystemComponent->StartupEffectsApplied)
+	if (GetLocalRole() != ROLE_Authority || !IsValid(AbilitySystemComponent) || AbilitySystemComponent->bStartupEffectsApplied)
 	{
 		return;
 	}
@@ -326,7 +326,7 @@ void AGSCharacterBase::AddStartupEffects()
 		}
 	}
 
-	AbilitySystemComponent->StartupEffectsApplied = true;
+	AbilitySystemComponent->bStartupEffectsApplied = true;
 }
 
 void AGSCharacterBase::SetHealth(float Health)

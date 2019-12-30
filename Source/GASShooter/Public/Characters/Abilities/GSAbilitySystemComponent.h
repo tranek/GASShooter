@@ -66,8 +66,8 @@ class GASSHOOTER_API UGSAbilitySystemComponent : public UAbilitySystemComponent
 	GENERATED_BODY()
 	
 public:
-	bool CharacterAbilitiesGiven = false;
-	bool StartupEffectsApplied = false;
+	bool bCharacterAbilitiesGiven = false;
+	bool bStartupEffectsApplied = false;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -81,6 +81,11 @@ public:
 
 	// Version of function in AbilitySystemGlobals that returns correct type
 	static UGSAbilitySystemComponent* GetAbilitySystemComponentFromActor(const AActor* Actor, bool LookForComponent = false);
+
+	// Attempts to activate the given ability handle and batch all RPCs into one. This will only batch all RPCs that happen
+	// in one frame. Best case scenario we batch ActivateAbility, SendTargetData, and EndAbility into one RPC instead of three.
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	virtual bool BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool bAllowRemoteActivation = true);
 
 
 	// ----------------------------------------------------------------------------------------------------------------

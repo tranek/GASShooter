@@ -109,6 +109,17 @@ TArray<FActiveGameplayEffectHandle> UGSGameplayAbility::ApplyEffectContainerSpec
 	return AllEffects;
 }
 
+bool UGSGameplayAbility::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool bAllowRemoteActivation)
+{
+	UGSAbilitySystemComponent* GSASC = Cast<UGSAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
+	if (GSASC)
+	{
+		return GSASC->BatchRPCTryActivateAbility(InAbilityHandle, bAllowRemoteActivation);
+	}
+
+	return false;
+}
+
 UAnimMontage* UGSGameplayAbility::GetCurrentMontageForMesh(USkeletalMeshComponent* InMesh)
 {
 	FAbilityMeshMontage AbilityMeshMontage;

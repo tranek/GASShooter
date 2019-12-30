@@ -70,6 +70,17 @@ UGSAbilitySystemComponent* UGSAbilitySystemComponent::GetAbilitySystemComponentF
 	return Cast<UGSAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor, LookForComponent));
 }
 
+bool UGSAbilitySystemComponent::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool bAllowRemoteActivation)
+{
+	if (InAbilityHandle.IsValid())
+	{
+		FScopedServerAbilityRPCBatcher GSAbilityRPCBatcher(this, InAbilityHandle);
+		return TryActivateAbility(InAbilityHandle, bAllowRemoteActivation);
+	}
+
+	return false;
+}
+
 float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatingAbility, USkeletalMeshComponent* InMesh, FGameplayAbilityActivationInfo ActivationInfo, UAnimMontage* NewAnimMontage, float InPlayRate, FName StartSectionName)
 {
 	UGSGameplayAbility* InAbility = Cast<UGSGameplayAbility>(InAnimatingAbility);

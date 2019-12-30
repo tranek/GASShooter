@@ -11,9 +11,12 @@
 #include "GASShooter/GASShooterGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "Player/GSPlayerController.h"
 #include "Player/GSPlayerState.h"
+#include "TimerManager.h"
 #include "UI/GSFloatingStatusBarWidget.h"
+#include "Weapons/GSWeapon.h"
 
 AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -44,17 +47,6 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	GetMesh()->SetCollisionProfileName(FName("NoCollision"));
 	GetMesh()->bCastHiddenShadow = true;
 
-	ThirdPersonWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("ThirdPersonWeaponMesh"));
-	ThirdPersonWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	ThirdPersonWeaponMesh->SetCollisionProfileName(FName("NoCollision"));
-	ThirdPersonWeaponMesh->bCastHiddenShadow = true;
-	
-	FirstPersonWeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(FName("FirstPersonWeaponMesh"));
-	FirstPersonWeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	FirstPersonWeaponMesh->SetCollisionProfileName(FName("NoCollision"));
-	FirstPersonWeaponMesh->CastShadow = false;
-	FirstPersonWeaponMesh->SetVisibility(false, true);
-
 	UIFloatingStatusBarComponent = CreateDefaultSubobject<UWidgetComponent>(FName("UIFloatingStatusBarComponent"));
 	UIFloatingStatusBarComponent->SetupAttachment(RootComponent);
 	UIFloatingStatusBarComponent->SetRelativeLocation(FVector(0, 0, 120));
@@ -67,8 +59,16 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 		UE_LOG(LogTemp, Error, TEXT("%s() Failed to find UIFloatingStatusBarClass. If it was moved, please update the reference location in C++."), TEXT(__FUNCTION__));
 	}
 
-	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+	AutoPossessAI = EAutoPossessAI::PlacedInWorld;
 	AIControllerClass = AGSHeroAIController::StaticClass();
+}
+
+void AGSHeroCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AGSHeroCharacter, Inventory);
+	DOREPLIFETIME(AGSHeroCharacter, CurrentWeapon);
 }
 
 // Called to bind functionality to input
@@ -146,7 +146,12 @@ void AGSHeroCharacter::Restart()
 {
 	Super::Restart();
 
-	SetPerspective(IsFirstPersonPerspective);
+	if (IsLocallyControlled() && IsPlayerControlled())
+	{
+		//bIsFirstPersonPerspective = true;
+	}
+
+	SetPerspective(bIsFirstPersonPerspective);
 }
 
 UGSFloatingStatusBarWidget* AGSHeroCharacter::GetFloatingStatusBar()
@@ -177,6 +182,69 @@ void AGSHeroCharacter::FinishDying()
 	Super::FinishDying();
 }
 
+bool AGSHeroCharacter::IsInFirstPersonPerspective() const
+{
+	return bIsFirstPersonPerspective;
+}
+
+USkeletalMeshComponent* AGSHeroCharacter::GetFirstPersonMesh()
+{
+	return FirstPersonMesh;
+}
+
+USkeletalMeshComponent* AGSHeroCharacter::GetThirdPersonMesh()
+{
+	return GetMesh();
+}
+
+bool AGSHeroCharacter::AddWeaponToInventory(AGSWeapon* NewWeapon)
+{
+	if (DoesWeaponExistInInventory(NewWeapon))
+	{
+		//TODO grab ammo from it if we're not full and destroy it in the world
+
+		return false;
+	}
+
+	Inventory.Weapons.Add(NewWeapon);
+	NewWeapon->SetOwningCharacter(this);
+
+	return true;
+}
+
+void AGSHeroCharacter::EquipWeapon(AGSWeapon* InWeapon)
+{
+	//TODO figure out role stuff
+	/*
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		return;
+	}
+	*/
+
+	UE_LOG(LogTemp, Log, TEXT("%s Equipping %s"), TEXT(__FUNCTION__), *InWeapon->GetName());
+
+	UnEquipCurrentWeapon();
+
+	CurrentWeapon = InWeapon;
+	CurrentWeapon->Equip();
+}
+
+void AGSHeroCharacter::ServerEquipWeapon_Implementation(AGSWeapon* InWeapon)
+{
+	//TODO related to role stuff for EquipWeapon()
+}
+
+bool AGSHeroCharacter::ServerEquipWeapon_Validate(AGSWeapon* InWeapon)
+{
+	return true;
+}
+
+FName AGSHeroCharacter::GetWeaponAttachPoint()
+{
+	return WeaponAttachPoint;
+}
+
 /**
 * On the Server, Possession happens before BeginPlay.
 * On the Client, BeginPlay happens before Possession.
@@ -194,23 +262,15 @@ void AGSHeroCharacter::BeginPlay()
 	//TODO
 	//StartingCameraBoomArmLength = CameraBoom->TargetArmLength;
 	//StartingCameraBoomLocation = CameraBoom->GetRelativeLocation();
+
+	Inventory = FGSHeroInventory();
 }
 
 void AGSHeroCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	if (GetMesh() && ThirdPersonWeaponMesh)
-	{
-		ThirdPersonWeaponMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("WeaponPoint"));
-		ThirdPersonWeaponMesh->SetRelativeRotation(FRotator(0, 0, -90.0f));
-	}
-
-	if (FirstPersonMesh && FirstPersonWeaponMesh)
-	{
-		FirstPersonWeaponMesh->AttachToComponent(FirstPersonMesh, FAttachmentTransformRules::SnapToTargetIncludingScale, FName("WeaponPoint"));
-		FirstPersonWeaponMesh->SetRelativeRotation(FRotator(0, 0, -90.0f));
-	}
+	GetWorldTimerManager().SetTimerForNextTick(this, &AGSHeroCharacter::SpawnDefaultInventory);
 }
 
 void AGSHeroCharacter::LookUp(float Value)
@@ -263,8 +323,8 @@ void AGSHeroCharacter::MoveRight(float Value)
 
 void AGSHeroCharacter::TogglePerspective()
 {
-	IsFirstPersonPerspective = !IsFirstPersonPerspective;
-	SetPerspective(IsFirstPersonPerspective);
+	bIsFirstPersonPerspective = !bIsFirstPersonPerspective;
+	SetPerspective(bIsFirstPersonPerspective);
 }
 
 void AGSHeroCharacter::SetPerspective(bool InIsFirstPersonPerspective)
@@ -389,11 +449,71 @@ void AGSHeroCharacter::OnRep_PlayerState()
 
 void AGSHeroCharacter::BindASCInput()
 {
-	if (!ASCInputBound && IsValid(AbilitySystemComponent) && IsValid(InputComponent))
+	if (!bASCInputBound && IsValid(AbilitySystemComponent) && IsValid(InputComponent))
 	{
 		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
 			FString("CancelTarget"), FString("EGSAbilityInputID"), static_cast<int32>(EGSAbilityInputID::Confirm), static_cast<int32>(EGSAbilityInputID::Cancel)));
 
-		ASCInputBound = true;
+		bASCInputBound = true;
+	}
+}
+
+void AGSHeroCharacter::SpawnDefaultInventory()
+{
+	UE_LOG(LogTemp, Log, TEXT("%s %s"), TEXT(__FUNCTION__), *GetName());
+
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		return;
+	}
+
+	int32 NumWeaponClasses = DefaultInventoryWeaponClasses.Num();
+	for (int32 i = 0; i < NumWeaponClasses; i++)
+	{
+		if (DefaultInventoryWeaponClasses[i])
+		{
+			FActorSpawnParameters SpawnInfo;
+			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+			AGSWeapon* NewWeapon = GetWorld()->SpawnActor<AGSWeapon>(DefaultInventoryWeaponClasses[i], SpawnInfo);
+			AddWeaponToInventory(NewWeapon);
+		}
+	}
+
+	// Equip first weapon in inventory
+	if (Inventory.Weapons.Num() > 0)
+	{
+		EquipWeapon(Inventory.Weapons[0]);
+	}
+}
+
+bool AGSHeroCharacter::DoesWeaponExistInInventory(AGSWeapon* InWeapon)
+{
+	UE_LOG(LogTemp, Log, TEXT("%s InWeapon class %s"), TEXT(__FUNCTION__), *InWeapon->GetClass()->GetName());
+
+	for (AGSWeapon* Weapon : Inventory.Weapons)
+	{
+		if (Weapon->GetClass() == InWeapon->GetClass())
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void AGSHeroCharacter::UnEquipCurrentWeapon()
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->UnEquip();
+		CurrentWeapon = nullptr;
+	}
+}
+
+void AGSHeroCharacter::OnRep_CurrentWeapon()
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->Equip();
 	}
 }

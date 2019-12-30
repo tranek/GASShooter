@@ -59,6 +59,11 @@ void AGASShooterGameModeBase::BeginPlay()
 			break;
 		}
 	}
+
+	if (!EnemySpawnPoint)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s EnemySpawnPoint is null."), TEXT(__FUNCTION__));
+	}
 }
 
 void AGASShooterGameModeBase::RespawnHero(AController* Controller)
