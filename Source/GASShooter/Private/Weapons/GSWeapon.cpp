@@ -33,6 +33,10 @@ AGSWeapon::AGSWeapon()
 	WeaponMesh3P->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponMesh3P->SetupAttachment(RootComponent);
 	WeaponMesh3P->bCastHiddenShadow = true;
+
+	WeaponPrimaryInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Primary.Instant"));
+	WeaponSecondaryInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Secondary.Instant"));
+	WeaponAlternateInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Alternate.Instant"));
 }
 
 USkeletalMeshComponent* AGSWeapon::GetWeaponMesh1P()
@@ -86,6 +90,10 @@ void AGSWeapon::Equip()
 		{
 			WeaponMesh1P->SetVisibility(true, true);
 		}
+		else
+		{
+			WeaponMesh1P->SetVisibility(false, true);
+		}
 	}
 
 	if (WeaponMesh3P)
@@ -97,6 +105,10 @@ void AGSWeapon::Equip()
 		{
 			WeaponMesh3P->SetVisibility(false, true);
 		}
+		else
+		{
+			WeaponMesh3P->SetVisibility(true, true);
+		}
 	}
 
 	AddAbilities();
@@ -104,13 +116,13 @@ void AGSWeapon::Equip()
 
 void AGSWeapon::UnEquip()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s %s"), TEXT(__FUNCTION__), *GetName());
+	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), GET_ACTOR_ROLE_FSTRING(OwningCharacter));
 
 	WeaponMesh1P->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
-	WeaponMesh1P->SetVisibility(false, false);
+	WeaponMesh1P->SetVisibility(false, true);
 
 	WeaponMesh3P->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
-	WeaponMesh3P->SetVisibility(false, false);
+	WeaponMesh3P->SetVisibility(false, true);
 
 	RemoveAbilities();
 }
@@ -139,33 +151,99 @@ void AGSWeapon::PickUpOnTouch(AGSHeroCharacter* InCharacter)
 
 void AGSWeapon::AddAbilities()
 {
-	// Grant abilities, but only on the server	
-	if (GetLocalRole() != ROLE_Authority || !IsValid(OwningCharacter) || !OwningCharacter->GetAbilitySystemComponent())
+	UE_LOG(LogTemp, Log, TEXT("%s %s Role: %s"), TEXT(__FUNCTION__), *GetName(), GET_ACTOR_ROLE_FSTRING(OwningCharacter));
+
+	if (!IsValid(OwningCharacter) || !OwningCharacter->GetAbilitySystemComponent())
 	{
 		return;
 	}
 
 	UGSAbilitySystemComponent* ASC = Cast<UGSAbilitySystemComponent>(OwningCharacter->GetAbilitySystemComponent());
 
+	if (!ASC)
+	{
+		UE_LOG(LogTemp, Log, TEXT("%s %s Role: %s ASC is null"), TEXT(__FUNCTION__), *GetName(), GET_ACTOR_ROLE_FSTRING(OwningCharacter));
+		return;
+	}
+
+	ASC->OnAbilityGiven.AddUObject(this, &AGSWeapon::HandleAbilityGiven);
+
+	// Grant abilities, but only on the server	
+	if (GetLocalRole() != ROLE_Authority)
+	{
+		return;
+	}
+
 	for (TSubclassOf<UGSGameplayAbility>& Ability : Abilities)
 	{
-		AbilitySpecs.Add(ASC->GiveAbility(
+		AbilitySpecHandles.Add(ASC->GiveAbility(
 			FGameplayAbilitySpec(Ability, GetAbilityLevel(Ability.GetDefaultObject()->AbilityID), static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID), this)));
 	}
 }
 
 void AGSWeapon::RemoveAbilities()
 {
-	// Remove abilities, but only on the server	
-	if (GetLocalRole() != ROLE_Authority || !IsValid(OwningCharacter) || !OwningCharacter->GetAbilitySystemComponent())
+	// These abilities will be cleared from the ASC when the abilities are removed on the Server
+	PrimaryInstantAbilitySpecHandle = FGameplayAbilitySpecHandle();
+	SecondaryInstantAbilitySpecHandle = FGameplayAbilitySpecHandle();
+	AlternateInstantAbilitySpecHandle = FGameplayAbilitySpecHandle();
+	PrimaryInstantAbilitySpec = nullptr;
+	SecondaryInstantAbilitySpec = nullptr;
+	AlternateInstantAbilitySpec = nullptr;
+	PrimaryInstantAbility = nullptr;
+	SecondaryInstantAbility = nullptr;
+	AlternateInstantAbility = nullptr;
+
+	if (!IsValid(OwningCharacter) || !OwningCharacter->GetAbilitySystemComponent())
 	{
 		return;
 	}
 
 	UGSAbilitySystemComponent* ASC = Cast<UGSAbilitySystemComponent>(OwningCharacter->GetAbilitySystemComponent());
 
-	for (FGameplayAbilitySpecHandle SpecHandle : AbilitySpecs)
+	if (!ASC)
+	{
+		return;
+	}
+
+	ASC->OnAbilityGiven.RemoveAll(this);
+
+	// Remove abilities, but only on the server	
+	if (GetLocalRole() != ROLE_Authority)
+	{
+		return;
+	}
+
+	for (FGameplayAbilitySpecHandle& SpecHandle : AbilitySpecHandles)
 	{
 		ASC->ClearAbility(SpecHandle);
+	}
+}
+
+void AGSWeapon::HandleAbilityGiven(FGameplayAbilitySpec& AbilitySpec)
+{
+	//UE_LOG(LogTemp, Log, TEXT("%s. %s. Ability: %s. Role: %s"), TEXT(__FUNCTION__), *GetName(), *AbilitySpec.GetDebugString(), GET_ACTOR_ROLE_FSTRING(OwningCharacter));
+
+	if (IsValid(AbilitySpec.SourceObject) && AbilitySpec.SourceObject == this)
+	{
+		//  Cache the Weapon's cacheables
+		if (AbilitySpec.Ability && AbilitySpec.Ability->AbilityTags.HasTagExact(WeaponPrimaryInstantAbilityTag))
+		{
+			PrimaryInstantAbilitySpecHandle = AbilitySpec.Handle;
+			PrimaryInstantAbilitySpec = &AbilitySpec;
+			PrimaryInstantAbility = Cast<UGSGameplayAbility>(AbilitySpec.GetPrimaryInstance());
+		}
+		else if (AbilitySpec.Ability && AbilitySpec.Ability->AbilityTags.HasTagExact(WeaponSecondaryInstantAbilityTag))
+		{
+			SecondaryInstantAbilitySpecHandle = AbilitySpec.Handle;
+			SecondaryInstantAbilitySpec = &AbilitySpec;
+			SecondaryInstantAbility = Cast<UGSGameplayAbility>(AbilitySpec.GetPrimaryInstance());
+		}
+		else if (AbilitySpec.Ability && AbilitySpec.Ability->AbilityTags.HasTagExact(WeaponAlternateInstantAbilityTag))
+		{
+			AlternateInstantAbilitySpecHandle = AbilitySpec.Handle;
+			AlternateInstantAbilitySpec = &AbilitySpec;
+			AlternateInstantAbility = Cast<UGSGameplayAbility>(AbilitySpec.GetPrimaryInstance());
+		}
 	}
 }

@@ -119,6 +119,16 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 		if (PC)
 		{
 			PC->CreateHUD();
+
+			// Player is host (listen server)
+			if (IsLocallyControlled() && IsPlayerControlled())
+			{
+				SpawnDefaultInventory();
+			}
+		}
+		else
+		{
+			SpawnDefaultInventory();
 		}
 
 		InitializeFloatingStatusBar();
@@ -145,6 +155,8 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 void AGSHeroCharacter::Restart()
 {
 	Super::Restart();
+
+	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), ACTOR_ROLE_FSTRING);
 
 	if (IsLocallyControlled() && IsPlayerControlled())
 	{
@@ -212,30 +224,26 @@ bool AGSHeroCharacter::AddWeaponToInventory(AGSWeapon* NewWeapon)
 	return true;
 }
 
-void AGSHeroCharacter::EquipWeapon(AGSWeapon* InWeapon)
+void AGSHeroCharacter::EquipWeapon(AGSWeapon* NewWeapon)
 {
-	//TODO figure out role stuff
-	/*
 	if (GetLocalRole() < ROLE_Authority)
 	{
-		return;
+		ServerEquipWeapon(NewWeapon);
 	}
-	*/
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("%s Equipping %s"), TEXT(__FUNCTION__), *NewWeapon->GetName());
 
-	UE_LOG(LogTemp, Log, TEXT("%s Equipping %s"), TEXT(__FUNCTION__), *InWeapon->GetName());
-
-	UnEquipCurrentWeapon();
-
-	CurrentWeapon = InWeapon;
-	CurrentWeapon->Equip();
+		SetCurrentWeapon(NewWeapon, CurrentWeapon);
+	}
 }
 
-void AGSHeroCharacter::ServerEquipWeapon_Implementation(AGSWeapon* InWeapon)
+void AGSHeroCharacter::ServerEquipWeapon_Implementation(AGSWeapon* NewWeapon)
 {
-	//TODO related to role stuff for EquipWeapon()
+	EquipWeapon(NewWeapon);
 }
 
-bool AGSHeroCharacter::ServerEquipWeapon_Validate(AGSWeapon* InWeapon)
+bool AGSHeroCharacter::ServerEquipWeapon_Validate(AGSWeapon* NewWeapon)
 {
 	return true;
 }
@@ -270,7 +278,8 @@ void AGSHeroCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	GetWorldTimerManager().SetTimerForNextTick(this, &AGSHeroCharacter::SpawnDefaultInventory);
+	//TODO Delete this
+	//GetWorldTimerManager().SetTimerForNextTick(this, &AGSHeroCharacter::SpawnDefaultInventory);
 }
 
 void AGSHeroCharacter::LookUp(float Value)
@@ -429,11 +438,15 @@ void AGSHeroCharacter::OnRep_PlayerState()
 		if (PC)
 		{
 			PC->CreateHUD();
+
+			if (IsLocallyControlled() && IsPlayerControlled())
+			{
+				SpawnDefaultInventory();
+			}
 		}
 
 		// Simulated on proxies don't have their PlayerStates yet when BeginPlay is called so we call it again here
 		InitializeFloatingStatusBar();
-
 
 		// Respawn specific things that won't affect first possession.
 
@@ -458,7 +471,7 @@ void AGSHeroCharacter::BindASCInput()
 	}
 }
 
-void AGSHeroCharacter::SpawnDefaultInventory()
+void AGSHeroCharacter::SpawnDefaultInventory_Implementation()
 {
 	UE_LOG(LogTemp, Log, TEXT("%s %s"), TEXT(__FUNCTION__), *GetName());
 
@@ -486,6 +499,11 @@ void AGSHeroCharacter::SpawnDefaultInventory()
 	}
 }
 
+bool AGSHeroCharacter::SpawnDefaultInventory_Validate()
+{
+	return true;
+}
+
 bool AGSHeroCharacter::DoesWeaponExistInInventory(AGSWeapon* InWeapon)
 {
 	UE_LOG(LogTemp, Log, TEXT("%s InWeapon class %s"), TEXT(__FUNCTION__), *InWeapon->GetClass()->GetName());
@@ -501,6 +519,17 @@ bool AGSHeroCharacter::DoesWeaponExistInInventory(AGSWeapon* InWeapon)
 	return false;
 }
 
+void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWeapon)
+{
+	UnEquipCurrentWeapon();
+
+	if (NewWeapon)
+	{
+		NewWeapon->Equip();
+		CurrentWeapon = NewWeapon;
+	}
+}
+
 void AGSHeroCharacter::UnEquipCurrentWeapon()
 {
 	if (CurrentWeapon)
@@ -510,10 +539,9 @@ void AGSHeroCharacter::UnEquipCurrentWeapon()
 	}
 }
 
-void AGSHeroCharacter::OnRep_CurrentWeapon()
+void AGSHeroCharacter::OnRep_CurrentWeapon(AGSWeapon* LastWeapon)
 {
-	if (CurrentWeapon)
-	{
-		CurrentWeapon->Equip();
-	}
+	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), ACTOR_ROLE_FSTRING);
+
+	SetCurrentWeapon(CurrentWeapon, LastWeapon);
 }

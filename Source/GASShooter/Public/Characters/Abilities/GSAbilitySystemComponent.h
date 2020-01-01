@@ -8,6 +8,8 @@
 
 class USkeletalMeshComponent;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGiveAbilityDelegate, FGameplayAbilitySpec&);
+
 USTRUCT()
 struct GASSHOOTER_API FGameplayAbilityLocalAnimMontageForMesh
 {
@@ -66,8 +68,12 @@ class GASSHOOTER_API UGSAbilitySystemComponent : public UAbilitySystemComponent
 	GENERATED_BODY()
 	
 public:
+	UGSAbilitySystemComponent();
+	
 	bool bCharacterAbilitiesGiven = false;
 	bool bStartupEffectsApplied = false;
+
+	FOnGiveAbilityDelegate OnAbilityGiven;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -81,6 +87,8 @@ public:
 
 	// Version of function in AbilitySystemGlobals that returns correct type
 	static UGSAbilitySystemComponent* GetAbilitySystemComponentFromActor(const AActor* Actor, bool LookForComponent = false);
+
+	virtual void OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) override;
 
 	// Attempts to activate the given ability handle and batch all RPCs into one. This will only batch all RPCs that happen
 	// in one frame. Best case scenario we batch ActivateAbility, SendTargetData, and EndAbility into one RPC instead of three.

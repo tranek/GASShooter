@@ -6,8 +6,13 @@
 #include "Animation/AnimInstance.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "Net/UnrealNetwork.h"
+#include "Weapons/GSWeapon.h"
 
 static TAutoConsoleVariable<float> CVarReplayMontageErrorThreshold(TEXT("replay.MontageErrorThreshold"), 0.5f, TEXT("Tolerance level for when montage playback position correction occurs in replays"));
+
+UGSAbilitySystemComponent::UGSAbilitySystemComponent()
+{
+}
 
 void UGSAbilitySystemComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -68,6 +73,15 @@ void UGSAbilitySystemComponent::NotifyAbilityEnded(FGameplayAbilitySpecHandle Ha
 UGSAbilitySystemComponent* UGSAbilitySystemComponent::GetAbilitySystemComponentFromActor(const AActor* Actor, bool LookForComponent)
 {
 	return Cast<UGSAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor, LookForComponent));
+}
+
+void UGSAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
+{
+	Super::OnGiveAbility(AbilitySpec);
+
+	UE_LOG(LogTemp, Log, TEXT("%s Ability: %s. AvatarActor Role: %s"), TEXT(__FUNCTION__), *AbilitySpec.GetDebugString(), GET_ACTOR_ROLE_FSTRING(AvatarActor));
+
+	OnAbilityGiven.Broadcast(AbilitySpec);
 }
 
 bool UGSAbilitySystemComponent::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool bAllowRemoteActivation)

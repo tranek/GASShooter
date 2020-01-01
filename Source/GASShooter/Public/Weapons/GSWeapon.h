@@ -22,6 +22,39 @@ public:
 	// Sets default values for this actor's properties
 	AGSWeapon();
 
+	// Cached batchable primary instant ability spec handle
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayAbilitySpecHandle PrimaryInstantAbilitySpecHandle;
+
+	// Cached batchable primary instant ability spec
+	FGameplayAbilitySpec* PrimaryInstantAbilitySpec;
+
+	// Cached batchable primary instant ability
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
+	UGSGameplayAbility* PrimaryInstantAbility;
+
+	// Cached batchable secondary instant ability spec handle
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayAbilitySpecHandle SecondaryInstantAbilitySpecHandle;
+
+	// Cached batchable secondary instant ability spec
+	FGameplayAbilitySpec* SecondaryInstantAbilitySpec;
+
+	// Cached batchable secondary instant ability
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
+	UGSGameplayAbility* SecondaryInstantAbility;
+
+	// Cached batchable alternate instant ability spec handle
+	UPROPERTY(BlueprintReadOnly)
+	FGameplayAbilitySpecHandle AlternateInstantAbilitySpecHandle;
+
+	// Cached batchable alternate instant ability spec
+	FGameplayAbilitySpec* AlternateInstantAbilitySpec;
+
+	// Cached batchable alternate instant ability
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
+	UGSGameplayAbility* AlternateInstantAbility;
+
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
 	virtual USkeletalMeshComponent* GetWeaponMesh1P();
 
@@ -72,7 +105,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GASShooter|GSWeapon")
 	TArray<TSubclassOf<UGSGameplayAbility>> Abilities;
 
-	TArray<FGameplayAbilitySpecHandle> AbilitySpecs;
+	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
+
+	// Cache tags
+	FGameplayTag WeaponPrimaryInstantAbilityTag;
+	FGameplayTag WeaponSecondaryInstantAbilityTag;
+	FGameplayTag WeaponAlternateInstantAbilityTag;
 
 	// Called when the player picks up this weapon
 	virtual void PickUpOnTouch(AGSHeroCharacter* InCharacter);
@@ -80,4 +118,6 @@ protected:
 	virtual void AddAbilities();
 
 	virtual void RemoveAbilities();
+
+	virtual void HandleAbilityGiven(FGameplayAbilitySpec& AbilitySpec);
 };

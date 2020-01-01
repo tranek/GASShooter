@@ -68,12 +68,12 @@ public:
 	bool AddWeaponToInventory(AGSWeapon* NewWeapon);
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
-	void EquipWeapon(AGSWeapon* InWeapon);
+	void EquipWeapon(AGSWeapon* NewWeapon);
 
 	UFUNCTION(Server, Reliable)
-	void ServerEquipWeapon(AGSWeapon* InWeapon);
-	void ServerEquipWeapon_Implementation(AGSWeapon* InWeapon);
-	bool ServerEquipWeapon_Validate(AGSWeapon* InWeapon);
+	void ServerEquipWeapon(AGSWeapon* NewWeapon);
+	void ServerEquipWeapon_Implementation(AGSWeapon* NewWeapon);
+	bool ServerEquipWeapon_Validate(AGSWeapon* NewWeapon);
 
 	FName GetWeaponAttachPoint();
 
@@ -166,13 +166,18 @@ protected:
 	void BindASCInput();
 
 	// Server spawns default inventory
+	UFUNCTION(Server, Reliable)
 	void SpawnDefaultInventory();
+	void SpawnDefaultInventory_Implementation();
+	bool SpawnDefaultInventory_Validate();
 
 	bool DoesWeaponExistInInventory(AGSWeapon* InWeapon);
+
+	void SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWeapon);
 
 	// Unequips the current weapon
 	void UnEquipCurrentWeapon();
 
 	UFUNCTION()
-	void OnRep_CurrentWeapon();
+	void OnRep_CurrentWeapon(AGSWeapon* LastWeapon);
 };
