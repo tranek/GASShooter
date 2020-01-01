@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameplayAbilitySpec.h"
 #include "GameFramework/Actor.h"
+#include "GameplayAbilitySpec.h"
 #include "GASShooter/GASShooter.h"
 #include "GSWeapon.generated.h"
 
@@ -54,6 +54,9 @@ public:
 	// Cached batchable alternate instant ability
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
 	UGSGameplayAbility* AlternateInstantAbility;
+
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
+	class AGSGATA_SingleLineTrace* SingleLineTraceTargetActor;
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
 	virtual USkeletalMeshComponent* GetWeaponMesh1P();
@@ -111,6 +114,8 @@ protected:
 	FGameplayTag WeaponPrimaryInstantAbilityTag;
 	FGameplayTag WeaponSecondaryInstantAbilityTag;
 	FGameplayTag WeaponAlternateInstantAbilityTag;
+
+	virtual void BeginPlay() override;
 
 	// Called when the player picks up this weapon
 	virtual void PickUpOnTouch(AGSHeroCharacter* InCharacter);

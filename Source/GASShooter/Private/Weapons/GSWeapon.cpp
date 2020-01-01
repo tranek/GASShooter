@@ -4,6 +4,7 @@
 #include "Weapons/GSWeapon.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
+#include "Characters/Abilities/GSGATA_SingleLineTrace.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -137,6 +138,11 @@ int32 AGSWeapon::GetAbilityLevel(EGSAbilityInputID AbilityID)
 {
 	// All abilities for now are level 1
 	return 1;
+}
+
+void AGSWeapon::BeginPlay()
+{
+	SingleLineTraceTargetActor = GetWorld()->SpawnActor<AGSGATA_SingleLineTrace>();
 }
 
 void AGSWeapon::PickUpOnTouch(AGSHeroCharacter* InCharacter)
