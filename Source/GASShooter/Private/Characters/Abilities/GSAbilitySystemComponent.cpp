@@ -84,15 +84,28 @@ void UGSAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
 	OnAbilityGiven.Broadcast(AbilitySpec);
 }
 
-bool UGSAbilitySystemComponent::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool bAllowRemoteActivation)
+bool UGSAbilitySystemComponent::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool EndAbilityImmediately)
 {
+	bool AbilityActivated = false;
 	if (InAbilityHandle.IsValid())
 	{
 		FScopedServerAbilityRPCBatcher GSAbilityRPCBatcher(this, InAbilityHandle);
-		return TryActivateAbility(InAbilityHandle, bAllowRemoteActivation);
+		AbilityActivated = TryActivateAbility(InAbilityHandle, true);
+
+		if (EndAbilityImmediately)
+		{
+			FGameplayAbilitySpec* AbilitySpec = FindAbilitySpecFromHandle(InAbilityHandle);
+			if (AbilitySpec)
+			{
+				UGSGameplayAbility* GSAbility = Cast<UGSGameplayAbility>(AbilitySpec->GetPrimaryInstance());
+				GSAbility->ExternalEndAbility();
+			}
+		}
+
+		return AbilityActivated;
 	}
 
-	return false;
+	return AbilityActivated;
 }
 
 float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatingAbility, USkeletalMeshComponent* InMesh, FGameplayAbilityActivationInfo ActivationInfo, UAnimMontage* NewAnimMontage, float InPlayRate, FName StartSectionName)

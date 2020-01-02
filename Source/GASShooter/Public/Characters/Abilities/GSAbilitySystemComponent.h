@@ -90,10 +90,13 @@ public:
 
 	virtual void OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) override;
 
+	// Turn on RPC batching in ASC. Off by default.
+	virtual bool ShouldDoServerAbilityRPCBatch() const override { return true; }
+
 	// Attempts to activate the given ability handle and batch all RPCs into one. This will only batch all RPCs that happen
 	// in one frame. Best case scenario we batch ActivateAbility, SendTargetData, and EndAbility into one RPC instead of three.
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
-	virtual bool BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool bAllowRemoteActivation = true);
+	virtual bool BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool EndAbilityImmediately);
 
 
 	// ----------------------------------------------------------------------------------------------------------------

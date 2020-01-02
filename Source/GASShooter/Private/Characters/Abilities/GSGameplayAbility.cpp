@@ -109,15 +109,24 @@ TArray<FActiveGameplayEffectHandle> UGSGameplayAbility::ApplyEffectContainerSpec
 	return AllEffects;
 }
 
-bool UGSGameplayAbility::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool bAllowRemoteActivation)
+bool UGSGameplayAbility::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool EndAbilityImmediately)
 {
 	UGSAbilitySystemComponent* GSASC = Cast<UGSAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
 	if (GSASC)
 	{
-		return GSASC->BatchRPCTryActivateAbility(InAbilityHandle, bAllowRemoteActivation);
+		return GSASC->BatchRPCTryActivateAbility(InAbilityHandle, EndAbilityImmediately);
 	}
 
 	return false;
+}
+
+void UGSGameplayAbility::ExternalEndAbility()
+{
+	check(CurrentActorInfo);
+
+	bool bReplicateEndAbility = true;
+	bool bWasCancelled = false;
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
 UAnimMontage* UGSGameplayAbility::GetCurrentMontageForMesh(USkeletalMeshComponent* InMesh)
