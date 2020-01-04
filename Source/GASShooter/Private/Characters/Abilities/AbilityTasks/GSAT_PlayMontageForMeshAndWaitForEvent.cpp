@@ -1,4 +1,4 @@
-// Copyright 2019 Dan Kestranek.
+// Copyright 2020 Dan Kestranek.
 
 
 #include "Characters/Abilities/AbilityTasks/GSAT_PlayMontageForMeshAndWaitForEvent.h"
