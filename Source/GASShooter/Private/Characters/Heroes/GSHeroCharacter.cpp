@@ -275,15 +275,16 @@ void AGSHeroCharacter::BeginPlay()
 	// When the player a client, the floating status bars are all set up in OnRep_PlayerState.
 	InitializeFloatingStatusBar();
 
-	StartingThirdPersonCameraBoomArmLength = ThirdPersonCameraBoom->TargetArmLength;
-	StartingThirdPersonCameraBoomLocation = ThirdPersonCameraBoom->GetRelativeLocation();
-
 	Inventory = FGSHeroInventory();
 }
 
 void AGSHeroCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
+
+	StartingThirdPersonCameraBoomArmLength = ThirdPersonCameraBoom->TargetArmLength;
+	StartingThirdPersonCameraBoomLocation = ThirdPersonCameraBoom->GetRelativeLocation();
+	StartingThirdPersonMeshLocation = GetMesh()->GetRelativeLocation();
 
 	//TODO Delete this
 	//GetWorldTimerManager().SetTimerForNextTick(this, &AGSHeroCharacter::SpawnDefaultInventory);
@@ -372,7 +373,8 @@ void AGSHeroCharacter::SetPerspective(bool InIsFirstPersonPerspective)
 			GetMesh()->SetVisibility(true, true);
 
 			// Reset the third person mesh
-			GetMesh()->AddLocalOffset(FVector(0.0f, 100.0f, 0.0f));
+			//GetMesh()->AddLocalOffset(FVector(0.0f, 100.0f, 0.0f));
+			GetMesh()->SetRelativeLocation(StartingThirdPersonMeshLocation);
 		}
 	}
 }

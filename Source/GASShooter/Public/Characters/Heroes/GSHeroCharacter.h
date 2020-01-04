@@ -103,6 +103,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
 	FVector StartingThirdPersonCameraBoomLocation;
 
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
+	FVector StartingThirdPersonMeshLocation;
+
 	// Default to first person
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
 	bool bIsFirstPersonPerspective = false;
