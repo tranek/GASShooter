@@ -470,16 +470,6 @@ void AGSHeroCharacter::OnRep_Controller()
 	Super::OnRep_Controller();
 
 	SetupStartupPerspective();
-
-	//TODO Delete this
-	/*
-	if (IsLocallyControlled() && IsPlayerControlled())
-	{
-		bIsFirstPersonPerspective = true;
-	}
-
-	SetPerspective(bIsFirstPersonPerspective);
-	*/
 }
 
 void AGSHeroCharacter::BindASCInput()
