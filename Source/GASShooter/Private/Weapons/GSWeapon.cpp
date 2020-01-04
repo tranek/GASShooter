@@ -38,6 +38,8 @@ AGSWeapon::AGSWeapon()
 	WeaponPrimaryInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Primary.Instant"));
 	WeaponSecondaryInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Secondary.Instant"));
 	WeaponAlternateInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Alternate.Instant"));
+
+	FireMode = FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.None"));
 }
 
 USkeletalMeshComponent* AGSWeapon::GetWeaponMesh1P()

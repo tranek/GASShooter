@@ -129,6 +129,12 @@ void UGSGameplayAbility::ExternalEndAbility()
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
+FString UGSGameplayAbility::GetCurrentPredictionKeyStatus()
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	return ASC->ScopedPredictionKey.ToString() + " is valid for more prediction: " + (ASC->ScopedPredictionKey.IsValidForMorePrediction() ? TEXT("true") : TEXT("false"));
+}
+
 UAnimMontage* UGSGameplayAbility::GetCurrentMontageForMesh(USkeletalMeshComponent* InMesh)
 {
 	FAbilityMeshMontage AbilityMeshMontage;

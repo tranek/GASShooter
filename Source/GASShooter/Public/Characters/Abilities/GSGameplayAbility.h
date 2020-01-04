@@ -90,6 +90,9 @@ public:
 	// Same as calling K2_EndAbility. Meant for use with batching system to end the ability externally.
 	virtual void ExternalEndAbility();
 
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	virtual FString GetCurrentPredictionKeyStatus();
+
 
 	// --------------------------------------
 	//	Animation Support for multiple USkeletalMeshComponents on the AvatarActor

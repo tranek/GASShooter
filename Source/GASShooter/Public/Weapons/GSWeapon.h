@@ -23,7 +23,7 @@ public:
 	AGSWeapon();
 
 	// Cached batchable primary instant ability spec handle
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
 	FGameplayAbilitySpecHandle PrimaryInstantAbilitySpecHandle;
 
 	// Cached batchable primary instant ability spec
@@ -34,7 +34,7 @@ public:
 	UGSGameplayAbility* PrimaryInstantAbility;
 
 	// Cached batchable secondary instant ability spec handle
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
 	FGameplayAbilitySpecHandle SecondaryInstantAbilitySpecHandle;
 
 	// Cached batchable secondary instant ability spec
@@ -45,7 +45,7 @@ public:
 	UGSGameplayAbility* SecondaryInstantAbility;
 
 	// Cached batchable alternate instant ability spec handle
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
 	FGameplayAbilitySpecHandle AlternateInstantAbilitySpecHandle;
 
 	// Cached batchable alternate instant ability spec
@@ -63,6 +63,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
 	virtual USkeletalMeshComponent* GetWeaponMesh3P();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|GSWeapon")
+	FGameplayTag FireMode;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -95,15 +98,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "GASShooter|GSWeapon")
 	AGSHeroCharacter* OwningCharacter;
-
-	UPROPERTY(VisibleAnywhere, Category = "GASShooter|GSWeapon")
-	UAnimMontage* EquipMontage;
-
-	UPROPERTY(VisibleAnywhere, Category = "GASShooter|GSWeapon")
-	UAnimMontage* ReloadMontage;
-
-	UPROPERTY(VisibleAnywhere, Category = "GASShooter|GSWeapon")
-	UAnimMontage* FireMontage;
 
 	UPROPERTY(EditAnywhere, Category = "GASShooter|GSWeapon")
 	TArray<TSubclassOf<UGSGameplayAbility>> Abilities;

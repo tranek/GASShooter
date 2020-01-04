@@ -78,7 +78,8 @@ public:
 			float Rate = 1.f,
 			FName StartSection = NAME_None,
 			bool bStopWhenAbilityEnds = true,
-			float AnimRootMotionTranslationScale = 1.f);
+			float AnimRootMotionTranslationScale = 1.f,
+			bool bReplicateMontage = true);
 
 private:
 	// Mesh that the Montage is playing on. Must be owned by the AvatarActor.
@@ -108,6 +109,9 @@ private:
 	/** Rather montage should be aborted if ability ends */
 	UPROPERTY()
 	bool bStopWhenAbilityEnds;
+
+	UPROPERTY()
+	bool bReplicateMontage;
 
 	/** Checks if the ability is playing a montage and stops that montage, returns true if a montage was stopped, false if not. */
 	bool StopPlayingMontage();

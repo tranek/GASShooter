@@ -97,7 +97,7 @@ void UGSAT_PlayMontageForMeshAndWaitForEvent::OnGameplayEvent(FGameplayTag Event
 
 UGSAT_PlayMontageForMeshAndWaitForEvent* UGSAT_PlayMontageForMeshAndWaitForEvent::PlayMontageForMeshAndWaitForEvent(UGameplayAbility* OwningAbility,
 	FName TaskInstanceName, USkeletalMeshComponent* InMesh, UAnimMontage* MontageToPlay, FGameplayTagContainer EventTags, float Rate, FName StartSection,
-	bool bStopWhenAbilityEnds, float AnimRootMotionTranslationScale)
+	bool bStopWhenAbilityEnds, float AnimRootMotionTranslationScale, bool bReplicateMontage)
 {
 	UAbilitySystemGlobals::NonShipping_ApplyGlobalAbilityScaler_Rate(Rate);
 
@@ -109,6 +109,7 @@ UGSAT_PlayMontageForMeshAndWaitForEvent* UGSAT_PlayMontageForMeshAndWaitForEvent
 	MyObj->StartSection = StartSection;
 	MyObj->AnimRootMotionTranslationScale = AnimRootMotionTranslationScale;
 	MyObj->bStopWhenAbilityEnds = bStopWhenAbilityEnds;
+	MyObj->bReplicateMontage = bReplicateMontage;
 
 	return MyObj;
 }
@@ -126,6 +127,12 @@ void UGSAT_PlayMontageForMeshAndWaitForEvent::Activate()
 		return;
 	}
 
+	// If we're not replicating, only play on the locally controlled player
+	if (!bReplicateMontage && !Ability->GetCurrentActorInfo()->IsLocallyControlledPlayer())
+	{
+		return;
+	}
+
 	bool bPlayedMontage = false;
 	UGSAbilitySystemComponent* GSAbilitySystemComponent = GetTargetASC();
 
@@ -138,7 +145,7 @@ void UGSAT_PlayMontageForMeshAndWaitForEvent::Activate()
 			// Bind to event callback
 			EventHandle = GSAbilitySystemComponent->AddGameplayEventTagContainerDelegate(EventTags, FGameplayEventTagMulticastDelegate::FDelegate::CreateUObject(this, &UGSAT_PlayMontageForMeshAndWaitForEvent::OnGameplayEvent));
 
-			if (GSAbilitySystemComponent->PlayMontageForMesh(Ability, Mesh, Ability->GetCurrentActivationInfo(), MontageToPlay, Rate, StartSection) > 0.f)
+			if (GSAbilitySystemComponent->PlayMontageForMesh(Ability, Mesh, Ability->GetCurrentActivationInfo(), MontageToPlay, Rate, StartSection, bReplicateMontage) > 0.f)
 			{
 				// Playing a montage could potentially fire off a callback into game code which could kill this ability! Early out if we are  pending kill.
 				if (ShouldBroadcastAbilityTaskDelegates() == false)

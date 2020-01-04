@@ -108,7 +108,7 @@ bool UGSAbilitySystemComponent::BatchRPCTryActivateAbility(FGameplayAbilitySpecH
 	return AbilityActivated;
 }
 
-float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatingAbility, USkeletalMeshComponent* InMesh, FGameplayAbilityActivationInfo ActivationInfo, UAnimMontage* NewAnimMontage, float InPlayRate, FName StartSectionName)
+float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatingAbility, USkeletalMeshComponent* InMesh, FGameplayAbilityActivationInfo ActivationInfo, UAnimMontage* NewAnimMontage, float InPlayRate, FName StartSectionName, bool bReplicateMontage)
 {
 	UGSGameplayAbility* InAbility = Cast<UGSGameplayAbility>(InAnimatingAbility);
 
@@ -156,18 +156,21 @@ float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatin
 			// Replicate to non owners
 			if (IsOwnerActorAuthoritative())
 			{
-				// Those are static parameters, they are only set when the montage is played. They are not changed after that.
-				FGameplayAbilityRepAnimMontageForMesh& AbilityRepMontageInfo = GetGameplayAbilityRepAnimMontageForMesh(InMesh);
-				AbilityRepMontageInfo.RepMontageInfo.AnimMontage = NewAnimMontage;
-				AbilityRepMontageInfo.RepMontageInfo.ForcePlayBit = !bool(AbilityRepMontageInfo.RepMontageInfo.ForcePlayBit);
-
-				// Update parameters that change during Montage life time.
-				AnimMontage_UpdateReplicatedDataForMesh(InMesh);
-
-				// Force net update on our avatar actor
-				if (AbilityActorInfo->AvatarActor != nullptr)
+				if (bReplicateMontage)
 				{
-					AbilityActorInfo->AvatarActor->ForceNetUpdate();
+					// Those are static parameters, they are only set when the montage is played. They are not changed after that.
+					FGameplayAbilityRepAnimMontageForMesh& AbilityRepMontageInfo = GetGameplayAbilityRepAnimMontageForMesh(InMesh);
+					AbilityRepMontageInfo.RepMontageInfo.AnimMontage = NewAnimMontage;
+					AbilityRepMontageInfo.RepMontageInfo.ForcePlayBit = !bool(AbilityRepMontageInfo.RepMontageInfo.ForcePlayBit);
+
+					// Update parameters that change during Montage life time.
+					AnimMontage_UpdateReplicatedDataForMesh(InMesh);
+
+					// Force net update on our avatar actor
+					if (AbilityActorInfo->AvatarActor != nullptr)
+					{
+						AbilityActorInfo->AvatarActor->ForceNetUpdate();
+					}
 				}
 			}
 			else

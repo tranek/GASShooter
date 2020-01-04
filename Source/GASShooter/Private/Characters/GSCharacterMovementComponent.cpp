@@ -9,7 +9,7 @@
 UGSCharacterMovementComponent::UGSCharacterMovementComponent()
 {
 	SprintSpeedMultiplier = 1.4f;
-	ADSSpeedMultiplier = 0.5f;
+	ADSSpeedMultiplier = 0.8f;
 }
 
 float UGSCharacterMovementComponent::GetMaxSpeed() const

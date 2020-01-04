@@ -21,7 +21,7 @@ void UGSAT_ServerWaitForClientTargetData::Activate()
 {
 	if (!Ability || !Ability->GetCurrentActorInfo()->IsNetAuthority())
 	{
-		EndTask();
+		return;
 	}
 
 	FGameplayAbilitySpecHandle	SpecHandle = GetAbilitySpecHandle();

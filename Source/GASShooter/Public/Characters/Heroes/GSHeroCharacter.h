@@ -8,6 +8,19 @@
 
 class AGSWeapon;
 
+UENUM(BlueprintType)
+enum class EGSHeroWeaponState : uint8
+{
+	// 0
+	Rifle					UMETA(DisplayName = "Rifle"),
+	// 1
+	RifleAiming				UMETA(DisplayName = "Rifle Aiming"),
+	// 2
+	RocketLauncher			UMETA(DisplayName = "Rocket Launcher"),
+	// 3
+	RocketLauncherAiming	UMETA(DisplayName = "Rocket Launcherr Aiming")
+};
+
 USTRUCT()
 struct GASSHOOTER_API FGSHeroInventory
 {
@@ -84,6 +97,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|Camera")
 	float BaseLookUpRate = 45.0f;
 
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
+	float StartingThirdPersonCameraBoomArmLength;
+
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
+	FVector StartingThirdPersonCameraBoomLocation;
+
 	// Default to first person
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
 	bool bIsFirstPersonPerspective = false;
@@ -159,6 +178,7 @@ protected:
 
 	// Client only
 	virtual void OnRep_PlayerState() override;
+	virtual void OnRep_Controller() override;
 
 	// Called from both SetupPlayerInputComponent and OnRep_PlayerState because of a potential race condition where the PlayerController might
 	// call ClientRestart which calls SetupPlayerInputComponent before the PlayerState is repped to the client so the PlayerState would be null in SetupPlayerInputComponent.
@@ -170,6 +190,8 @@ protected:
 	void SpawnDefaultInventory();
 	void SpawnDefaultInventory_Implementation();
 	bool SpawnDefaultInventory_Validate();
+
+	void SetupStartupPerspective();
 
 	bool DoesWeaponExistInInventory(AGSWeapon* InWeapon);
 

@@ -150,6 +150,8 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 		SetMana(GetMaxMana());
 		SetStamina(GetMaxStamina());
 	}
+
+	SetupStartupPerspective();
 }
 
 void AGSHeroCharacter::Restart()
@@ -267,9 +269,8 @@ void AGSHeroCharacter::BeginPlay()
 	// When the player a client, the floating status bars are all set up in OnRep_PlayerState.
 	InitializeFloatingStatusBar();
 
-	//TODO
-	//StartingCameraBoomArmLength = CameraBoom->TargetArmLength;
-	//StartingCameraBoomLocation = CameraBoom->GetRelativeLocation();
+	StartingThirdPersonCameraBoomArmLength = ThirdPersonCameraBoom->TargetArmLength;
+	StartingThirdPersonCameraBoomLocation = ThirdPersonCameraBoom->GetRelativeLocation();
 
 	Inventory = FGSHeroInventory();
 }
@@ -460,6 +461,23 @@ void AGSHeroCharacter::OnRep_PlayerState()
 	}
 }
 
+void AGSHeroCharacter::OnRep_Controller()
+{
+	Super::OnRep_Controller();
+
+	SetupStartupPerspective();
+
+	//TODO Delete this
+	/*
+	if (IsLocallyControlled() && IsPlayerControlled())
+	{
+		bIsFirstPersonPerspective = true;
+	}
+
+	SetPerspective(bIsFirstPersonPerspective);
+	*/
+}
+
 void AGSHeroCharacter::BindASCInput()
 {
 	if (!bASCInputBound && IsValid(AbilitySystemComponent) && IsValid(InputComponent))
@@ -502,6 +520,16 @@ void AGSHeroCharacter::SpawnDefaultInventory_Implementation()
 bool AGSHeroCharacter::SpawnDefaultInventory_Validate()
 {
 	return true;
+}
+
+void AGSHeroCharacter::SetupStartupPerspective()
+{
+	if (IsLocallyControlled() && IsPlayerControlled())
+	{
+		bIsFirstPersonPerspective = true;
+	}
+
+	SetPerspective(bIsFirstPersonPerspective);
 }
 
 bool AGSHeroCharacter::DoesWeaponExistInInventory(AGSWeapon* InWeapon)
