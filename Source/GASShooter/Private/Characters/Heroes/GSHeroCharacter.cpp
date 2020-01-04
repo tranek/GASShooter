@@ -23,7 +23,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	ThirdPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("CameraBoom"));
 	ThirdPersonCameraBoom->SetupAttachment(RootComponent);
 	ThirdPersonCameraBoom->bUsePawnControlRotation = true;
-	ThirdPersonCameraBoom->SetRelativeLocation(FVector(0, 60, 68.492264));
+	ThirdPersonCameraBoom->SetRelativeLocation(FVector(0, 50, 68.492264));
 
 	ThirdPersonCamera = CreateDefaultSubobject<UCameraComponent>(FName("FollowCamera"));
 	ThirdPersonCamera->SetupAttachment(ThirdPersonCameraBoom);
