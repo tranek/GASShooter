@@ -410,6 +410,7 @@ void AGSHeroCharacter::InitializeFloatingStatusBar()
 				UIFloatingStatusBar->SetHealthPercentage(GetHealth() / GetMaxHealth());
 				UIFloatingStatusBar->SetManaPercentage(GetMana() / GetMaxMana());
 				UIFloatingStatusBar->OwningCharacter = this;
+				UIFloatingStatusBar->SetCharacterName(CharacterName);
 			}
 		}
 	}
