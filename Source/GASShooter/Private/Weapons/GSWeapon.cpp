@@ -28,12 +28,14 @@ AGSWeapon::AGSWeapon()
 	WeaponMesh1P->CastShadow = false;
 	WeaponMesh1P->SetVisibility(false, true);
 	WeaponMesh1P->SetupAttachment(RootComponent);
+	WeaponMesh1P->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
 
 	WeaponMesh3P = CreateDefaultSubobject<USkeletalMeshComponent>(FName("WeaponMesh3P"));
 	//TODO for now no collision. No Collision while equipped, collision when sitting in the world waiting to be picked up.
 	WeaponMesh3P->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponMesh3P->SetupAttachment(RootComponent);
 	WeaponMesh3P->bCastHiddenShadow = true;
+	WeaponMesh3P->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
 
 	WeaponPrimaryInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Primary.Instant"));
 	WeaponSecondaryInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Secondary.Instant"));
