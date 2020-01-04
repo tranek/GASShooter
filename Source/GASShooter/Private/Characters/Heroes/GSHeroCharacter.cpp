@@ -120,7 +120,10 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 		{
 			PC->CreateHUD();
 
-			// Player is host (listen server)
+			// Spawn default inventory when the Server is autonomous - local player is host or for AI players.
+			// Otherwise players will tell the Server to spawn default inventory when their PlayerState replicates.
+
+			// Local player is host (listen server)
 			if (IsLocallyControlled() && IsPlayerControlled())
 			{
 				SpawnDefaultInventory();
@@ -128,6 +131,7 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 		}
 		else
 		{
+			// AI player
 			SpawnDefaultInventory();
 		}
 
