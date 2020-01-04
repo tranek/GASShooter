@@ -89,7 +89,8 @@ public:
 
 	// Same as calling K2_EndAbility. Meant for use with batching system to end the ability externally.
 	virtual void ExternalEndAbility();
-
+	
+	// Returns the current prediction key and if it's valid for more predicting. Used for debugging ability prediction windows.
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	virtual FString GetCurrentPredictionKeyStatus();
 
