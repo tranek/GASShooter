@@ -104,9 +104,6 @@ protected:
 
 	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|Camera")
-	float Targeting1PFOV;
-
 	// Cache tags
 	FGameplayTag WeaponPrimaryInstantAbilityTag;
 	FGameplayTag WeaponSecondaryInstantAbilityTag;

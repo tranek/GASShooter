@@ -18,8 +18,6 @@ AGSWeapon::AGSWeapon()
 	bReplicates = true;
 	bNetUseOwnerRelevancy = true;
 
-	Targeting1PFOV = 60.0f;
-
 	Root = CreateDefaultSubobject<USceneComponent>(FName("Root"));
 	Root->SetVisibility(false, false);
 	RootComponent = Root;

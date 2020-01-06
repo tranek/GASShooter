@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "Characters/Abilities/GSAbilitySystemComponent.h"
+#include "Characters/Abilities/GSGameplayAbility.h"
 #include "GSBlueprintFunctionLibrary.generated.h"
+
 
 /**
  * 
@@ -14,4 +17,10 @@ class GASSHOOTER_API UGSBlueprintFunctionLibrary : public UBlueprintFunctionLibr
 {
 	GENERATED_BODY()
 	
+public:
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	static UGSGameplayAbility* GetPrimaryAbilityInstanceFromHandle(UAbilitySystemComponent* AbilitySystemComponent, FGameplayAbilitySpecHandle Handle);
+
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	static UGSGameplayAbility* GetPrimaryAbilityInstanceFromClass(UAbilitySystemComponent* AbilitySystemComponent, TSubclassOf<UGameplayAbility> InAbilityClass);
 };
