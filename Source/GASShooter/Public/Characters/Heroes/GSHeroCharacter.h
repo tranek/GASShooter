@@ -114,6 +114,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
 	float Default1PFOV;
 
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
+	float Default3PFOV;
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSHeroCharacter")
 	FName WeaponAttachPoint;
 

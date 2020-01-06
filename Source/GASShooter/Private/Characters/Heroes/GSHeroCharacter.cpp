@@ -25,6 +25,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	bIsFirstPersonPerspective = false;
 	bASCInputBound = false;
 	Default1PFOV = 90.0f;
+	Default3PFOV = 80.0f;
 	
 	ThirdPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("CameraBoom"));
 	ThirdPersonCameraBoom->SetupAttachment(RootComponent);
@@ -33,7 +34,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 
 	ThirdPersonCamera = CreateDefaultSubobject<UCameraComponent>(FName("FollowCamera"));
 	ThirdPersonCamera->SetupAttachment(ThirdPersonCameraBoom);
-	ThirdPersonCamera->FieldOfView = 80.0f;
+	ThirdPersonCamera->FieldOfView = Default3PFOV;
 
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(FName("FirstPersonCamera"));
 	FirstPersonCamera->SetupAttachment(RootComponent);
