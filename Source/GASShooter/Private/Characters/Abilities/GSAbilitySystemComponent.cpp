@@ -84,6 +84,11 @@ void UGSAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
 	OnAbilityGiven.Broadcast(AbilitySpec);
 }
 
+int32 UGSAbilitySystemComponent::K2_GetTagCount(FGameplayTag TagToCheck) const
+{
+	return GetTagCount(TagToCheck);
+}
+
 bool UGSAbilitySystemComponent::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool EndAbilityImmediately)
 {
 	bool AbilityActivated = false;

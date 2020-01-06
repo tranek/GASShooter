@@ -90,6 +90,10 @@ public:
 
 	virtual void OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) override;
 
+	// Exposes GetTagCount to Blueprint
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Abilities", meta = (DisplayName = "GetTagCount", ScriptName = "GetTagCount"))
+	int32 K2_GetTagCount(FGameplayTag TagToCheck) const;
+
 	// Turn on RPC batching in ASC. Off by default.
 	virtual bool ShouldDoServerAbilityRPCBatch() const override { return true; }
 

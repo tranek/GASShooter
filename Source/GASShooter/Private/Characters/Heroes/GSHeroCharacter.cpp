@@ -20,6 +20,12 @@
 
 AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
+	BaseTurnRate = 45.0f;
+	BaseLookUpRate = 45.0f;
+	bIsFirstPersonPerspective = false;
+	bASCInputBound = false;
+	Default1PFOV = 90.0f;
+	
 	ThirdPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("CameraBoom"));
 	ThirdPersonCameraBoom->SetupAttachment(RootComponent);
 	ThirdPersonCameraBoom->bUsePawnControlRotation = true;
@@ -373,7 +379,6 @@ void AGSHeroCharacter::SetPerspective(bool InIsFirstPersonPerspective)
 			GetMesh()->SetVisibility(true, true);
 
 			// Reset the third person mesh
-			//GetMesh()->AddLocalOffset(FVector(0.0f, 100.0f, 0.0f));
 			GetMesh()->SetRelativeLocation(StartingThirdPersonMeshLocation);
 		}
 	}

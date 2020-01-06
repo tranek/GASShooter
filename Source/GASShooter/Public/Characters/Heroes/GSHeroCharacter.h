@@ -92,10 +92,10 @@ public:
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|Camera")
-	float BaseTurnRate = 45.0f;
+	float BaseTurnRate;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|Camera")
-	float BaseLookUpRate = 45.0f;
+	float BaseLookUpRate;
 
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
 	float StartingThirdPersonCameraBoomArmLength;
@@ -106,11 +106,13 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
 	FVector StartingThirdPersonMeshLocation;
 
-	// Default to first person
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
-	bool bIsFirstPersonPerspective = false;
+	bool bIsFirstPersonPerspective;
 
-	bool bASCInputBound = false;
+	bool bASCInputBound;
+
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
+	float Default1PFOV;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSHeroCharacter")
 	FName WeaponAttachPoint;
