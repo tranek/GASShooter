@@ -50,6 +50,8 @@ class GASSHOOTER_API AGSHeroCharacter : public AGSCharacterBase
 public:
 	AGSHeroCharacter(const class FObjectInitializer& ObjectInitializer);
 
+	FGameplayTag CurrentWeaponTag;
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// Called to bind functionality to input
@@ -79,6 +81,11 @@ public:
 	// Returns false if the weapon already exists in the inventory, true if it's a new weapon.
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
 	bool AddWeaponToInventory(AGSWeapon* NewWeapon);
+
+	// Removes a weapon from the inventory.
+	// Returns true if the weapon exists and was removed. False if the weapon didn't exist in the inventory.
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
+	bool RemoveWeaponFromInventory(AGSWeapon* WeaponToRemove);
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
 	void EquipWeapon(AGSWeapon* NewWeapon);
@@ -149,6 +156,9 @@ protected:
 
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeapon)
 	AGSWeapon* CurrentWeapon;
+
+	// Cache tags
+	FGameplayTag NoWeaponTag;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

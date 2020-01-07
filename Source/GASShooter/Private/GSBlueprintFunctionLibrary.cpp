@@ -30,3 +30,8 @@ UGSGameplayAbility* UGSBlueprintFunctionLibrary::GetPrimaryAbilityInstanceFromCl
 
 	return nullptr;
 }
+
+bool UGSBlueprintFunctionLibrary::IsAbilitySpecHandleValid(FGameplayAbilitySpecHandle Handle)
+{
+	return Handle.IsValid();
+}

@@ -89,6 +89,24 @@ int32 UGSAbilitySystemComponent::K2_GetTagCount(FGameplayTag TagToCheck) const
 	return GetTagCount(TagToCheck);
 }
 
+FGameplayAbilitySpecHandle UGSAbilitySystemComponent::FindAbilitySpecHandleForClass(TSubclassOf<UGameplayAbility> AbilityClass, UObject* OptionalSourceObject)
+{
+	ABILITYLIST_SCOPE_LOCK();
+	for (FGameplayAbilitySpec& Spec : ActivatableAbilities.Items)
+	{
+		TSubclassOf<UGameplayAbility> SpecAbilityClass = Spec.Ability->GetClass();
+		if (SpecAbilityClass == AbilityClass)
+		{
+			if (!OptionalSourceObject || (OptionalSourceObject && Spec.SourceObject == OptionalSourceObject))
+			{
+				return Spec.Handle;
+			}
+		}
+	}
+
+	return FGameplayAbilitySpecHandle();
+}
+
 bool UGSAbilitySystemComponent::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool EndAbilityImmediately)
 {
 	bool AbilityActivated = false;

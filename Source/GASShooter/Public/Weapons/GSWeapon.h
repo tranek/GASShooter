@@ -22,38 +22,11 @@ public:
 	// Sets default values for this actor's properties
 	AGSWeapon();
 
-	// Cached batchable primary instant ability spec handle
-	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
-	FGameplayAbilitySpecHandle PrimaryInstantAbilitySpecHandle;
-
-	// Cached batchable primary instant ability spec
-	FGameplayAbilitySpec* PrimaryInstantAbilitySpec;
-
-	// Cached batchable primary instant ability
-	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
-	UGSGameplayAbility* PrimaryInstantAbility;
-
-	// Cached batchable secondary instant ability spec handle
-	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
-	FGameplayAbilitySpecHandle SecondaryInstantAbilitySpecHandle;
-
-	// Cached batchable secondary instant ability spec
-	FGameplayAbilitySpec* SecondaryInstantAbilitySpec;
-
-	// Cached batchable secondary instant ability
-	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
-	UGSGameplayAbility* SecondaryInstantAbility;
-
-	// Cached batchable alternate instant ability spec handle
-	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
-	FGameplayAbilitySpecHandle AlternateInstantAbilitySpecHandle;
-
-	// Cached batchable alternate instant ability spec
-	FGameplayAbilitySpec* AlternateInstantAbilitySpec;
-
-	// Cached batchable alternate instant ability
-	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
-	UGSGameplayAbility* AlternateInstantAbility;
+	// This tag will be used by the Characters when they equip a weapon to gate activation of abilities
+	// since abilities are granted on adding to inventory and removed when the weapon is removed from the
+	// inventory - not on equip/unequip.
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSWeapon")
+	FGameplayTag WeaponTag;
 
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
 	class AGSGATA_SingleLineTrace* SingleLineTraceTargetActor;
@@ -80,6 +53,10 @@ public:
 	// Called when the player unequips this weapon
 	virtual void UnEquip();
 
+	virtual void AddAbilities();
+
+	virtual void RemoveAbilities();
+
 	// Reloads the weapon
 	virtual void Reload();
 
@@ -102,6 +79,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "GASShooter|GSWeapon")
 	TArray<TSubclassOf<UGSGameplayAbility>> Abilities;
 
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
 	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
 
 	// Cache tags
@@ -114,9 +92,4 @@ protected:
 	// Called when the player picks up this weapon
 	virtual void PickUpOnTouch(AGSHeroCharacter* InCharacter);
 
-	virtual void AddAbilities();
-
-	virtual void RemoveAbilities();
-
-	virtual void HandleAbilityGiven(FGameplayAbilitySpec& AbilitySpec);
 };

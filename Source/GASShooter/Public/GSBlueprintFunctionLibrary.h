@@ -18,9 +18,19 @@ class GASSHOOTER_API UGSBlueprintFunctionLibrary : public UBlueprintFunctionLibr
 	GENERATED_BODY()
 	
 public:
+	/**
+	* GameplayAbility
+	*/
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	static UGSGameplayAbility* GetPrimaryAbilityInstanceFromHandle(UAbilitySystemComponent* AbilitySystemComponent, FGameplayAbilitySpecHandle Handle);
 
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	static UGSGameplayAbility* GetPrimaryAbilityInstanceFromClass(UAbilitySystemComponent* AbilitySystemComponent, TSubclassOf<UGameplayAbility> InAbilityClass);
+
+
+	/**
+	* FGameplayAbilitySpecHandle
+	*/
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Abilities")
+	static bool IsAbilitySpecHandleValid(FGameplayAbilitySpecHandle Handle);
 };

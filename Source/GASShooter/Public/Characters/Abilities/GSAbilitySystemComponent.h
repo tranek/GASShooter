@@ -94,6 +94,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Abilities", meta = (DisplayName = "GetTagCount", ScriptName = "GetTagCount"))
 	int32 K2_GetTagCount(FGameplayTag TagToCheck) const;
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Abilities")
+	FGameplayAbilitySpecHandle FindAbilitySpecHandleForClass(TSubclassOf<UGameplayAbility> AbilityClass, UObject* OptionalSourceObject=nullptr);
+
 	// Turn on RPC batching in ASC. Off by default.
 	virtual bool ShouldDoServerAbilityRPCBatch() const override { return true; }
 

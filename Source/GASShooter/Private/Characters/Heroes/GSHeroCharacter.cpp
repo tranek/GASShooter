@@ -26,6 +26,8 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	bASCInputBound = false;
 	Default1PFOV = 90.0f;
 	Default3PFOV = 80.0f;
+	NoWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
+	CurrentWeaponTag = NoWeaponTag;
 	
 	ThirdPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("CameraBoom"));
 	ThirdPersonCameraBoom->SetupAttachment(RootComponent);
@@ -128,20 +130,6 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 		if (PC)
 		{
 			PC->CreateHUD();
-
-			// Spawn default inventory when the Server is autonomous - local player is host or for AI players.
-			// Otherwise players will tell the Server to spawn default inventory when their PlayerState replicates.
-
-			// Local player is host (listen server)
-			if (IsLocallyControlled() && IsPlayerControlled())
-			{
-				SpawnDefaultInventory();
-			}
-		}
-		else
-		{
-			// AI player
-			SpawnDefaultInventory();
 		}
 
 		InitializeFloatingStatusBar();
@@ -235,8 +223,24 @@ bool AGSHeroCharacter::AddWeaponToInventory(AGSWeapon* NewWeapon)
 
 	Inventory.Weapons.Add(NewWeapon);
 	NewWeapon->SetOwningCharacter(this);
+	NewWeapon->AddAbilities();
 
 	return true;
+}
+
+bool AGSHeroCharacter::RemoveWeaponFromInventory(AGSWeapon* WeaponToRemove)
+{
+	if (DoesWeaponExistInInventory(WeaponToRemove))
+	{
+		WeaponToRemove->RemoveAbilities();
+		WeaponToRemove->SetOwningCharacter(nullptr);
+		Inventory.Weapons.Remove(WeaponToRemove);
+
+		//TODO check if equipped and unequip it if it is
+		// probably need a function IsEquipped() or something either here or on the weapon or both?
+	}
+
+	return false;
 }
 
 void AGSHeroCharacter::EquipWeapon(AGSWeapon* NewWeapon)
@@ -293,8 +297,7 @@ void AGSHeroCharacter::PostInitializeComponents()
 	StartingThirdPersonCameraBoomLocation = ThirdPersonCameraBoom->GetRelativeLocation();
 	StartingThirdPersonMeshLocation = GetMesh()->GetRelativeLocation();
 
-	//TODO Delete this
-	//GetWorldTimerManager().SetTimerForNextTick(this, &AGSHeroCharacter::SpawnDefaultInventory);
+	GetWorldTimerManager().SetTimerForNextTick(this, &AGSHeroCharacter::SpawnDefaultInventory);
 }
 
 void AGSHeroCharacter::LookUp(float Value)
@@ -454,11 +457,12 @@ void AGSHeroCharacter::OnRep_PlayerState()
 		if (PC)
 		{
 			PC->CreateHUD();
+		}
 
-			if (IsLocallyControlled() && IsPlayerControlled())
-			{
-				SpawnDefaultInventory();
-			}
+		// If current weapon repped before PlayerState, set tag on ASC
+		if (CurrentWeapon)
+		{
+			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
 		}
 
 		// Simulated on proxies don't have their PlayerStates yet when BeginPlay is called so we call it again here
@@ -558,8 +562,20 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 
 	if (NewWeapon)
 	{
+		if (AbilitySystemComponent)
+		{
+			// Clear out potential NoWeaponTag
+			AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
+		}
+
 		NewWeapon->Equip();
 		CurrentWeapon = NewWeapon;
+		CurrentWeaponTag = NewWeapon->WeaponTag;
+
+		if (AbilitySystemComponent)
+		{
+			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
+		}
 	}
 }
 
@@ -569,6 +585,13 @@ void AGSHeroCharacter::UnEquipCurrentWeapon()
 	{
 		CurrentWeapon->UnEquip();
 		CurrentWeapon = nullptr;
+
+		if (AbilitySystemComponent)
+		{
+			AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
+		}
+
+		CurrentWeaponTag = NoWeaponTag;
 	}
 }
 
