@@ -88,6 +88,9 @@ public:
 	bool RemoveWeaponFromInventory(AGSWeapon* WeaponToRemove);
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
+	void RemoveAllWeaponsFromInventory();
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
 	void EquipWeapon(AGSWeapon* NewWeapon);
 
 	UFUNCTION(Server, Reliable)
@@ -204,10 +207,7 @@ protected:
 	void BindASCInput();
 
 	// Server spawns default inventory
-	UFUNCTION(Server, Reliable)
 	void SpawnDefaultInventory();
-	void SpawnDefaultInventory_Implementation();
-	bool SpawnDefaultInventory_Validate();
 
 	void SetupStartupPerspective();
 

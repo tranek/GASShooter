@@ -179,6 +179,8 @@ void AGSHeroCharacter::Die()
 	// Go into third person for death animation
 	SetPerspective(false);
 
+	RemoveAllWeaponsFromInventory();
+
 	Super::Die();
 }
 
@@ -241,6 +243,22 @@ bool AGSHeroCharacter::RemoveWeaponFromInventory(AGSWeapon* WeaponToRemove)
 	}
 
 	return false;
+}
+
+void AGSHeroCharacter::RemoveAllWeaponsFromInventory()
+{
+	UnEquipCurrentWeapon();
+
+	if (Role < ROLE_Authority)
+	{
+		return;
+	}
+
+	for (int32 i = Inventory.Weapons.Num() - 1; i >= 0; i--)
+	{
+		AGSWeapon* Weapon = Inventory.Weapons[i];
+		RemoveWeaponFromInventory(Weapon);
+	}
 }
 
 void AGSHeroCharacter::EquipWeapon(AGSWeapon* NewWeapon)
@@ -498,7 +516,7 @@ void AGSHeroCharacter::BindASCInput()
 	}
 }
 
-void AGSHeroCharacter::SpawnDefaultInventory_Implementation()
+void AGSHeroCharacter::SpawnDefaultInventory()
 {
 	UE_LOG(LogTemp, Log, TEXT("%s %s"), TEXT(__FUNCTION__), *GetName());
 
@@ -524,11 +542,6 @@ void AGSHeroCharacter::SpawnDefaultInventory_Implementation()
 	{
 		EquipWeapon(Inventory.Weapons[0]);
 	}
-}
-
-bool AGSHeroCharacter::SpawnDefaultInventory_Validate()
-{
-	return true;
 }
 
 void AGSHeroCharacter::SetupStartupPerspective()
@@ -585,13 +598,13 @@ void AGSHeroCharacter::UnEquipCurrentWeapon()
 	{
 		CurrentWeapon->UnEquip();
 		CurrentWeapon = nullptr;
+	}
 
-		if (AbilitySystemComponent)
-		{
-			AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
-		}
-
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
 		CurrentWeaponTag = NoWeaponTag;
+		AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
 	}
 }
 

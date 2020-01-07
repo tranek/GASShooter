@@ -211,4 +211,6 @@ void AGSWeapon::PickUpOnTouch(AGSHeroCharacter* InCharacter)
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *InCharacter->GetName(), *GetName());
+
+	//TODO call add to inventory on incharacter. Check if alive first.
 }
