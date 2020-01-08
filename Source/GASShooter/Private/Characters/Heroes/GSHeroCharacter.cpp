@@ -249,7 +249,7 @@ void AGSHeroCharacter::RemoveAllWeaponsFromInventory()
 {
 	UnEquipCurrentWeapon();
 
-	if (Role < ROLE_Authority)
+	if (GetLocalRole() < ROLE_Authority)
 	{
 		return;
 	}
