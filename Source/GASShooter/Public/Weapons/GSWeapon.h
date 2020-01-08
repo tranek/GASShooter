@@ -11,6 +11,7 @@
 class AGSHeroCharacter;
 class UAnimMontage;
 class UGSGameplayAbility;
+class UPaperSprite;
 class USkeletalMeshComponent;
 
 UCLASS(Blueprintable, BlueprintType)
@@ -30,6 +31,20 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
 	class AGSGATA_SingleLineTrace* SingleLineTraceTargetActor;
+	
+	// UI HUD Primary Icon when equipped. Using Sprites because of the texture atlas from ShooterGame.
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|UI")
+	UPaperSprite* PrimaryIcon;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|UI")
+	UPaperSprite* SecondaryIcon;
+
+	// UI HUD Primary Clip Icon when equipped
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|UI")
+	UPaperSprite* PrimaryClipIcon;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|UI")
+	UPaperSprite* SecondaryClipIcon;
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
 	virtual USkeletalMeshComponent* GetWeaponMesh1P();
@@ -37,8 +52,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
 	virtual USkeletalMeshComponent* GetWeaponMesh3P();
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|GSWeapon")
+	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Category = "GASShooter|GSWeapon")
 	FGameplayTag FireMode;
+
+	// Things like fire mode for rifle
+	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Category = "GASShooter|GSWeapon")
+	FText StatusText;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -62,6 +81,16 @@ public:
 
 	virtual int32 GetAbilityLevel(EGSAbilityInputID AbilityID);
 
+	// Resets things like fire mode to default
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
+	virtual void ResetWeapon();
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
+	virtual int32 GetClipAmmo() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
+	virtual int32 GetReserveAmmo() const;
+
 protected:
 	// Generic Root component so that we can hide visibility of one mesh without affecting the other if they were parent/child
 	UPROPERTY(VisibleAnywhere)
@@ -81,6 +110,13 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
 	TArray<FGameplayAbilitySpecHandle> AbilitySpecHandles;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|GSWeapon")
+	FGameplayTag DefaultFireMode;
+
+	// Things like fire mode for rifle
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon")
+	FText DefaultStatusText;
 
 	// Cache tags
 	FGameplayTag WeaponPrimaryInstantAbilityTag;

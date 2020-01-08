@@ -68,6 +68,38 @@ UGSHUDWidget* AGSPlayerController::GetGSHUD()
 	return UIHUDWidget;
 }
 
+void AGSPlayerController::SetEquippedWeaponPrimaryIconFromSprite(UPaperSprite* InSprite)
+{
+	if (UIHUDWidget)
+	{
+		UIHUDWidget->SetEquippedWeaponSprite(InSprite);
+	}
+}
+
+void AGSPlayerController::SetEquippedWeaponStatusText(const FText& StatusText)
+{
+	if (UIHUDWidget)
+	{
+		UIHUDWidget->SetEquippedWeaponStatusText(StatusText);
+	}
+}
+
+void AGSPlayerController::SetEquippedWeaponClipAmmo(int32 ClipAmmo)
+{
+	if (UIHUDWidget)
+	{
+		UIHUDWidget->SetEquippedWeaponClipAmmo(ClipAmmo);
+	}
+}
+
+void AGSPlayerController::SetEquippedWeaponReserveAmmo(int32 ReserveAmmo)
+{
+	if (UIHUDWidget)
+	{
+		UIHUDWidget->SetEquippedWeaponReserveAmmo(ReserveAmmo);
+	}
+}
+
 void AGSPlayerController::ShowDamageNumber_Implementation(float DamageAmount, AGSCharacterBase* TargetCharacter)
 {
 	//TODO

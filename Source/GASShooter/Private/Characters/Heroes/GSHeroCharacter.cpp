@@ -236,6 +236,7 @@ bool AGSHeroCharacter::RemoveWeaponFromInventory(AGSWeapon* WeaponToRemove)
 	{
 		WeaponToRemove->RemoveAbilities();
 		WeaponToRemove->SetOwningCharacter(nullptr);
+		WeaponToRemove->ResetWeapon();
 		Inventory.Weapons.Remove(WeaponToRemove);
 
 		//TODO check if equipped and unequip it if it is
@@ -583,11 +584,20 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 
 		NewWeapon->Equip();
 		CurrentWeapon = NewWeapon;
-		CurrentWeaponTag = NewWeapon->WeaponTag;
+		CurrentWeaponTag = CurrentWeapon->WeaponTag;
 
 		if (AbilitySystemComponent)
 		{
 			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
+		}
+
+		AGSPlayerController* PC = GetController<AGSPlayerController>();
+		if (PC && PC->IsLocalController())
+		{
+			PC->SetEquippedWeaponPrimaryIconFromSprite(CurrentWeapon->PrimaryIcon);
+			PC->SetEquippedWeaponStatusText(CurrentWeapon->StatusText);
+			PC->SetEquippedWeaponClipAmmo(CurrentWeapon->GetClipAmmo());
+			PC->SetEquippedWeaponReserveAmmo(CurrentWeapon->GetReserveAmmo());
 		}
 	}
 }
@@ -605,6 +615,15 @@ void AGSHeroCharacter::UnEquipCurrentWeapon()
 		AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
 		CurrentWeaponTag = NoWeaponTag;
 		AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
+	}
+
+	AGSPlayerController* PC = GetController<AGSPlayerController>();
+	if (PC && PC->IsLocalController())
+	{
+		PC->SetEquippedWeaponPrimaryIconFromSprite(nullptr);
+		PC->SetEquippedWeaponStatusText(FText());
+		PC->SetEquippedWeaponClipAmmo(0);
+		PC->SetEquippedWeaponReserveAmmo(0);
 	}
 }
 

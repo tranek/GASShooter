@@ -6,6 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "GSHUDWidget.generated.h"
 
+class UPaperSprite;
+class UTexture2D;
+
 /**
  * 
  */
@@ -20,6 +23,23 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetRespawnCountdown(float RespawnTimeRemaining);
+
+
+	/**
+	* Weapon info
+	*/
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetEquippedWeaponSprite(UPaperSprite* Sprite);
+
+	// Things like fire mode for rifle
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetEquippedWeaponStatusText(const FText& StatusText);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetEquippedWeaponClipAmmo(int32 ClipAmmo);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetEquippedWeaponReserveAmmo(int32 ReserveAmmo);
 
 
 	/**

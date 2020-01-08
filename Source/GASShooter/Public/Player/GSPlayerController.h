@@ -7,6 +7,8 @@
 #include "Characters/GSCharacterBase.h"
 #include "GSPlayerController.generated.h"
 
+class UPaperSprite;
+
 /**
  * 
  */
@@ -19,6 +21,24 @@ public:
 	void CreateHUD();
 
 	class UGSHUDWidget* GetGSHUD();
+
+
+	/**
+	* Weapon HUD info
+	*/
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|UI")
+	void SetEquippedWeaponPrimaryIconFromSprite(UPaperSprite* InSprite);
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|UI")
+	void SetEquippedWeaponStatusText(const FText& StatusText);
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|UI")
+	void SetEquippedWeaponClipAmmo(int32 ClipAmmo);
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|UI")
+	void SetEquippedWeaponReserveAmmo(int32 ReserveAmmo);
+
 
 	UFUNCTION(Client, Reliable, WithValidation)
 	void ShowDamageNumber(float DamageAmount, AGSCharacterBase* TargetCharacter);

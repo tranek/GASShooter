@@ -18,7 +18,7 @@ enum class EGSHeroWeaponState : uint8
 	// 2
 	RocketLauncher			UMETA(DisplayName = "Rocket Launcher"),
 	// 3
-	RocketLauncherAiming	UMETA(DisplayName = "Rocket Launcherr Aiming")
+	RocketLauncherAiming	UMETA(DisplayName = "Rocket Launcher Aiming")
 };
 
 USTRUCT()

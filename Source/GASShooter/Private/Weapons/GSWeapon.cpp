@@ -198,8 +198,28 @@ int32 AGSWeapon::GetAbilityLevel(EGSAbilityInputID AbilityID)
 	return 1;
 }
 
+void AGSWeapon::ResetWeapon()
+{
+	FireMode = DefaultFireMode;
+	StatusText = DefaultStatusText;
+}
+
+int32 AGSWeapon::GetClipAmmo() const
+{
+	//TODO pull from AttributeSet
+	return 99;
+}
+
+int32 AGSWeapon::GetReserveAmmo() const
+{
+	//TODO Pull from AttributeSet
+	return 99;
+}
+
 void AGSWeapon::BeginPlay()
 {
+	ResetWeapon();
+
 	SingleLineTraceTargetActor = GetWorld()->SpawnActor<AGSGATA_SingleLineTrace>();
 }
 
