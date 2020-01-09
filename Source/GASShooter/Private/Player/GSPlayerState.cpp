@@ -2,7 +2,7 @@
 
 
 #include "Player/GSPlayerState.h"
-#include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
+#include "Characters/Abilities/GSAttributeSetBase.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Player/GSPlayerController.h"

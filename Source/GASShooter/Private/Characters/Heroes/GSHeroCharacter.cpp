@@ -5,7 +5,7 @@
 #include "AI/GSHeroAIController.h"
 #include "Camera/CameraComponent.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
-#include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
+#include "Characters/Abilities/GSAttributeSetBase.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GASShooter/GASShooterGameModeBase.h"

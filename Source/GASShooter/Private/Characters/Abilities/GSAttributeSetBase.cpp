@@ -1,7 +1,7 @@
 // Copyright 2020 Dan Kestranek.
 
 
-#include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
+#include "Characters/Abilities/GSAttributeSetBase.h"
 #include "Characters/GSCharacterBase.h"
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"

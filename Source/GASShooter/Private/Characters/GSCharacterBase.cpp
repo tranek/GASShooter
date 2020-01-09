@@ -2,7 +2,7 @@
 
 
 #include "Characters/GSCharacterBase.h"
-#include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
+#include "Characters/Abilities/GSAttributeSetBase.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "Characters/GSCharacterMovementComponent.h"
