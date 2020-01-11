@@ -34,10 +34,10 @@ public:
 	void SetEquippedWeaponStatusText(const FText& StatusText);
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|UI")
-	void SetEquippedWeaponClipAmmo(int32 ClipAmmo);
+	void SetPrimaryClipAmmo(int32 ClipAmmo);
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|UI")
-	void SetEquippedWeaponReserveAmmo(int32 ReserveAmmo);
+	void SetPrimaryReserveAmmo(int32 ReserveAmmo);
 
 
 	UFUNCTION(Client, Reliable, WithValidation)

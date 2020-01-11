@@ -61,7 +61,7 @@ void UGSAT_PlayMontageForMeshAndWaitForEvent::OnAbilityCancelled()
 {
 	// TODO: Merge this fix back to engine, it was calling the wrong callback
 
-	if (StopPlayingMontage())
+	if (StopPlayingMontage(OverrideBlendOutTimeForCancelAbility))
 	{
 		// Let the BP handle the interrupt as well
 		if (ShouldBroadcastAbilityTaskDelegates())
@@ -97,7 +97,8 @@ void UGSAT_PlayMontageForMeshAndWaitForEvent::OnGameplayEvent(FGameplayTag Event
 
 UGSAT_PlayMontageForMeshAndWaitForEvent* UGSAT_PlayMontageForMeshAndWaitForEvent::PlayMontageForMeshAndWaitForEvent(UGameplayAbility* OwningAbility,
 	FName TaskInstanceName, USkeletalMeshComponent* InMesh, UAnimMontage* MontageToPlay, FGameplayTagContainer EventTags, float Rate, FName StartSection,
-	bool bStopWhenAbilityEnds, float AnimRootMotionTranslationScale, bool bReplicateMontage)
+	bool bStopWhenAbilityEnds, float AnimRootMotionTranslationScale, bool bReplicateMontage, float OverrideBlendOutTimeForCancelAbility,
+	float OverrideBlendOutTimeForStopWhenEndAbility)
 {
 	UAbilitySystemGlobals::NonShipping_ApplyGlobalAbilityScaler_Rate(Rate);
 
@@ -110,6 +111,8 @@ UGSAT_PlayMontageForMeshAndWaitForEvent* UGSAT_PlayMontageForMeshAndWaitForEvent
 	MyObj->AnimRootMotionTranslationScale = AnimRootMotionTranslationScale;
 	MyObj->bStopWhenAbilityEnds = bStopWhenAbilityEnds;
 	MyObj->bReplicateMontage = bReplicateMontage;
+	MyObj->OverrideBlendOutTimeForCancelAbility = OverrideBlendOutTimeForCancelAbility;
+	MyObj->OverrideBlendOutTimeForStopWhenEndAbility = OverrideBlendOutTimeForStopWhenEndAbility;
 
 	return MyObj;
 }
@@ -124,12 +127,6 @@ void UGSAT_PlayMontageForMeshAndWaitForEvent::Activate()
 	if (Mesh == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s invalid Mesh"), TEXT(__FUNCTION__));
-		return;
-	}
-
-	// If we're not replicating, only play on the locally controlled player
-	if (!bReplicateMontage && !Ability->GetCurrentActorInfo()->IsLocallyControlledPlayer())
-	{
 		return;
 	}
 
@@ -214,7 +211,7 @@ void UGSAT_PlayMontageForMeshAndWaitForEvent::OnDestroy(bool AbilityEnded)
 		Ability->OnGameplayAbilityCancelled.Remove(CancelledHandle);
 		if (AbilityEnded && bStopWhenAbilityEnds)
 		{
-			StopPlayingMontage();
+			StopPlayingMontage(OverrideBlendOutTimeForStopWhenEndAbility);
 		}
 	}
 
@@ -228,7 +225,7 @@ void UGSAT_PlayMontageForMeshAndWaitForEvent::OnDestroy(bool AbilityEnded)
 
 }
 
-bool UGSAT_PlayMontageForMeshAndWaitForEvent::StopPlayingMontage()
+bool UGSAT_PlayMontageForMeshAndWaitForEvent::StopPlayingMontage(float OverrideBlendOutTime)
 {
 	if (Mesh == nullptr)
 	{
@@ -236,7 +233,7 @@ bool UGSAT_PlayMontageForMeshAndWaitForEvent::StopPlayingMontage()
 	}
 
 	UGSAbilitySystemComponent* GSAbilitySystemComponent = GetTargetASC();
-	if (GSAbilitySystemComponent)
+	if (!GSAbilitySystemComponent)
 	{
 		return false;
 	}
@@ -268,7 +265,7 @@ bool UGSAT_PlayMontageForMeshAndWaitForEvent::StopPlayingMontage()
 				MontageInstance->OnMontageEnded.Unbind();
 			}
 
-			GSAbilitySystemComponent->CurrentMontageStopForMesh(Mesh);
+			GSAbilitySystemComponent->CurrentMontageStopForMesh(Mesh, OverrideBlendOutTime);
 			return true;
 		}
 	}

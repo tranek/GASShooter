@@ -8,6 +8,7 @@
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Weapons/GSWeaponAttributeSet.h"
 
 // Sets default values
 AGSWeapon::AGSWeapon()
@@ -17,6 +18,8 @@ AGSWeapon::AGSWeapon()
 
 	bReplicates = true;
 	bNetUseOwnerRelevancy = true;
+	// Set this to a value that's appropriate for your game
+	NetUpdateFrequency = 100.0f;
 
 	Root = CreateDefaultSubobject<USceneComponent>(FName("Root"));
 	Root->SetVisibility(false, false);
@@ -44,6 +47,11 @@ AGSWeapon::AGSWeapon()
 	FireMode = FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.None"));
 }
 
+UAbilitySystemComponent* AGSWeapon::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
 USkeletalMeshComponent* AGSWeapon::GetWeaponMesh1P()
 {
 	return WeaponMesh1P;
@@ -59,11 +67,16 @@ void AGSWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AGSWeapon, OwningCharacter);
+	DOREPLIFETIME(AGSWeapon, AttributeSet);
 }
 
 void AGSWeapon::SetOwningCharacter(AGSHeroCharacter* InOwningCharacter)
 {
 	OwningCharacter = InOwningCharacter;
+	if (OwningCharacter)
+	{
+		AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(OwningCharacter->GetAbilitySystemComponent());
+	}
 }
 
 void AGSWeapon::NotifyActorBeginOverlap(AActor* Other)
@@ -119,7 +132,7 @@ void AGSWeapon::Equip()
 
 void AGSWeapon::UnEquip()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), GET_ACTOR_ROLE_FSTRING(OwningCharacter));
+	UE_LOG(LogTemp, Log, TEXT("%s %s"), TEXT(__FUNCTION__), *GetName());
 
 	WeaponMesh1P->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
 	WeaponMesh1P->SetVisibility(false, true);
@@ -172,8 +185,6 @@ void AGSWeapon::RemoveAbilities()
 		return;
 	}
 
-	ASC->OnAbilityGiven.RemoveAll(this);
-
 	// Remove abilities, but only on the server	
 	if (GetLocalRole() != ROLE_Authority)
 	{
@@ -204,23 +215,88 @@ void AGSWeapon::ResetWeapon()
 	StatusText = DefaultStatusText;
 }
 
-int32 AGSWeapon::GetClipAmmo() const
+int32 AGSWeapon::GetPrimaryClipAmmo() const
 {
-	//TODO pull from AttributeSet
-	return 99;
+	if (IsValid(AttributeSet))
+	{
+		return AttributeSet->GetPrimaryClipAmmo();
+	}
+
+	return 0;
 }
 
-int32 AGSWeapon::GetReserveAmmo() const
+int32 AGSWeapon::GetPrimaryMaxClipAmmo() const
 {
-	//TODO Pull from AttributeSet
-	return 99;
+	if (IsValid(AttributeSet))
+	{
+		return AttributeSet->GetPrimaryMaxClipAmmo();
+	}
+
+	return 0;
+}
+
+int32 AGSWeapon::GetPrimaryReserveAmmo() const
+{
+	if (IsValid(AttributeSet))
+	{
+		return AttributeSet->GetPrimaryReserveAmmo();
+	}
+
+	return 0;
+}
+
+int32 AGSWeapon::GetSecondaryClipAmmo() const
+{
+	if (IsValid(AttributeSet))
+	{
+		return AttributeSet->GetSecondaryClipAmmo();
+	}
+
+	return 0;
+}
+
+int32 AGSWeapon::GetSecondaryMaxClipAmmo() const
+{
+	if (IsValid(AttributeSet))
+	{
+		return AttributeSet->GetSecondaryMaxClipAmmo();
+	}
+
+	return 0;
+}
+
+int32 AGSWeapon::GetSecondaryReserveAmmo() const
+{
+	if (IsValid(AttributeSet))
+	{
+		return AttributeSet->GetSecondaryReserveAmmo();
+	}
+
+	return 0;
 }
 
 void AGSWeapon::BeginPlay()
 {
+	AttributeSet = NewObject<UGSWeaponAttributeSet>(this);
+
 	ResetWeapon();
 
 	SingleLineTraceTargetActor = GetWorld()->SpawnActor<AGSGATA_SingleLineTrace>();
+
+	// Init Attributes on Server, they will be replicated to clients
+	if (GetLocalRole() == ROLE_Authority && AttributeSet)
+	{
+		AttributeSet->InitPrimaryMaxAmmo(PrimaryMaxAmmo);
+		AttributeSet->InitPrimaryMaxClipAmmo(PrimaryMaxClipAmmo);
+		AttributeSet->InitPrimaryClipAmmo(PrimaryClipAmmo);
+		AttributeSet->InitPrimaryReserveAmmo(PrimaryReserveAmmo);
+		AttributeSet->InitPrimaryDamage(PrimaryDamage);
+		AttributeSet->InitSecondaryMaxAmmo(SecondaryMaxAmmo);
+		AttributeSet->InitSecondaryMaxClipAmmo(SecondaryMaxClipAmmo);
+		AttributeSet->InitSecondaryClipAmmo(SecondaryClipAmmo);
+		AttributeSet->InitSecondaryReserveAmmo(SecondaryReserveAmmo);
+		AttributeSet->InitSecondaryDamage(SecondaryDamage);
+	}
 }
 
 void AGSWeapon::PickUpOnTouch(AGSHeroCharacter* InCharacter)

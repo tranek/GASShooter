@@ -3,8 +3,10 @@
 
 #include "Player/GSPlayerController.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
+#include "Characters/Heroes/GSHeroCharacter.h"
 #include "Player/GSPlayerState.h"
 #include "UI/GSHUDWidget.h"
+#include "Weapons/GSWeapon.h"
 
 void AGSPlayerController::CreateHUD()
 {
@@ -52,6 +54,18 @@ void AGSPlayerController::CreateHUD()
 	UIHUDWidget->SetExperience(PS->GetXP());
 	UIHUDWidget->SetGold(PS->GetGold());
 	UIHUDWidget->SetHeroLevel(PS->GetCharacterLevel());
+	UIHUDWidget->SetPrimaryClipAmmo(PS->GetPrimaryClipAmmo());
+	UIHUDWidget->SetPrimaryReserveAmmo(PS->GetPrimaryReserveAmmo());
+
+	AGSHeroCharacter* Hero = GetPawn<AGSHeroCharacter>();
+	if (Hero)
+	{
+		AGSWeapon* CurrentWeapon = Hero->GetCurrentWeapon();
+		if (CurrentWeapon)
+		{
+			UIHUDWidget->SetEquippedWeaponSprite(CurrentWeapon->PrimaryIcon);
+		}
+	}
 
 	//TODO
 	/*
@@ -84,19 +98,19 @@ void AGSPlayerController::SetEquippedWeaponStatusText(const FText& StatusText)
 	}
 }
 
-void AGSPlayerController::SetEquippedWeaponClipAmmo(int32 ClipAmmo)
+void AGSPlayerController::SetPrimaryClipAmmo(int32 ClipAmmo)
 {
 	if (UIHUDWidget)
 	{
-		UIHUDWidget->SetEquippedWeaponClipAmmo(ClipAmmo);
+		UIHUDWidget->SetPrimaryClipAmmo(ClipAmmo);
 	}
 }
 
-void AGSPlayerController::SetEquippedWeaponReserveAmmo(int32 ReserveAmmo)
+void AGSPlayerController::SetPrimaryReserveAmmo(int32 ReserveAmmo)
 {
 	if (UIHUDWidget)
 	{
-		UIHUDWidget->SetEquippedWeaponReserveAmmo(ReserveAmmo);
+		UIHUDWidget->SetPrimaryReserveAmmo(ReserveAmmo);
 	}
 }
 

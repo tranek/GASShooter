@@ -71,11 +71,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSHeroCharacter")
 	virtual bool IsInFirstPersonPerspective() const;
 
-	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSHeroCharacter")
-	USkeletalMeshComponent* GetFirstPersonMesh();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GASShooter|GSHeroCharacter")
+	USkeletalMeshComponent* GetFirstPersonMesh() const;
 
-	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSHeroCharacter")
-	USkeletalMeshComponent* GetThirdPersonMesh();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GASShooter|GSHeroCharacter")
+	USkeletalMeshComponent* GetThirdPersonMesh() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
+	AGSWeapon* GetCurrentWeapon() const;
 
 	// Adds a new weapon to the inventory.
 	// Returns false if the weapon already exists in the inventory, true if it's a new weapon.

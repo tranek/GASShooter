@@ -8,8 +8,6 @@
 
 class USkeletalMeshComponent;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnGiveAbilityDelegate, FGameplayAbilitySpec&);
-
 USTRUCT()
 struct GASSHOOTER_API FGameplayAbilityLocalAnimMontageForMesh
 {
@@ -73,8 +71,6 @@ public:
 	bool bCharacterAbilitiesGiven = false;
 	bool bStartupEffectsApplied = false;
 
-	FOnGiveAbilityDelegate OnAbilityGiven;
-
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual bool GetShouldTick() const override;
@@ -87,8 +83,6 @@ public:
 
 	// Version of function in AbilitySystemGlobals that returns correct type
 	static UGSAbilitySystemComponent* GetAbilitySystemComponentFromActor(const AActor* Actor, bool LookForComponent = false);
-
-	virtual void OnGiveAbility(FGameplayAbilitySpec& AbilitySpec) override;
 
 	// Exposes GetTagCount to Blueprint
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Abilities", meta = (DisplayName = "GetTagCount", ScriptName = "GetTagCount"))

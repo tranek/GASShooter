@@ -36,10 +36,10 @@ public:
 	void SetEquippedWeaponStatusText(const FText& StatusText);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetEquippedWeaponClipAmmo(int32 ClipAmmo);
+	void SetPrimaryClipAmmo(int32 ClipAmmo);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetEquippedWeaponReserveAmmo(int32 ReserveAmmo);
+	void SetPrimaryReserveAmmo(int32 ReserveAmmo);
 
 
 	/**

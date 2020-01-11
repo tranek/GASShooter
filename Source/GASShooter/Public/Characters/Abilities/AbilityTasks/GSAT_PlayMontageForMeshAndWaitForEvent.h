@@ -79,7 +79,9 @@ public:
 			FName StartSection = NAME_None,
 			bool bStopWhenAbilityEnds = true,
 			float AnimRootMotionTranslationScale = 1.f,
-			bool bReplicateMontage = true);
+			bool bReplicateMontage = true,
+			float OverrideBlendOutTimeForCancelAbility = -1.f,
+			float OverrideBlendOutTimeForStopWhenEndAbility = -1.f);
 
 private:
 	// Mesh that the Montage is playing on. Must be owned by the AvatarActor.
@@ -113,8 +115,14 @@ private:
 	UPROPERTY()
 	bool bReplicateMontage;
 
+	UPROPERTY()
+	float OverrideBlendOutTimeForCancelAbility;
+
+	UPROPERTY()
+	float OverrideBlendOutTimeForStopWhenEndAbility;
+
 	/** Checks if the ability is playing a montage and stops that montage, returns true if a montage was stopped, false if not. */
-	bool StopPlayingMontage();
+	bool StopPlayingMontage(float OverrideBlendOutTime = -1.f);
 
 	/** Returns our ability system component */
 	UGSAbilitySystemComponent* GetTargetASC();

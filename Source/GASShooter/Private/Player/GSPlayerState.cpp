@@ -8,6 +8,7 @@
 #include "Player/GSPlayerController.h"
 #include "UI/GSFloatingStatusBarWidget.h"
 #include "UI/GSHUDWidget.h"
+#include "Weapons/GSWeaponAttributeSet.h"
 
 AGSPlayerState::AGSPlayerState()
 {
@@ -126,6 +127,16 @@ int32 AGSPlayerState::GetGold() const
 int32 AGSPlayerState::GetGoldBounty() const
 {
 	return AttributeSetBase->GetGoldBounty();
+}
+
+int32 AGSPlayerState::GetPrimaryClipAmmo() const
+{
+	return AbilitySystemComponent->GetNumericAttribute(UGSWeaponAttributeSet::GetPrimaryClipAmmoAttribute());
+}
+
+int32 AGSPlayerState::GetPrimaryReserveAmmo() const
+{
+	return AbilitySystemComponent->GetNumericAttribute(UGSWeaponAttributeSet::GetPrimaryReserveAmmoAttribute());
 }
 
 void AGSPlayerState::BeginPlay()

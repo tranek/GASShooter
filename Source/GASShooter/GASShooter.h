@@ -40,5 +40,7 @@ enum class EGSAbilityInputID : uint8
 	// 6 SecondaryFire
 	SecondaryFire		UMETA(DisplayName = "Secondary Fire"),
 	// 7 Alternate Fire
-	AlternateFire		UMETA(DisplayName = "Alternate Fire")
+	AlternateFire		UMETA(DisplayName = "Alternate Fire"),
+	// 8 Reload
+	Reload				UMETA(DisplayName = "Reload")
 };

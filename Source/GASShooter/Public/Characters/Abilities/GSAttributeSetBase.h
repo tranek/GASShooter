@@ -25,12 +25,6 @@ class GASSHOOTER_API UGSAttributeSetBase : public UAttributeSet
 public:
 	UGSAttributeSetBase();
 
-	// AttributeSet Overrides
-	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
-	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
-
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
 	// Current Health, when 0 we expect owner to die unless prevented by an ability. Capped by MaxHealth.
 	// Positive changes can directly use this.
 	// Negative changes to Health should go through Damage meta attribute.
@@ -117,6 +111,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Gold", ReplicatedUsing = OnRep_GoldBounty)
 	FGameplayAttributeData GoldBounty;
 	ATTRIBUTE_ACCESSORS(UGSAttributeSetBase, GoldBounty)
+
+	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
+	virtual void PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
 	FGameplayTag HitDirectionFrontTag;

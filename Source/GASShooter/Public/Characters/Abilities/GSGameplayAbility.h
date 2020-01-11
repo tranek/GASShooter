@@ -94,6 +94,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	virtual FString GetCurrentPredictionKeyStatus();
 
+	// Returns if the current prediction key is valid for more predicting.
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Abilities")
+	virtual bool IsPredictionKeyValidForMorePrediction() const;
+
 
 	// --------------------------------------
 	//	Animation Support for multiple USkeletalMeshComponents on the AvatarActor
@@ -128,8 +132,12 @@ protected:
 	/**
 	 * Stops the current animation montage.
 	 *
-	 * @param OverrideBlendTime If >= 0, will override the BlendOutTime parameter on the AnimMontage instance
+	 * @param OverrideBlendOutTime If >= 0, will override the BlendOutTime parameter on the AnimMontage instance
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Ability|Animation", Meta = (AdvancedDisplay = "OverrideBlendOutTime"))
 	void MontageStopForMesh(USkeletalMeshComponent* InMesh, float OverrideBlendOutTime = -1.0f);
+
+	// Stops all currently animating montages
+	UFUNCTION(BlueprintCallable, Category = "Ability|Animation", Meta = (AdvancedDisplay = "OverrideBlendOutTime"))
+	void MontageStopForAllMeshes(float OverrideBlendOutTime = -1.0f);
 };

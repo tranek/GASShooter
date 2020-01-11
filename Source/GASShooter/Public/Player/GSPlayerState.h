@@ -81,6 +81,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSPlayerState|Attributes")
 	int32 GetGoldBounty() const;
 
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSPlayerState|Attributes")
+	int32 GetPrimaryClipAmmo() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSPlayerState|Attributes")
+	int32 GetPrimaryReserveAmmo() const;
+
 protected:
 	FGameplayTag DeadTag;
 

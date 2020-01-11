@@ -75,15 +75,6 @@ UGSAbilitySystemComponent* UGSAbilitySystemComponent::GetAbilitySystemComponentF
 	return Cast<UGSAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor, LookForComponent));
 }
 
-void UGSAbilitySystemComponent::OnGiveAbility(FGameplayAbilitySpec& AbilitySpec)
-{
-	Super::OnGiveAbility(AbilitySpec);
-
-	UE_LOG(LogTemp, Log, TEXT("%s Ability: %s. AvatarActor Role: %s"), TEXT(__FUNCTION__), *AbilitySpec.GetDebugString(), GET_ACTOR_ROLE_FSTRING(AvatarActor));
-
-	OnAbilityGiven.Broadcast(AbilitySpec);
-}
-
 int32 UGSAbilitySystemComponent::K2_GetTagCount(FGameplayTag TagToCheck) const
 {
 	return GetTagCount(TagToCheck);

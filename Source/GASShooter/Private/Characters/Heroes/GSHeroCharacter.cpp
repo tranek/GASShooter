@@ -17,6 +17,7 @@
 #include "TimerManager.h"
 #include "UI/GSFloatingStatusBarWidget.h"
 #include "Weapons/GSWeapon.h"
+#include "Weapons/GSWeaponAttributeSet.h"
 
 AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -204,14 +205,19 @@ bool AGSHeroCharacter::IsInFirstPersonPerspective() const
 	return bIsFirstPersonPerspective;
 }
 
-USkeletalMeshComponent* AGSHeroCharacter::GetFirstPersonMesh()
+USkeletalMeshComponent* AGSHeroCharacter::GetFirstPersonMesh() const
 {
 	return FirstPersonMesh;
 }
 
-USkeletalMeshComponent* AGSHeroCharacter::GetThirdPersonMesh()
+USkeletalMeshComponent* AGSHeroCharacter::GetThirdPersonMesh() const
 {
 	return GetMesh();
+}
+
+AGSWeapon* AGSHeroCharacter::GetCurrentWeapon() const
+{
+	return CurrentWeapon;
 }
 
 bool AGSHeroCharacter::AddWeaponToInventory(AGSWeapon* NewWeapon)
@@ -589,6 +595,13 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 		if (AbilitySystemComponent)
 		{
 			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
+			
+			// SpawnedAttributes are replicated
+			if (GetLocalRole() == ROLE_Authority)
+			{
+				AbilitySystemComponent->SpawnedAttributes.AddUnique(CurrentWeapon->AttributeSet);
+				AbilitySystemComponent->ForceReplication();
+			}
 		}
 
 		AGSPlayerController* PC = GetController<AGSPlayerController>();
@@ -596,25 +609,32 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 		{
 			PC->SetEquippedWeaponPrimaryIconFromSprite(CurrentWeapon->PrimaryIcon);
 			PC->SetEquippedWeaponStatusText(CurrentWeapon->StatusText);
-			PC->SetEquippedWeaponClipAmmo(CurrentWeapon->GetClipAmmo());
-			PC->SetEquippedWeaponReserveAmmo(CurrentWeapon->GetReserveAmmo());
+			PC->SetPrimaryClipAmmo(CurrentWeapon->GetPrimaryClipAmmo());
+			PC->SetPrimaryReserveAmmo(CurrentWeapon->GetPrimaryReserveAmmo());
 		}
 	}
 }
 
 void AGSHeroCharacter::UnEquipCurrentWeapon()
 {
+	if (AbilitySystemComponent)
+	{
+		// SpawnedAttributes are replicated
+		if (CurrentWeapon && GetLocalRole() == ROLE_Authority)
+		{
+			AbilitySystemComponent->SpawnedAttributes.Remove(CurrentWeapon->AttributeSet);
+			AbilitySystemComponent->ForceReplication();
+		}
+
+		AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
+		CurrentWeaponTag = NoWeaponTag;
+		AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
+	}
+
 	if (CurrentWeapon)
 	{
 		CurrentWeapon->UnEquip();
 		CurrentWeapon = nullptr;
-	}
-
-	if (AbilitySystemComponent)
-	{
-		AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
-		CurrentWeaponTag = NoWeaponTag;
-		AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
 	}
 
 	AGSPlayerController* PC = GetController<AGSPlayerController>();
@@ -622,8 +642,8 @@ void AGSHeroCharacter::UnEquipCurrentWeapon()
 	{
 		PC->SetEquippedWeaponPrimaryIconFromSprite(nullptr);
 		PC->SetEquippedWeaponStatusText(FText());
-		PC->SetEquippedWeaponClipAmmo(0);
-		PC->SetEquippedWeaponReserveAmmo(0);
+		PC->SetPrimaryClipAmmo(0);
+		PC->SetPrimaryReserveAmmo(0);
 	}
 }
 

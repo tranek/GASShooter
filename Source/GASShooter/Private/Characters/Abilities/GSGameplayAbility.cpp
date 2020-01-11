@@ -135,6 +135,12 @@ FString UGSGameplayAbility::GetCurrentPredictionKeyStatus()
 	return ASC->ScopedPredictionKey.ToString() + " is valid for more prediction: " + (ASC->ScopedPredictionKey.IsValidForMorePrediction() ? TEXT("true") : TEXT("false"));
 }
 
+bool UGSGameplayAbility::IsPredictionKeyValidForMorePrediction() const
+{
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
+	return ASC->ScopedPredictionKey.IsValidForMorePrediction();
+}
+
 UAnimMontage* UGSGameplayAbility::GetCurrentMontageForMesh(USkeletalMeshComponent* InMesh)
 {
 	FAbilityMeshMontage AbilityMeshMontage;
@@ -208,6 +214,20 @@ void UGSGameplayAbility::MontageStopForMesh(USkeletalMeshComponent* InMesh, floa
 		if (AbilitySystemComponent->IsAnimatingAbilityForAnyMesh(this))
 		{
 			AbilitySystemComponent->CurrentMontageStopForMesh(InMesh, OverrideBlendOutTime);
+		}
+	}
+}
+
+void UGSGameplayAbility::MontageStopForAllMeshes(float OverrideBlendOutTime)
+{
+	check(CurrentActorInfo);
+
+	UGSAbilitySystemComponent* const AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(CurrentActorInfo->AbilitySystemComponent.Get());
+	if (AbilitySystemComponent != nullptr)
+	{
+		if (AbilitySystemComponent->IsAnimatingAbilityForAnyMesh(this))
+		{
+			AbilitySystemComponent->StopAllCurrentMontages(OverrideBlendOutTime);
 		}
 	}
 }
