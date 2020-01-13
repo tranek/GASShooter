@@ -96,9 +96,19 @@ public:
 
 	// Attempts to activate the given ability handle and batch all RPCs into one. This will only batch all RPCs that happen
 	// in one frame. Best case scenario we batch ActivateAbility, SendTargetData, and EndAbility into one RPC instead of three.
+	// Worst case we batch ActivateAbility and SendTargetData into one RPC instead of two and call EndAbility later in a separate
+	// RPC. If we can't batch SendTargetData with ActivateAbility then batching doesn't help and we should just activate normnally.
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	virtual bool BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool EndAbilityImmediately);
 
+	UFUNCTION(BlueprintCallable, Category = "GameplayCue", Meta = (AutoCreateRefTerm = "GameplayCueParameters"))
+	void ExecuteGameplayCueLocal(const FGameplayTag GameplayCueTag, const FGameplayCueParameters& GameplayCueParameters);
+
+	UFUNCTION(BlueprintCallable, Category = "GameplayCue", Meta = (AutoCreateRefTerm = "GameplayCueParameters"))
+	void AddGameplayCueLocal(const FGameplayTag GameplayCueTag, const FGameplayCueParameters& GameplayCueParameters);
+
+	UFUNCTION(BlueprintCallable, Category = "GameplayCue", Meta = (AutoCreateRefTerm = "GameplayCueParameters"))
+	void RemoveGameplayCueLocal(const FGameplayTag GameplayCueTag, const FGameplayCueParameters& GameplayCueParameters);
 
 	// ----------------------------------------------------------------------------------------------------------------
 	//	AnimMontage Support for multiple USkeletalMeshComponents on the AvatarActor. Only one ability can be animating at a time though?
