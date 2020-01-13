@@ -595,13 +595,10 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 		if (AbilitySystemComponent)
 		{
 			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
-			
-			// SpawnedAttributes are replicated
-			if (GetLocalRole() == ROLE_Authority)
-			{
-				AbilitySystemComponent->SpawnedAttributes.AddUnique(CurrentWeapon->AttributeSet);
-				AbilitySystemComponent->ForceReplication();
-			}
+
+			// SpawnedAttributes is replicated, but we can add them on clients too
+			AbilitySystemComponent->SpawnedAttributes.AddUnique(CurrentWeapon->AttributeSet);
+			AbilitySystemComponent->ForceReplication();
 		}
 
 		AGSPlayerController* PC = GetController<AGSPlayerController>();
@@ -619,8 +616,8 @@ void AGSHeroCharacter::UnEquipCurrentWeapon()
 {
 	if (AbilitySystemComponent)
 	{
-		// SpawnedAttributes are replicated
-		if (CurrentWeapon && GetLocalRole() == ROLE_Authority)
+		// SpawnedAttributes is replicated, but we can remove them on clients too
+		if (CurrentWeapon)
 		{
 			AbilitySystemComponent->SpawnedAttributes.Remove(CurrentWeapon->AttributeSet);
 			AbilitySystemComponent->ForceReplication();
