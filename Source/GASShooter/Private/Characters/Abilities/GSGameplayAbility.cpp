@@ -65,9 +65,10 @@ FGSGameplayEffectContainerSpec UGSGameplayAbility::MakeEffectContainerSpecFromCo
 		{
 			TArray<FHitResult> HitResults;
 			TArray<AActor*> TargetActors;
+			TArray<FGameplayAbilityTargetDataHandle> TargetData;
 			const UGSTargetType* TargetTypeCDO = Container.TargetType.GetDefaultObject();
-			TargetTypeCDO->GetTargets(AvatarCharacter, AvatarActor, EventData, HitResults, TargetActors);
-			ReturnSpec.AddTargets(HitResults, TargetActors);
+			TargetTypeCDO->GetTargets(AvatarCharacter, AvatarActor, EventData, TargetData, HitResults, TargetActors);
+			ReturnSpec.AddTargets(TargetData, HitResults, TargetActors);
 		}
 
 		// If we don't have an override level, use the ability level

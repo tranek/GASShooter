@@ -64,7 +64,7 @@ public:
 	bool HasValidTargets() const;
 
 	/** Adds new targets to target data */
-	void AddTargets(const TArray<FHitResult>& HitResults, const TArray<AActor*>& TargetActors);
+	void AddTargets(const TArray<FGameplayAbilityTargetDataHandle>& TargetData, const TArray<FHitResult>& HitResults, const TArray<AActor*>& TargetActors);
 
 	/** Clears target data */
 	void ClearTargets();

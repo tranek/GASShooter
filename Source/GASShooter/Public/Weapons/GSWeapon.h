@@ -102,11 +102,11 @@ public:
 	// Implement IAbilitySystemInterface
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
-	virtual USkeletalMeshComponent* GetWeaponMesh1P();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GASShooter|GSWeapon")
+	virtual USkeletalMeshComponent* GetWeaponMesh1P() const;
 
-	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
-	virtual USkeletalMeshComponent* GetWeaponMesh3P();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "GASShooter|GSWeapon")
+	virtual USkeletalMeshComponent* GetWeaponMesh3P() const;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 

@@ -52,12 +52,12 @@ UAbilitySystemComponent* AGSWeapon::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-USkeletalMeshComponent* AGSWeapon::GetWeaponMesh1P()
+USkeletalMeshComponent* AGSWeapon::GetWeaponMesh1P() const
 {
 	return WeaponMesh1P;
 }
 
-USkeletalMeshComponent* AGSWeapon::GetWeaponMesh3P()
+USkeletalMeshComponent* AGSWeapon::GetWeaponMesh3P() const
 {
 	return WeaponMesh3P;
 }

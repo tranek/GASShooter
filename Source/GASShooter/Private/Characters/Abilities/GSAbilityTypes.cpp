@@ -15,8 +15,13 @@ bool FGSGameplayEffectContainerSpec::HasValidTargets() const
 	return TargetData.Num() > 0;
 }
 
-void FGSGameplayEffectContainerSpec::AddTargets(const TArray<FHitResult>& HitResults, const TArray<AActor*>& TargetActors)
+void FGSGameplayEffectContainerSpec::AddTargets(const TArray<FGameplayAbilityTargetDataHandle>& InTargetData, const TArray<FHitResult>& HitResults, const TArray<AActor*>& TargetActors)
 {
+	for (const FGameplayAbilityTargetDataHandle& TD : InTargetData)
+	{
+		TargetData.Append(TD);
+	}
+
 	for (const FHitResult& HitResult : HitResults)
 	{
 		FGameplayAbilityTargetData_SingleTargetHit* NewData = new FGameplayAbilityTargetData_SingleTargetHit(HitResult);
