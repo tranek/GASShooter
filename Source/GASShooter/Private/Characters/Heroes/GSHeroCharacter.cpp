@@ -23,6 +23,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 {
 	BaseTurnRate = 45.0f;
 	BaseLookUpRate = 45.0f;
+	bStartInFirstPersonPerspective = true;
 	bIsFirstPersonPerspective = false;
 	bASCInputBound = false;
 	Default1PFOV = 90.0f;
@@ -162,14 +163,7 @@ void AGSHeroCharacter::Restart()
 {
 	Super::Restart();
 
-	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), ACTOR_ROLE_FSTRING);
-
-	if (IsLocallyControlled() && IsPlayerControlled())
-	{
-		bIsFirstPersonPerspective = true;
-	}
-
-	SetPerspective(bIsFirstPersonPerspective);
+	//UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), ACTOR_ROLE_FSTRING);
 }
 
 UGSFloatingStatusBarWidget* AGSHeroCharacter::GetFloatingStatusBar()
@@ -555,12 +549,13 @@ void AGSHeroCharacter::SpawnDefaultInventory()
 
 void AGSHeroCharacter::SetupStartupPerspective()
 {
-	if (IsLocallyControlled() && IsPlayerControlled())
-	{
-		bIsFirstPersonPerspective = true;
-	}
+	APlayerController* PC = Cast<APlayerController>(GetController());
 
-	SetPerspective(bIsFirstPersonPerspective);
+	if (PC && PC->IsLocalController())
+	{
+		bIsFirstPersonPerspective = bStartInFirstPersonPerspective;
+		SetPerspective(bIsFirstPersonPerspective);
+	}
 }
 
 bool AGSHeroCharacter::DoesWeaponExistInInventory(AGSWeapon* InWeapon)

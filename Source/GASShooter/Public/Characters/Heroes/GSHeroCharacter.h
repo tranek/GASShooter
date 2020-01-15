@@ -50,6 +50,9 @@ class GASSHOOTER_API AGSHeroCharacter : public AGSCharacterBase
 public:
 	AGSHeroCharacter(const class FObjectInitializer& ObjectInitializer);
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|GSHeroCharacter")
+	bool bStartInFirstPersonPerspective;
+
 	FGameplayTag CurrentWeaponTag;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
