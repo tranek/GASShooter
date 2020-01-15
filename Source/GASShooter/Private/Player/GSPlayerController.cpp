@@ -64,6 +64,7 @@ void AGSPlayerController::CreateHUD()
 		if (CurrentWeapon)
 		{
 			UIHUDWidget->SetEquippedWeaponSprite(CurrentWeapon->PrimaryIcon);
+			UIHUDWidget->SetEquippedWeaponStatusText(CurrentWeapon->StatusText);
 		}
 	}
 
