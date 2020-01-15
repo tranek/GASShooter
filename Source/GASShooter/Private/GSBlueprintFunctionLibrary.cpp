@@ -3,6 +3,31 @@
 
 #include "GSBlueprintFunctionLibrary.h"
 
+FString UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(UWorld* World)
+{
+	FString Prefix;
+	if (World)
+	{
+		if (World->WorldType == EWorldType::PIE)
+		{
+			switch (World->GetNetMode())
+			{
+			case NM_Client:
+				Prefix = FString::Printf(TEXT("Client %d "), GPlayInEditorID - 1);
+				break;
+			case NM_DedicatedServer:
+			case NM_ListenServer:
+				Prefix = FString::Printf(TEXT("Server "));
+				break;
+			case NM_Standalone:
+				break;
+			}
+		}
+	}
+
+	return Prefix;
+}
+
 UGSGameplayAbility* UGSBlueprintFunctionLibrary::GetPrimaryAbilityInstanceFromHandle(UAbilitySystemComponent* AbilitySystemComponent, FGameplayAbilitySpecHandle Handle)
 {
 	if (AbilitySystemComponent)

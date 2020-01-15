@@ -125,9 +125,6 @@ public:
 
 	virtual void RemoveAbilities();
 
-	// Reloads the weapon
-	virtual void Reload();
-
 	virtual int32 GetAbilityLevel(EGSAbilityInputID AbilityID);
 
 	// Resets things like fire mode to default
@@ -191,5 +188,4 @@ protected:
 
 	// Called when the player picks up this weapon
 	virtual void PickUpOnTouch(AGSHeroCharacter* InCharacter);
-
 };

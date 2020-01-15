@@ -7,6 +7,7 @@
 #include "Characters/Abilities/GSGATA_SingleLineTrace.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "GSBlueprintFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Weapons/GSWeaponAttributeSet.h"
 
@@ -77,6 +78,10 @@ void AGSWeapon::SetOwningCharacter(AGSHeroCharacter* InOwningCharacter)
 	{
 		AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(OwningCharacter->GetAbilitySystemComponent());
 	}
+	else
+	{
+		AbilitySystemComponent = nullptr;
+	}
 }
 
 void AGSWeapon::NotifyActorBeginOverlap(AActor* Other)
@@ -93,7 +98,7 @@ void AGSWeapon::Equip()
 		return;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("%s %s Role: %s"), TEXT(__FUNCTION__), *GetName(), GET_ACTOR_ROLE_FSTRING(OwningCharacter));
+	UE_LOG(LogTemp, Log, TEXT("%s %s %s Role: %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *GetName(), GET_ACTOR_ROLE_FSTRING(OwningCharacter));
 
 	FName AttachPoint = OwningCharacter->GetWeaponAttachPoint();
 
@@ -132,7 +137,7 @@ void AGSWeapon::Equip()
 
 void AGSWeapon::UnEquip()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s %s"), TEXT(__FUNCTION__), *GetName());
+	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
 
 	WeaponMesh1P->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
 	WeaponMesh1P->SetVisibility(false, true);
@@ -143,7 +148,7 @@ void AGSWeapon::UnEquip()
 
 void AGSWeapon::AddAbilities()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s %s Role: %s"), TEXT(__FUNCTION__), *GetName(), GET_ACTOR_ROLE_FSTRING(OwningCharacter));
+	UE_LOG(LogTemp, Log, TEXT("%s %s %s Role: %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *GetName(), GET_ACTOR_ROLE_FSTRING(OwningCharacter));
 
 	if (!IsValid(OwningCharacter) || !OwningCharacter->GetAbilitySystemComponent())
 	{
@@ -195,12 +200,6 @@ void AGSWeapon::RemoveAbilities()
 	{
 		ASC->ClearAbility(SpecHandle);
 	}
-}
-
-void AGSWeapon::Reload()
-{
-	UE_LOG(LogTemp, Log, TEXT("%s %s"), TEXT(__FUNCTION__), *GetName());
-
 }
 
 int32 AGSWeapon::GetAbilityLevel(EGSAbilityInputID AbilityID)
@@ -277,7 +276,10 @@ int32 AGSWeapon::GetSecondaryReserveAmmo() const
 
 void AGSWeapon::BeginPlay()
 {
-	AttributeSet = NewObject<UGSWeaponAttributeSet>(this);
+	if (!AttributeSet)
+	{
+		AttributeSet = NewObject<UGSWeaponAttributeSet>(this);
+	}
 
 	ResetWeapon();
 

@@ -221,7 +221,10 @@ protected:
 
 	void SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWeapon);
 
-	// Unequips the current weapon
+	// Unequips the specified weapon. Used when OnRep_CurrentWeapon fires.
+	void UnEquipWeapon(AGSWeapon* WeaponToUnEquip);
+
+	// Unequips the current weapon. Used if for example we drop the current weapon.
 	void UnEquipCurrentWeapon();
 
 	UFUNCTION()

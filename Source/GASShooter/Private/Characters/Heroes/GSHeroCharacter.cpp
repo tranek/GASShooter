@@ -479,11 +479,13 @@ void AGSHeroCharacter::OnRep_PlayerState()
 		{
 			PC->CreateHUD();
 		}
-
-		// If current weapon repped before PlayerState, set tag on ASC
+		
 		if (CurrentWeapon)
 		{
+			// If current weapon repped before PlayerState, set tag on ASC
 			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
+			// Update owning character and ASC just in case it repped before PlayerState
+			CurrentWeapon->SetOwningCharacter(this);
 		}
 
 		// Simulated on proxies don't have their PlayerStates yet when BeginPlay is called so we call it again here
@@ -575,7 +577,7 @@ bool AGSHeroCharacter::DoesWeaponExistInInventory(AGSWeapon* InWeapon)
 
 void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWeapon)
 {
-	UnEquipCurrentWeapon();
+	UnEquipWeapon(LastWeapon);
 
 	if (NewWeapon)
 	{
@@ -593,7 +595,7 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 		{
 			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
 
-			// SpawnedAttributes is replicated, but we can add them on clients too
+			// SpawnedAttributes is replicated, okay to add on Clients
 			AbilitySystemComponent->SpawnedAttributes.AddUnique(CurrentWeapon->AttributeSet);
 			AbilitySystemComponent->ForceReplication();
 		}
@@ -607,13 +609,26 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 			PC->SetPrimaryReserveAmmo(CurrentWeapon->GetPrimaryReserveAmmo());
 		}
 	}
+	else
+	{
+		// This will clear HUD, tags etc
+		UnEquipCurrentWeapon();
+	}
+}
+
+void AGSHeroCharacter::UnEquipWeapon(AGSWeapon* WeaponToUnEquip)
+{
+	if (WeaponToUnEquip)
+	{
+		WeaponToUnEquip->UnEquip();
+	}
 }
 
 void AGSHeroCharacter::UnEquipCurrentWeapon()
 {
 	if (AbilitySystemComponent)
 	{
-		// SpawnedAttributes is replicated, but we can remove them on clients too
+		// SpawnedAttributes is replicated, okay to remove on Clients
 		if (CurrentWeapon)
 		{
 			AbilitySystemComponent->SpawnedAttributes.Remove(CurrentWeapon->AttributeSet);
@@ -625,11 +640,8 @@ void AGSHeroCharacter::UnEquipCurrentWeapon()
 		AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
 	}
 
-	if (CurrentWeapon)
-	{
-		CurrentWeapon->UnEquip();
-		CurrentWeapon = nullptr;
-	}
+	UnEquipWeapon(CurrentWeapon);
+	CurrentWeapon = nullptr;
 
 	AGSPlayerController* PC = GetController<AGSPlayerController>();
 	if (PC && PC->IsLocalController())
@@ -643,7 +655,5 @@ void AGSHeroCharacter::UnEquipCurrentWeapon()
 
 void AGSHeroCharacter::OnRep_CurrentWeapon(AGSWeapon* LastWeapon)
 {
-	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), ACTOR_ROLE_FSTRING);
-
 	SetCurrentWeapon(CurrentWeapon, LastWeapon);
 }

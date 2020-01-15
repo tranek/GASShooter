@@ -19,6 +19,10 @@ class GASSHOOTER_API UGSBlueprintFunctionLibrary : public UBlueprintFunctionLibr
 	GENERATED_BODY()
 	
 public:
+	// Returns the player's editor window role - Server (listen host) or Client #
+	UFUNCTION(BlueprintCallable)
+	static FString GetPlayerEditorWindowRole(UWorld* World);
+
 	/**
 	* GameplayAbility
 	*/
