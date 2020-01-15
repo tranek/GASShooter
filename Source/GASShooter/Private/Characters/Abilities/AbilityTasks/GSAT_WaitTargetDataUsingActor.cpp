@@ -239,6 +239,13 @@ void UGSAT_WaitTargetDataUsingActor::OnDestroy(bool AbilityEnded)
 {
 	if (TargetActor)
 	{
+		// TargetActor doesn't have a StopTargeting function which is where this should go
+		TargetActor->SetActorTickEnabled(false);
+		TargetActor->SourceActor = nullptr;
+		TargetActor->OwningAbility = nullptr;
+
+		//TODO handle/clean up Reticle if it exists
+
 		// Clear added callbacks
 		TargetActor->TargetDataReadyDelegate.RemoveAll(this);
 		TargetActor->CanceledDelegate.RemoveAll(this);

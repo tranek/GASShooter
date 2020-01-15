@@ -26,6 +26,12 @@ void AGSGATA_SingleLineTrace::SetDestroyOnConfirmation(bool DestroyOnConfirmatio
 	bDestroyOnConfirmation = DestroyOnConfirmation;
 }
 
+void AGSGATA_SingleLineTrace::StartTargeting(UGameplayAbility* Ability)
+{
+	SetActorTickEnabled(true);
+	Super::StartTargeting(Ability);
+}
+
 void AGSGATA_SingleLineTrace::CancelTargeting()
 {
 	const FGameplayAbilityActorInfo* ActorInfo = (OwningAbility ? OwningAbility->GetCurrentActorInfo() : nullptr);
@@ -40,4 +46,14 @@ void AGSGATA_SingleLineTrace::CancelTargeting()
 	}
 
 	CanceledDelegate.Broadcast(FGameplayAbilityTargetDataHandle());
+}
+
+void AGSGATA_SingleLineTrace::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Start with Tick disabled. We'll enable it in StartTargeting() and disable it again in the WaitTargetDataUsingActor task.
+	// Ideally we would have a StopTargeting() function on the TargetActor base class.
+	// For instant confirmations, tick will never happen because we StartTargeting(), ConfirmTargeting(), and immediately disable tick.
+	SetActorTickEnabled(false);
 }

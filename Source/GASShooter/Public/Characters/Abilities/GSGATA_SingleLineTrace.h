@@ -29,5 +29,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetDestroyOnConfirmation(bool DestroyOnConfirmation = false);
 
+	virtual void StartTargeting(UGameplayAbility* Ability) override;
+
 	virtual void CancelTargeting() override;
+
+	virtual void BeginPlay() override;
 };
