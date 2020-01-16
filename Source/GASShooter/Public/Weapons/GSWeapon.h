@@ -26,7 +26,7 @@ public:
 	// Sets default values for this actor's properties
 	AGSWeapon();
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_AttributeSet)
 	UGSWeaponAttributeSet* AttributeSet;
 
 	// This tag will be used by the Characters when they equip a weapon to gate activation of abilities
@@ -188,4 +188,7 @@ protected:
 
 	// Called when the player picks up this weapon
 	virtual void PickUpOnTouch(AGSHeroCharacter* InCharacter);
+
+	UFUNCTION()
+	virtual void OnRep_AttributeSet();
 };

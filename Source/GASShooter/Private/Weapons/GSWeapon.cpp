@@ -9,6 +9,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GSBlueprintFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
+#include "Player/GSPlayerController.h"
 #include "Weapons/GSWeaponAttributeSet.h"
 
 // Sets default values
@@ -314,4 +315,21 @@ void AGSWeapon::PickUpOnTouch(AGSHeroCharacter* InCharacter)
 	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *InCharacter->GetName(), *GetName());
 
 	//TODO call add to inventory on incharacter. Check if alive first.
+}
+
+void AGSWeapon::OnRep_AttributeSet()
+{
+	if (OwningCharacter)
+	{
+		AGSPlayerController* PC = OwningCharacter->GetController<AGSPlayerController>();
+		if (PC && PC->IsLocalController())
+		{
+			// The AttributeSet with the initialized attributes sometimes replicates after the CurrentWeapon replicates.
+			// Update the HUD just in case.
+			PC->SetEquippedWeaponPrimaryIconFromSprite(PrimaryIcon);
+			PC->SetEquippedWeaponStatusText(StatusText);
+			PC->SetPrimaryClipAmmo(GetPrimaryClipAmmo());
+			PC->SetPrimaryReserveAmmo(GetPrimaryReserveAmmo());
+		}
+	}
 }
