@@ -30,6 +30,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	Default3PFOV = 80.0f;
 	NoWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
 	CurrentWeaponTag = NoWeaponTag;
+	Inventory = FGSHeroInventory();
 	
 	ThirdPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("CameraBoom"));
 	ThirdPersonCameraBoom->SetupAttachment(RootComponent);
@@ -306,8 +307,6 @@ void AGSHeroCharacter::BeginPlay()
 	// On respawn, they are set up in PossessedBy.
 	// When the player a client, the floating status bars are all set up in OnRep_PlayerState.
 	InitializeFloatingStatusBar();
-
-	Inventory = FGSHeroInventory();
 }
 
 void AGSHeroCharacter::PostInitializeComponents()
@@ -587,6 +586,8 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 			AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
 		}
 
+		// Weapons coming from OnRep_CurrentWeapon won't have the owner set
+		NewWeapon->SetOwningCharacter(this);
 		NewWeapon->Equip();
 		CurrentWeapon = NewWeapon;
 		CurrentWeaponTag = CurrentWeapon->WeaponTag;

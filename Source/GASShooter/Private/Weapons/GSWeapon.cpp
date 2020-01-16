@@ -77,10 +77,12 @@ void AGSWeapon::SetOwningCharacter(AGSHeroCharacter* InOwningCharacter)
 	if (OwningCharacter)
 	{
 		AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(OwningCharacter->GetAbilitySystemComponent());
+		SetOwner(InOwningCharacter);
 	}
 	else
 	{
 		AbilitySystemComponent = nullptr;
+		SetOwner(nullptr);
 	}
 }
 
@@ -284,6 +286,7 @@ void AGSWeapon::BeginPlay()
 	ResetWeapon();
 
 	SingleLineTraceTargetActor = GetWorld()->SpawnActor<AGSGATA_SingleLineTrace>();
+	SingleLineTraceTargetActor->SetOwner(this);
 
 	// Init Attributes on Server, they will be replicated to clients
 	if (GetLocalRole() == ROLE_Authority && AttributeSet)

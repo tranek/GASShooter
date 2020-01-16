@@ -24,9 +24,8 @@ enum class EGSHeroWeaponState : uint8
 USTRUCT()
 struct GASSHOOTER_API FGSHeroInventory
 {
-	GENERATED_BODY()
+	GENERATED_USTRUCT_BODY()
 
-public:
 	UPROPERTY()
 	TArray<AGSWeapon*> Weapons;
 
