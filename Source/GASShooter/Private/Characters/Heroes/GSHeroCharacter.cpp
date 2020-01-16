@@ -137,6 +137,17 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 			PC->CreateHUD();
 		}
 
+		if (AbilitySystemComponent->GetTagCount(DeadTag) > 0)
+		{
+			// Set Health/Mana/Stamina to their max. This is only necessary for *Respawn*.
+			SetHealth(GetMaxHealth());
+			SetMana(GetMaxMana());
+			SetStamina(GetMaxStamina());
+		}
+
+		// Forcibly set the DeadTag count to 0. This is only necessary for *Respawn*.
+		AbilitySystemComponent->SetTagMapCount(DeadTag, 0);
+
 		InitializeFloatingStatusBar();
 
 		// If player is host on listen server, the floating status bar would have been created for them from BeginPlay before player possession, hide it
@@ -144,17 +155,6 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 		{
 			UIFloatingStatusBarComponent->SetVisibility(false, true);
 		}
-
-
-		// Respawn specific things that won't affect first possession.
-
-		// Forcibly set the DeadTag count to 0
-		AbilitySystemComponent->SetTagMapCount(DeadTag, 0);
-
-		// Set Health/Mana/Stamina to their max. This is only necessary for *Respawn*.
-		SetHealth(GetMaxHealth());
-		SetMana(GetMaxMana());
-		SetStamina(GetMaxStamina());
 	}
 
 	SetupStartupPerspective();
@@ -487,18 +487,19 @@ void AGSHeroCharacter::OnRep_PlayerState()
 			CurrentWeapon->SetOwningCharacter(this);
 		}
 
-		// Simulated on proxies don't have their PlayerStates yet when BeginPlay is called so we call it again here
-		InitializeFloatingStatusBar();
+		if (AbilitySystemComponent->GetTagCount(DeadTag) > 0)
+		{
+			// Set Health/Mana/Stamina to their max. This is only necessary for *Respawn*.
+			SetHealth(GetMaxHealth());
+			SetMana(GetMaxMana());
+			SetStamina(GetMaxStamina());
+		}
 
-		// Respawn specific things that won't affect first possession.
-
-		// Forcibly set the DeadTag count to 0
+		// Forcibly set the DeadTag count to 0. This is only necessary for *Respawn*.
 		AbilitySystemComponent->SetTagMapCount(DeadTag, 0);
 
-		// Set Health/Mana/Stamina to their max. This is only necessary for *Respawn*.
-		SetHealth(GetMaxHealth());
-		SetMana(GetMaxMana());
-		SetStamina(GetMaxStamina());
+		// Simulated on proxies don't have their PlayerStates yet when BeginPlay is called so we call it again here
+		InitializeFloatingStatusBar();
 	}
 }
 
