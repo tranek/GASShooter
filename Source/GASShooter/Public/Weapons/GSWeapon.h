@@ -163,6 +163,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|UI")
 	TSubclassOf<class UGSHUDReticle> PrimaryHUDReticleClass;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon")
+	bool bEnableSingleLineTraceTargetActor;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon")
+	bool bEnableSphereTraceTargetActor;
+
 	// Generic Root component so that we can hide visibility of one mesh without affecting the other if they were parent/child
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* Root;

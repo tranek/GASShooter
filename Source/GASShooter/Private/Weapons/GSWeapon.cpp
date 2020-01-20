@@ -27,6 +27,8 @@ AGSWeapon::AGSWeapon()
 	MaxSecondaryClipAmmo = 0;
 	PrimaryAmmoType = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.None"));
 	SecondaryAmmoType = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.None"));
+	bEnableSingleLineTraceTargetActor = false;
+	bEnableSphereTraceTargetActor = false;
 
 	Root = CreateDefaultSubobject<USceneComponent>(FName("Root"));
 	Root->SetVisibility(false, false);
@@ -301,8 +303,16 @@ void AGSWeapon::BeginPlay()
 {
 	ResetWeapon();
 
-	SingleLineTraceTargetActor = GetWorld()->SpawnActor<AGSGATA_SingleLineTrace>();
-	SingleLineTraceTargetActor->SetOwner(this);
+	if (bEnableSingleLineTraceTargetActor)
+	{
+		SingleLineTraceTargetActor = GetWorld()->SpawnActor<AGSGATA_SingleLineTrace>();
+		SingleLineTraceTargetActor->SetOwner(this);
+	}
+
+	if (bEnableSphereTraceTargetActor)
+	{
+		//TODO
+	}
 }
 
 void AGSWeapon::PickUpOnTouch(AGSHeroCharacter* InCharacter)

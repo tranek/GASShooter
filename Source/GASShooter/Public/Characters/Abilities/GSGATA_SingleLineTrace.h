@@ -7,7 +7,7 @@
 #include "GSGATA_SingleLineTrace.generated.h"
 
 /**
- * 
+ * Reusable single target line trace target actor. Stops tracing at the first blocking hit.
  */
 UCLASS()
 class GASSHOOTER_API AGSGATA_SingleLineTrace : public AGameplayAbilityTargetActor_SingleLineTrace
