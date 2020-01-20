@@ -10,7 +10,6 @@
 #include "GSBlueprintFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/GSPlayerController.h"
-#include "Weapons/GSWeaponAttributeSet.h"
 
 // Sets default values
 AGSWeapon::AGSWeapon()
@@ -22,6 +21,12 @@ AGSWeapon::AGSWeapon()
 	bNetUseOwnerRelevancy = true;
 	// Set this to a value that's appropriate for your game
 	NetUpdateFrequency = 100.0f;
+	PrimaryClipAmmo = 0;
+	MaxPrimaryClipAmmo = 0;
+	SecondaryClipAmmo = 0;
+	MaxSecondaryClipAmmo = 0;
+	PrimaryAmmoType = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.None"));
+	SecondaryAmmoType = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.None"));
 
 	Root = CreateDefaultSubobject<USceneComponent>(FName("Root"));
 	Root->SetVisibility(false, false);
@@ -45,6 +50,7 @@ AGSWeapon::AGSWeapon()
 	WeaponPrimaryInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Primary.Instant"));
 	WeaponSecondaryInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Secondary.Instant"));
 	WeaponAlternateInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Alternate.Instant"));
+	WeaponIsFiringTag = FGameplayTag::RequestGameplayTag(FName("Weapon.IsFiring"));
 
 	FireMode = FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.None"));
 }
@@ -69,7 +75,28 @@ void AGSWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AGSWeapon, OwningCharacter);
-	DOREPLIFETIME(AGSWeapon, AttributeSet);
+	DOREPLIFETIME(AGSWeapon, PrimaryClipAmmo);
+	DOREPLIFETIME(AGSWeapon, MaxPrimaryClipAmmo);
+	DOREPLIFETIME(AGSWeapon, SecondaryClipAmmo);
+	DOREPLIFETIME(AGSWeapon, MaxSecondaryClipAmmo);
+}
+
+void AGSWeapon::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker)
+{
+	Super::PreReplication(ChangedPropertyTracker);
+
+	DOREPLIFETIME_ACTIVE_OVERRIDE(AGSWeapon, PrimaryClipAmmo, (IsValid(AbilitySystemComponent) && !AbilitySystemComponent->HasMatchingGameplayTag(WeaponIsFiringTag)) || bPrimaryAmmoNeedsSync);
+	DOREPLIFETIME_ACTIVE_OVERRIDE(AGSWeapon, SecondaryClipAmmo, (IsValid(AbilitySystemComponent) && !AbilitySystemComponent->HasMatchingGameplayTag(WeaponIsFiringTag)) || bPrimaryAmmoNeedsSync);
+	
+	if (bPrimaryAmmoNeedsSync)
+	{
+		bPrimaryAmmoNeedsSync = false;
+	}
+
+	if (bSecondaryAmmoNeedsSync)
+	{
+		bSecondaryAmmoNeedsSync = false;
+	}
 }
 
 void AGSWeapon::SetOwningCharacter(AGSHeroCharacter* InOwningCharacter)
@@ -219,90 +246,63 @@ void AGSWeapon::ResetWeapon()
 
 int32 AGSWeapon::GetPrimaryClipAmmo() const
 {
-	if (IsValid(AttributeSet))
-	{
-		return AttributeSet->GetPrimaryClipAmmo();
-	}
-
-	return 0;
+	return PrimaryClipAmmo;
 }
 
-int32 AGSWeapon::GetPrimaryMaxClipAmmo() const
+int32 AGSWeapon::GetMaxPrimaryClipAmmo() const
 {
-	if (IsValid(AttributeSet))
-	{
-		return AttributeSet->GetPrimaryMaxClipAmmo();
-	}
-
-	return 0;
-}
-
-int32 AGSWeapon::GetPrimaryReserveAmmo() const
-{
-	if (IsValid(AttributeSet))
-	{
-		return AttributeSet->GetPrimaryReserveAmmo();
-	}
-
-	return 0;
+	return MaxPrimaryClipAmmo;
 }
 
 int32 AGSWeapon::GetSecondaryClipAmmo() const
 {
-	if (IsValid(AttributeSet))
-	{
-		return AttributeSet->GetSecondaryClipAmmo();
-	}
-
-	return 0;
+	return SecondaryClipAmmo;
 }
 
-int32 AGSWeapon::GetSecondaryMaxClipAmmo() const
+int32 AGSWeapon::GetMaxSecondaryClipAmmo() const
 {
-	if (IsValid(AttributeSet))
-	{
-		return AttributeSet->GetSecondaryMaxClipAmmo();
-	}
-
-	return 0;
+	return MaxSecondaryClipAmmo;
 }
 
-int32 AGSWeapon::GetSecondaryReserveAmmo() const
+void AGSWeapon::SetPrimaryClipAmmo(int32 NewPrimaryClipAmmo)
 {
-	if (IsValid(AttributeSet))
-	{
-		return AttributeSet->GetSecondaryReserveAmmo();
-	}
+	int32 OldPrimaryClipAmmo = PrimaryClipAmmo;
+	PrimaryClipAmmo = NewPrimaryClipAmmo;
+	OnPrimaryClipAmmoChanged.Broadcast(OldPrimaryClipAmmo, PrimaryClipAmmo);
+}
 
-	return 0;
+void AGSWeapon::SetMaxPrimaryClipAmmo(int32 NewMaxPrimaryClipAmmo)
+{
+	int32 OldMaxPrimaryClipAmmo = MaxPrimaryClipAmmo;
+	MaxPrimaryClipAmmo = NewMaxPrimaryClipAmmo;
+	OnMaxPrimaryClipAmmoChanged.Broadcast(OldMaxPrimaryClipAmmo, MaxPrimaryClipAmmo);
+}
+
+void AGSWeapon::SetSecondaryClipAmmo(int32 NewSecondaryClipAmmo)
+{
+	int32 OldSecondaryClipAmmo = SecondaryClipAmmo;
+	SecondaryClipAmmo = NewSecondaryClipAmmo;
+	OnSecondaryClipAmmoChanged.Broadcast(OldSecondaryClipAmmo, SecondaryClipAmmo);
+}
+
+void AGSWeapon::SetMaxSecondaryClipAmmo(int32 NewMaxSecondaryClipAmmo)
+{
+	int32 OldMaxSecondaryClipAmmo = MaxSecondaryClipAmmo;
+	MaxSecondaryClipAmmo = NewMaxSecondaryClipAmmo;
+	OnMaxSecondaryClipAmmoChanged.Broadcast(OldMaxSecondaryClipAmmo, MaxSecondaryClipAmmo);
+}
+
+TSubclassOf<UGSHUDReticle> AGSWeapon::GetPrimaryHUDReticleClass() const
+{
+	return PrimaryHUDReticleClass;
 }
 
 void AGSWeapon::BeginPlay()
 {
-	if (!AttributeSet)
-	{
-		AttributeSet = NewObject<UGSWeaponAttributeSet>(this);
-	}
-
 	ResetWeapon();
 
 	SingleLineTraceTargetActor = GetWorld()->SpawnActor<AGSGATA_SingleLineTrace>();
 	SingleLineTraceTargetActor->SetOwner(this);
-
-	// Init Attributes on Server, they will be replicated to clients
-	if (GetLocalRole() == ROLE_Authority && AttributeSet)
-	{
-		AttributeSet->InitPrimaryMaxAmmo(PrimaryMaxAmmo);
-		AttributeSet->InitPrimaryMaxClipAmmo(PrimaryMaxClipAmmo);
-		AttributeSet->InitPrimaryClipAmmo(PrimaryClipAmmo);
-		AttributeSet->InitPrimaryReserveAmmo(PrimaryReserveAmmo);
-		AttributeSet->InitPrimaryDamage(PrimaryDamage);
-		AttributeSet->InitSecondaryMaxAmmo(SecondaryMaxAmmo);
-		AttributeSet->InitSecondaryMaxClipAmmo(SecondaryMaxClipAmmo);
-		AttributeSet->InitSecondaryClipAmmo(SecondaryClipAmmo);
-		AttributeSet->InitSecondaryReserveAmmo(SecondaryReserveAmmo);
-		AttributeSet->InitSecondaryDamage(SecondaryDamage);
-	}
 }
 
 void AGSWeapon::PickUpOnTouch(AGSHeroCharacter* InCharacter)
@@ -317,19 +317,22 @@ void AGSWeapon::PickUpOnTouch(AGSHeroCharacter* InCharacter)
 	//TODO call add to inventory on incharacter. Check if alive first.
 }
 
-void AGSWeapon::OnRep_AttributeSet()
+void AGSWeapon::OnRep_PrimaryClipAmmo(int32 OldPrimaryClipAmmo)
 {
-	if (OwningCharacter)
-	{
-		AGSPlayerController* PC = OwningCharacter->GetController<AGSPlayerController>();
-		if (PC && PC->IsLocalController())
-		{
-			// The AttributeSet with the initialized attributes sometimes replicates after the CurrentWeapon replicates.
-			// Update the HUD just in case.
-			PC->SetEquippedWeaponPrimaryIconFromSprite(PrimaryIcon);
-			PC->SetEquippedWeaponStatusText(StatusText);
-			PC->SetPrimaryClipAmmo(GetPrimaryClipAmmo());
-			PC->SetPrimaryReserveAmmo(GetPrimaryReserveAmmo());
-		}
-	}
+	OnPrimaryClipAmmoChanged.Broadcast(OldPrimaryClipAmmo, PrimaryClipAmmo);
+}
+
+void AGSWeapon::OnRep_MaxPrimaryClipAmmo(int32 OldMaxPrimaryClipAmmo)
+{
+	OnMaxPrimaryClipAmmoChanged.Broadcast(OldMaxPrimaryClipAmmo, MaxPrimaryClipAmmo);
+}
+
+void AGSWeapon::OnRep_SecondaryClipAmmo(int32 OldSecondaryClipAmmo)
+{
+	OnSecondaryClipAmmoChanged.Broadcast(OldSecondaryClipAmmo, SecondaryClipAmmo);
+}
+
+void AGSWeapon::OnRep_MaxSecondaryClipAmmo(int32 OldMaxSecondaryClipAmmo)
+{
+	OnMaxSecondaryClipAmmoChanged.Broadcast(OldMaxSecondaryClipAmmo, MaxSecondaryClipAmmo);
 }

@@ -2,6 +2,7 @@
 
 
 #include "Player/GSPlayerController.h"
+#include "Characters/Abilities/AttributeSets/GSAmmoAttributeSet.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Player/GSPlayerState.h"
@@ -54,8 +55,6 @@ void AGSPlayerController::CreateHUD()
 	UIHUDWidget->SetExperience(PS->GetXP());
 	UIHUDWidget->SetGold(PS->GetGold());
 	UIHUDWidget->SetHeroLevel(PS->GetCharacterLevel());
-	UIHUDWidget->SetPrimaryClipAmmo(PS->GetPrimaryClipAmmo());
-	UIHUDWidget->SetPrimaryReserveAmmo(PS->GetPrimaryReserveAmmo());
 
 	AGSHeroCharacter* Hero = GetPawn<AGSHeroCharacter>();
 	if (Hero)
@@ -65,6 +64,18 @@ void AGSPlayerController::CreateHUD()
 		{
 			UIHUDWidget->SetEquippedWeaponSprite(CurrentWeapon->PrimaryIcon);
 			UIHUDWidget->SetEquippedWeaponStatusText(CurrentWeapon->StatusText);
+			UIHUDWidget->SetPrimaryClipAmmo(Hero->GetPrimaryClipAmmo());
+			UIHUDWidget->SetReticle(CurrentWeapon->GetPrimaryHUDReticleClass());
+
+			// PlayerState's Pawn isn't set up yet so we can't just call PS->GetPrimaryReserveAmmo()
+			if (PS->GetAmmoAttributeSet())
+			{
+				FGameplayAttribute Attribute = PS->GetAmmoAttributeSet()->GetReserveAmmoAttributeFromTag(CurrentWeapon->PrimaryAmmoType);
+				if (Attribute.IsValid())
+				{
+					UIHUDWidget->SetPrimaryReserveAmmo(PS->GetAbilitySystemComponent()->GetNumericAttribute(Attribute));
+				}
+			}
 		}
 	}
 
@@ -112,6 +123,30 @@ void AGSPlayerController::SetPrimaryReserveAmmo(int32 ReserveAmmo)
 	if (UIHUDWidget)
 	{
 		UIHUDWidget->SetPrimaryReserveAmmo(ReserveAmmo);
+	}
+}
+
+void AGSPlayerController::SetSecondaryClipAmmo(int32 SecondaryClipAmmo)
+{
+	if (UIHUDWidget)
+	{
+		UIHUDWidget->SetSecondaryClipAmmo(SecondaryClipAmmo);
+	}
+}
+
+void AGSPlayerController::SetSecondaryReserveAmmo(int32 SecondaryReserveAmmo)
+{
+	if (UIHUDWidget)
+	{
+		UIHUDWidget->SetSecondaryReserveAmmo(SecondaryReserveAmmo);
+	}
+}
+
+void AGSPlayerController::SetHUDReticle(TSubclassOf<UGSHUDReticle> ReticleClass)
+{
+	if (UIHUDWidget)
+	{
+		UIHUDWidget->SetReticle(ReticleClass);
 	}
 }
 

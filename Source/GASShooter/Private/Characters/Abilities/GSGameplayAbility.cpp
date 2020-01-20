@@ -6,19 +6,24 @@
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "Characters/Abilities/GSTargetType.h"
 #include "Characters/GSCharacterBase.h"
+#include "Characters/Heroes/GSHeroCharacter.h"
 #include "GameplayTagContainer.h"
+#include "Player/GSPlayerController.h"
+#include "Weapons/GSWeapon.h"
 
 UGSGameplayAbility::UGSGameplayAbility()
 {
 	// Default to Instance Per Actor
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+
+	bSourceObjectMustEqualCurrentWeaponToActivate = false;
 }
 
 void UGSGameplayAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
 {
 	Super::OnAvatarSet(ActorInfo, Spec);
 
-	if (ActivateAbilityOnGranted)
+	if (bActivateAbilityOnGranted)
 	{
 		bool ActivatedAbility = ActorInfo->AbilitySystemComponent->TryActivateAbility(Spec.Handle, false);
 	}
@@ -110,6 +115,11 @@ TArray<FActiveGameplayEffectHandle> UGSGameplayAbility::ApplyEffectContainerSpec
 	return AllEffects;
 }
 
+UObject* UGSGameplayAbility::K2_GetSourceObject(FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo& ActorInfo) const
+{
+	return GetSourceObject(Handle, &ActorInfo);
+}
+
 bool UGSGameplayAbility::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool EndAbilityImmediately)
 {
 	UGSAbilitySystemComponent* GSASC = Cast<UGSAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo());
@@ -140,6 +150,66 @@ bool UGSGameplayAbility::IsPredictionKeyValidForMorePrediction() const
 {
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
 	return ASC->ScopedPredictionKey.IsValidForMorePrediction();
+}
+
+bool UGSGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
+{
+	if (bSourceObjectMustEqualCurrentWeaponToActivate)
+	{
+		AGSHeroCharacter* Hero = Cast<AGSHeroCharacter>(ActorInfo->AvatarActor);
+		if (Hero && Hero->GetCurrentWeapon() && (UObject*)Hero->GetCurrentWeapon() == GetSourceObject(Handle, ActorInfo))
+		{
+			return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
+}
+
+bool UGSGameplayAbility::CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags) const
+{
+	return Super::CheckCost(Handle, ActorInfo, OptionalRelevantTags) && GSCheckCost(Handle, *ActorInfo);
+}
+
+bool UGSGameplayAbility::GSCheckCost_Implementation(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo& ActorInfo) const
+{
+	return true;
+}
+
+void UGSGameplayAbility::ApplyCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const
+{
+	GSApplyCost(Handle, *ActorInfo, ActivationInfo);
+	Super::ApplyCost(Handle, ActorInfo, ActivationInfo);
+}
+
+void UGSGameplayAbility::SetHUDReticle(TSubclassOf<UGSHUDReticle> ReticleClass)
+{
+	AGSPlayerController* PC = Cast<AGSPlayerController>(CurrentActorInfo->PlayerController);
+	if (PC)
+	{
+		PC->SetHUDReticle(ReticleClass);
+	}
+}
+
+void UGSGameplayAbility::ResetHUDReticle()
+{
+	AGSPlayerController* PC = Cast<AGSPlayerController>(CurrentActorInfo->PlayerController);
+	if (PC)
+	{
+		AGSHeroCharacter* Hero = Cast<AGSHeroCharacter>(CurrentActorInfo->AvatarActor);
+		if (Hero && Hero->GetCurrentWeapon())
+		{
+			PC->SetHUDReticle(Hero->GetCurrentWeapon()->GetPrimaryHUDReticleClass());
+		}
+		else
+		{
+			PC->SetHUDReticle(nullptr);
+		}
+	}
 }
 
 UAnimMontage* UGSGameplayAbility::GetCurrentMontageForMesh(USkeletalMeshComponent* InMesh)

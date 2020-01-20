@@ -41,6 +41,15 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetPrimaryReserveAmmo(int32 ReserveAmmo);
 
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetSecondaryClipAmmo(int32 SecondaryClipAmmo);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetSecondaryReserveAmmo(int32 SecondaryReserveAmmo);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetReticle(TSubclassOf<class UGSHUDReticle> ReticleClass);
+
 
 	/**
 	* Attribute setters

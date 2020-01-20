@@ -5,7 +5,8 @@
 #include "AI/GSHeroAIController.h"
 #include "Camera/CameraComponent.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
-#include "Characters/Abilities/GSAttributeSetBase.h"
+#include "Characters/Abilities/AttributeSets/GSAmmoAttributeSet.h"
+#include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GASShooter/GASShooterGameModeBase.h"
@@ -17,7 +18,6 @@
 #include "TimerManager.h"
 #include "UI/GSFloatingStatusBarWidget.h"
 #include "Weapons/GSWeapon.h"
-#include "Weapons/GSWeaponAttributeSet.h"
 
 AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -122,6 +122,8 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 
 		// Set the AttributeSetBase for convenience attribute functions
 		AttributeSetBase = PS->GetAttributeSetBase();
+
+		AmmoAttributeSet = PS->GetAmmoAttributeSet();
 
 		// If we handle players disconnecting and rejoining in the future, we'll have to change this so that possession from rejoining doesn't reset attributes.
 		// For now assume possession = spawn/respawn.
@@ -292,6 +294,74 @@ bool AGSHeroCharacter::ServerEquipWeapon_Validate(AGSWeapon* NewWeapon)
 FName AGSHeroCharacter::GetWeaponAttachPoint()
 {
 	return WeaponAttachPoint;
+}
+
+int32 AGSHeroCharacter::GetPrimaryClipAmmo() const
+{
+	if (CurrentWeapon)
+	{
+		return CurrentWeapon->GetPrimaryClipAmmo();
+	}
+
+	return 0;
+}
+
+int32 AGSHeroCharacter::GetMaxPrimaryClipAmmo() const
+{
+	if (CurrentWeapon)
+	{
+		return CurrentWeapon->GetMaxPrimaryClipAmmo();
+	}
+
+	return 0;
+}
+
+int32 AGSHeroCharacter::GetPrimaryReserveAmmo() const
+{
+	if (CurrentWeapon && AmmoAttributeSet)
+	{
+		FGameplayAttribute Attribute = AmmoAttributeSet->GetReserveAmmoAttributeFromTag(CurrentWeapon->PrimaryAmmoType);
+		if (Attribute.IsValid())
+		{
+			return AbilitySystemComponent->GetNumericAttribute(Attribute);
+		}
+	}
+
+	return 0;
+}
+
+int32 AGSHeroCharacter::GetSecondaryClipAmmo() const
+{
+	if (CurrentWeapon)
+	{
+		return CurrentWeapon->GetSecondaryClipAmmo();
+	}
+
+	return 0;
+}
+
+int32 AGSHeroCharacter::GetMaxSecondaryClipAmmo() const
+{
+	if (CurrentWeapon)
+	{
+		return CurrentWeapon->GetMaxSecondaryClipAmmo();
+	}
+
+	return 0;
+}
+
+int32 AGSHeroCharacter::GetSecondaryReserveAmmo() const
+{
+	if (CurrentWeapon)
+	{
+		FGameplayAttribute Attribute = AmmoAttributeSet->GetReserveAmmoAttributeFromTag(CurrentWeapon->SecondaryAmmoType);
+		if (Attribute.IsValid())
+		{
+			return AbilitySystemComponent->GetNumericAttribute(Attribute);
+		}
+	}
+
+	return 0;
 }
 
 /**
@@ -468,6 +538,8 @@ void AGSHeroCharacter::OnRep_PlayerState()
 
 		// Set the AttributeSetBase for convenience attribute functions
 		AttributeSetBase = PS->GetAttributeSetBase();
+		
+		AmmoAttributeSet = PS->GetAmmoAttributeSet();
 
 		// If we handle players disconnecting and rejoining in the future, we'll have to change this so that posession from rejoining doesn't reset attributes.
 		// For now assume possession = spawn/respawn.
@@ -485,6 +557,15 @@ void AGSHeroCharacter::OnRep_PlayerState()
 			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
 			// Update owning character and ASC just in case it repped before PlayerState
 			CurrentWeapon->SetOwningCharacter(this);
+
+			if (!PrimaryReserveAmmoChangedDelegateHandle.IsValid())
+			{
+				PrimaryReserveAmmoChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UGSAmmoAttributeSet::GetReserveAmmoAttributeFromTag(CurrentWeapon->PrimaryAmmoType)).AddUObject(this, &AGSHeroCharacter::CurrentWeaponPrimaryReserveAmmoChanged);
+			}
+			if (!SecondaryReserveAmmoChangedDelegateHandle.IsValid())
+			{
+				SecondaryReserveAmmoChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UGSAmmoAttributeSet::GetReserveAmmoAttributeFromTag(CurrentWeapon->SecondaryAmmoType)).AddUObject(this, &AGSHeroCharacter::CurrentWeaponSecondaryReserveAmmoChanged);
+			}
 		}
 
 		if (AbilitySystemComponent->GetTagCount(DeadTag) > 0)
@@ -596,10 +677,6 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 		if (AbilitySystemComponent)
 		{
 			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
-
-			// SpawnedAttributes is replicated, okay to add on Clients
-			AbilitySystemComponent->SpawnedAttributes.AddUnique(CurrentWeapon->AttributeSet);
-			AbilitySystemComponent->ForceReplication();
 		}
 
 		AGSPlayerController* PC = GetController<AGSPlayerController>();
@@ -608,7 +685,17 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 			PC->SetEquippedWeaponPrimaryIconFromSprite(CurrentWeapon->PrimaryIcon);
 			PC->SetEquippedWeaponStatusText(CurrentWeapon->StatusText);
 			PC->SetPrimaryClipAmmo(CurrentWeapon->GetPrimaryClipAmmo());
-			PC->SetPrimaryReserveAmmo(CurrentWeapon->GetPrimaryReserveAmmo());
+			PC->SetPrimaryReserveAmmo(GetPrimaryReserveAmmo());
+			PC->SetHUDReticle(CurrentWeapon->GetPrimaryHUDReticleClass());
+		}
+
+		NewWeapon->OnPrimaryClipAmmoChanged.AddDynamic(this, &AGSHeroCharacter::CurrentWeaponPrimaryClipAmmoChanged);
+		NewWeapon->OnSecondaryClipAmmoChanged.AddDynamic(this, &AGSHeroCharacter::CurrentWeaponSecondaryClipAmmoChanged);
+		
+		if (AbilitySystemComponent)
+		{
+			PrimaryReserveAmmoChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UGSAmmoAttributeSet::GetReserveAmmoAttributeFromTag(CurrentWeapon->PrimaryAmmoType)).AddUObject(this, &AGSHeroCharacter::CurrentWeaponPrimaryReserveAmmoChanged);
+			SecondaryReserveAmmoChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UGSAmmoAttributeSet::GetReserveAmmoAttributeFromTag(CurrentWeapon->SecondaryAmmoType)).AddUObject(this, &AGSHeroCharacter::CurrentWeaponSecondaryReserveAmmoChanged);
 		}
 	}
 	else
@@ -620,8 +707,19 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 
 void AGSHeroCharacter::UnEquipWeapon(AGSWeapon* WeaponToUnEquip)
 {
+	//TODO this will run into issues when calling UnEquipWeapon explicitly and the WeaponToUnEquip == CurrentWeapon
+
 	if (WeaponToUnEquip)
 	{
+		WeaponToUnEquip->OnPrimaryClipAmmoChanged.RemoveDynamic(this, &AGSHeroCharacter::CurrentWeaponPrimaryClipAmmoChanged);
+		WeaponToUnEquip->OnSecondaryClipAmmoChanged.RemoveDynamic(this, &AGSHeroCharacter::CurrentWeaponSecondaryClipAmmoChanged);
+
+		if (AbilitySystemComponent)
+		{
+			AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UGSAmmoAttributeSet::GetReserveAmmoAttributeFromTag(WeaponToUnEquip->PrimaryAmmoType)).Remove(PrimaryReserveAmmoChangedDelegateHandle);
+			AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UGSAmmoAttributeSet::GetReserveAmmoAttributeFromTag(WeaponToUnEquip->SecondaryAmmoType)).Remove(SecondaryReserveAmmoChangedDelegateHandle);
+		}
+		
 		WeaponToUnEquip->UnEquip();
 	}
 }
@@ -630,13 +728,6 @@ void AGSHeroCharacter::UnEquipCurrentWeapon()
 {
 	if (AbilitySystemComponent)
 	{
-		// SpawnedAttributes is replicated, okay to remove on Clients
-		if (CurrentWeapon)
-		{
-			AbilitySystemComponent->SpawnedAttributes.Remove(CurrentWeapon->AttributeSet);
-			AbilitySystemComponent->ForceReplication();
-		}
-
 		AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
 		CurrentWeaponTag = NoWeaponTag;
 		AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
@@ -652,6 +743,43 @@ void AGSHeroCharacter::UnEquipCurrentWeapon()
 		PC->SetEquippedWeaponStatusText(FText());
 		PC->SetPrimaryClipAmmo(0);
 		PC->SetPrimaryReserveAmmo(0);
+		PC->SetHUDReticle(nullptr);
+	}
+}
+
+void AGSHeroCharacter::CurrentWeaponPrimaryClipAmmoChanged(int32 OldPrimaryClipAmmo, int32 NewPrimaryClipAmmo)
+{
+	AGSPlayerController* PC = GetController<AGSPlayerController>();
+	if (PC && PC->IsLocalController())
+	{
+		PC->SetPrimaryClipAmmo(NewPrimaryClipAmmo);
+	}
+}
+
+void AGSHeroCharacter::CurrentWeaponSecondaryClipAmmoChanged(int32 OldSecondaryClipAmmo, int32 NewSecondaryClipAmmo)
+{
+	AGSPlayerController* PC = GetController<AGSPlayerController>();
+	if (PC && PC->IsLocalController())
+	{
+		PC->SetSecondaryClipAmmo(NewSecondaryClipAmmo);
+	}
+}
+
+void AGSHeroCharacter::CurrentWeaponPrimaryReserveAmmoChanged(const FOnAttributeChangeData& Data)
+{
+	AGSPlayerController* PC = GetController<AGSPlayerController>();
+	if (PC && PC->IsLocalController())
+	{
+		PC->SetPrimaryReserveAmmo(Data.NewValue);
+	}
+}
+
+void AGSHeroCharacter::CurrentWeaponSecondaryReserveAmmoChanged(const FOnAttributeChangeData& Data)
+{
+	AGSPlayerController* PC = GetController<AGSPlayerController>();
+	if (PC && PC->IsLocalController())
+	{
+		PC->SetSecondaryReserveAmmo(Data.NewValue);
 	}
 }
 

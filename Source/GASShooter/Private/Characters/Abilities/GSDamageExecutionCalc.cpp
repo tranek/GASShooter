@@ -2,7 +2,7 @@
 
 
 #include "Characters/Abilities/GSDamageExecutionCalc.h"
-#include "Characters/Abilities/GSAttributeSetBase.h"
+#include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 
 // Declare the attributes to capture and define how we want to capture them from the Source and Target.

@@ -39,6 +39,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|UI")
 	void SetPrimaryReserveAmmo(int32 ReserveAmmo);
 
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|UI")
+	void SetSecondaryClipAmmo(int32 SecondaryClipAmmo);
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|UI")
+	void SetSecondaryReserveAmmo(int32 SecondaryReserveAmmo);
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|UI")
+	void SetHUDReticle(TSubclassOf<class UGSHUDReticle> ReticleClass);
+
 
 	UFUNCTION(Client, Reliable, WithValidation)
 	void ShowDamageNumber(float DamageAmount, AGSCharacterBase* TargetCharacter);

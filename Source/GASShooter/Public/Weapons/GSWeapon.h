@@ -9,11 +9,12 @@
 #include "GASShooter/GASShooter.h"
 #include "GSWeapon.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponAmmoChangedDelegate, int32, OldValue, int32, NewValue);
+
 class AGSHeroCharacter;
 class UAnimMontage;
 class UGSAbilitySystemComponent;
 class UGSGameplayAbility;
-class UGSWeaponAttributeSet;
 class UPaperSprite;
 class USkeletalMeshComponent;
 
@@ -25,9 +26,6 @@ class GASSHOOTER_API AGSWeapon : public AActor, public IAbilitySystemInterface
 public:	
 	// Sets default values for this actor's properties
 	AGSWeapon();
-
-	UPROPERTY(ReplicatedUsing = OnRep_AttributeSet)
-	UGSWeaponAttributeSet* AttributeSet;
 
 	// This tag will be used by the Characters when they equip a weapon to gate activation of abilities
 	// since abilities are granted on adding to inventory and removed when the weapon is removed from the
@@ -55,49 +53,33 @@ public:
 	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Category = "GASShooter|GSWeapon")
 	FGameplayTag FireMode;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSWeapon")
+	FGameplayTag PrimaryAmmoType;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSWeapon")
+	FGameplayTag SecondaryAmmoType;
+
+	UPROPERTY(BlueprintReadWrite, Category = "GASShooter|GSWeapon")
+	bool bPrimaryAmmoNeedsSync = false;
+
+	UPROPERTY(BlueprintReadWrite, Category = "GASShooter|GSWeapon")
+	bool bSecondaryAmmoNeedsSync = false;
+
 	// Things like fire mode for rifle
 	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Category = "GASShooter|GSWeapon")
 	FText StatusText;
 
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSWeapon")
+	FWeaponAmmoChangedDelegate OnPrimaryClipAmmoChanged;
 
-	/**
-	* Starting Attribute values. Initialize in BeginPlay on the Server. If the weapons could level up,
-	* I'd opt for a DataTable and a GameplayEffect instead or one of the advanced init functions on AttributeSet.
-	* But this simple way of Initializing from the Blueprint will be fine for this.
-	*/
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSWeapon")
+	FWeaponAmmoChangedDelegate OnMaxPrimaryClipAmmoChanged;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon|Attributes")
-	int32 PrimaryMaxClipAmmo;
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSWeapon")
+	FWeaponAmmoChangedDelegate OnSecondaryClipAmmoChanged;
 
-	// How much ammo in the clip the gun starts with
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon|Attributes")
-	int32 PrimaryClipAmmo;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon|Attributes")
-	int32 PrimaryMaxAmmo;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon|Attributes")
-	int32 PrimaryReserveAmmo;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon|Attributes")
-	int32 PrimaryDamage;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon|Attributes")
-	int32 SecondaryMaxClipAmmo;
-
-	// How much ammo in the clip the gun starts with
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon|Attributes")
-	int32 SecondaryClipAmmo;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon|Attributes")
-	int32 SecondaryMaxAmmo;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon|Attributes")
-	int32 SecondaryReserveAmmo;
-
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon|Attributes")
-	int32 SecondaryDamage;
-
+	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSWeapon")
+	FWeaponAmmoChangedDelegate OnMaxSecondaryClipAmmoChanged;
 
 	// Implement IAbilitySystemInterface
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -109,6 +91,8 @@ public:
 	virtual USkeletalMeshComponent* GetWeaponMesh3P() const;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual void PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker) override;
 
 	void SetOwningCharacter(AGSHeroCharacter* InOwningCharacter);
 
@@ -135,23 +119,49 @@ public:
 	virtual int32 GetPrimaryClipAmmo() const;
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
-	virtual int32 GetPrimaryMaxClipAmmo() const;
-
-	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
-	virtual int32 GetPrimaryReserveAmmo() const;
+	virtual int32 GetMaxPrimaryClipAmmo() const;
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
 	virtual int32 GetSecondaryClipAmmo() const;
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
-	virtual int32 GetSecondaryMaxClipAmmo() const;
+	virtual int32 GetMaxSecondaryClipAmmo() const;
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
-	virtual int32 GetSecondaryReserveAmmo() const;
+	virtual void SetPrimaryClipAmmo(int32 NewPrimaryClipAmmo);
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
+	virtual void SetMaxPrimaryClipAmmo(int32 NewMaxPrimaryClipAmmo);
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
+	virtual void SetSecondaryClipAmmo(int32 NewSecondaryClipAmmo);
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
+	virtual void SetMaxSecondaryClipAmmo(int32 NewMaxSecondaryClipAmmo);
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
+	TSubclassOf<class UGSHUDReticle> GetPrimaryHUDReticleClass() const;
 
 protected:
 	UPROPERTY()
 	UGSAbilitySystemComponent* AbilitySystemComponent;
+
+	// How much ammo in the clip the gun starts with
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_PrimaryClipAmmo, Category = "GASShooter|GSWeapon|Ammo")
+	int32 PrimaryClipAmmo;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_MaxPrimaryClipAmmo, Category = "GASShooter|GSWeapon|Ammo")
+	int32 MaxPrimaryClipAmmo;
+
+	// How much ammo in the clip the gun starts with
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_SecondaryClipAmmo, Category = "GASShooter|GSWeapon|Ammo")
+	int32 SecondaryClipAmmo; // Things like rifle grenades
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_MaxSecondaryClipAmmo, Category = "GASShooter|GSWeapon|Ammo")
+	int32 MaxSecondaryClipAmmo;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|UI")
+	TSubclassOf<class UGSHUDReticle> PrimaryHUDReticleClass;
 
 	// Generic Root component so that we can hide visibility of one mesh without affecting the other if they were parent/child
 	UPROPERTY(VisibleAnywhere)
@@ -183,6 +193,7 @@ protected:
 	FGameplayTag WeaponPrimaryInstantAbilityTag;
 	FGameplayTag WeaponSecondaryInstantAbilityTag;
 	FGameplayTag WeaponAlternateInstantAbilityTag;
+	FGameplayTag WeaponIsFiringTag;
 
 	virtual void BeginPlay() override;
 
@@ -190,5 +201,14 @@ protected:
 	virtual void PickUpOnTouch(AGSHeroCharacter* InCharacter);
 
 	UFUNCTION()
-	virtual void OnRep_AttributeSet();
+	virtual void OnRep_PrimaryClipAmmo(int32 OldPrimaryClipAmmo);
+
+	UFUNCTION()
+	virtual void OnRep_MaxPrimaryClipAmmo(int32 OldMaxPrimaryClipAmmo);
+
+	UFUNCTION()
+	virtual void OnRep_SecondaryClipAmmo(int32 OldSecondaryClipAmmo);
+
+	UFUNCTION()
+	virtual void OnRep_MaxSecondaryClipAmmo(int32 OldMaxSecondaryClipAmmo);
 };

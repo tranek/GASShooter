@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Characters/GSCharacterBase.h"
+#include "GameplayEffectTypes.h"
 #include "GSHeroCharacter.generated.h"
 
 class AGSWeapon;
@@ -105,6 +106,24 @@ public:
 
 	FName GetWeaponAttachPoint();
 
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GASShooter|Inventory")
+	int32 GetPrimaryClipAmmo() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GASShooter|Inventory")
+	int32 GetMaxPrimaryClipAmmo() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GASShooter|Inventory")
+	int32 GetPrimaryReserveAmmo() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GASShooter|Inventory")
+	int32 GetSecondaryClipAmmo() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GASShooter|Inventory")
+	int32 GetMaxSecondaryClipAmmo() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GASShooter|Inventory")
+	int32 GetSecondaryReserveAmmo() const;
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|Camera")
 	float BaseTurnRate;
@@ -165,8 +184,15 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentWeapon)
 	AGSWeapon* CurrentWeapon;
 
+	UPROPERTY()
+	class UGSAmmoAttributeSet* AmmoAttributeSet;
+
 	// Cache tags
 	FGameplayTag NoWeaponTag;
+
+	// Attribute changed delegate handles
+	FDelegateHandle PrimaryReserveAmmoChangedDelegateHandle;
+	FDelegateHandle SecondaryReserveAmmoChangedDelegateHandle;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -225,6 +251,16 @@ protected:
 
 	// Unequips the current weapon. Used if for example we drop the current weapon.
 	void UnEquipCurrentWeapon();
+
+	UFUNCTION()
+	virtual void CurrentWeaponPrimaryClipAmmoChanged(int32 OldPrimaryClipAmmo, int32 NewPrimaryClipAmmo);
+
+	UFUNCTION()
+	virtual void CurrentWeaponSecondaryClipAmmoChanged(int32 OldSecondaryClipAmmo, int32 NewSecondaryClipAmmo);
+
+	// Attribute changed callbacks
+	virtual void CurrentWeaponPrimaryReserveAmmoChanged(const FOnAttributeChangeData& Data);
+	virtual void CurrentWeaponSecondaryReserveAmmoChanged(const FOnAttributeChangeData& Data);
 
 	UFUNCTION()
 	void OnRep_CurrentWeapon(AGSWeapon* LastWeapon);

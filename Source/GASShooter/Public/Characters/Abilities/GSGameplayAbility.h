@@ -54,7 +54,11 @@ public:
 
 	// Tells an ability to activate immediately when its granted. Used for passive abilities and abilites forced on others.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability")
-	bool ActivateAbilityOnGranted = false;
+	bool bActivateAbilityOnGranted = false;
+
+	// If true, only activate this ability if the weapon that granted it is the currently equipped weapon.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability")
+	bool bSourceObjectMustEqualCurrentWeaponToActivate;
 
 	// Map of gameplay tags to gameplay effect containers
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GameplayEffects")
@@ -82,23 +86,49 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ability")
 	virtual TArray<FActiveGameplayEffectHandle> ApplyEffectContainerSpec(const FGSGameplayEffectContainerSpec& ContainerSpec);
 
+	// Expose GetSourceObject to Blueprint. Retrieves the SourceObject associated with this ability. Callable on non instanced abilities.
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Ability", meta = (DisplayName = "Get Source Object"))
+	UObject* K2_GetSourceObject(FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo& ActorInfo) const;
+
 	// Attempts to activate the given ability handle and batch all RPCs into one. This will only batch all RPCs that happen
 	// in one frame. Best case scenario we batch ActivateAbility, SendTargetData, and EndAbility into one RPC instead of three.
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	UFUNCTION(BlueprintCallable, Category = "Ability")
 	virtual bool BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool EndAbilityImmediately);
 
 	// Same as calling K2_EndAbility. Meant for use with batching system to end the ability externally.
 	virtual void ExternalEndAbility();
 	
 	// Returns the current prediction key and if it's valid for more predicting. Used for debugging ability prediction windows.
-	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	UFUNCTION(BlueprintCallable, Category = "Ability")
 	virtual FString GetCurrentPredictionKeyStatus();
 
 	// Returns if the current prediction key is valid for more predicting.
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Abilities")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Ability")
 	virtual bool IsPredictionKeyValidForMorePrediction() const;
 
+	virtual bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 
+	virtual bool CheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
+
+	// Allows C++ and Blueprint abilities to override how cost is checked in case they don't use a GE like weapon ammo
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Ability")
+	bool GSCheckCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo& ActorInfo) const;
+	virtual bool GSCheckCost_Implementation(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo& ActorInfo) const;
+
+	virtual void ApplyCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const override;
+
+	// Allows C++ and Blueprint abilities to override how cost is applied in case they don't use a GE like weapon ammo
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Ability")
+	void GSApplyCost(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo& ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const;
+	virtual void GSApplyCost_Implementation(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo& ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) const {};
+
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	virtual void SetHUDReticle(TSubclassOf<class UGSHUDReticle> ReticleClass);
+
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	virtual void ResetHUDReticle();
+
+	
 	// --------------------------------------
 	//	Animation Support for multiple USkeletalMeshComponents on the AvatarActor
 	// --------------------------------------
@@ -137,7 +167,11 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Ability|Animation", Meta = (AdvancedDisplay = "OverrideBlendOutTime"))
 	void MontageStopForMesh(USkeletalMeshComponent* InMesh, float OverrideBlendOutTime = -1.0f);
 
-	// Stops all currently animating montages
+	/**
+	* Stops all currently animating montages
+	*
+	* @param OverrideBlendOutTime If >= 0, will override the BlendOutTime parameter on the AnimMontage instance
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Ability|Animation", Meta = (AdvancedDisplay = "OverrideBlendOutTime"))
 	void MontageStopForAllMeshes(float OverrideBlendOutTime = -1.0f);
 };

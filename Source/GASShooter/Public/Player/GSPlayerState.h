@@ -26,6 +26,8 @@ public:
 
 	class UGSAttributeSetBase* GetAttributeSetBase() const;
 
+	class UGSAmmoAttributeSet* GetAmmoAttributeSet() const;
+
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSPlayerState")
 	bool IsAlive() const;
 
@@ -95,6 +97,9 @@ protected:
 
 	UPROPERTY()
 	class UGSAttributeSetBase* AttributeSetBase;
+
+	UPROPERTY()
+	class UGSAmmoAttributeSet* AmmoAttributeSet;
 
 	// Attribute changed delegate handles
 	FDelegateHandle HealthChangedDelegateHandle;

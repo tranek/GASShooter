@@ -2,13 +2,14 @@
 
 
 #include "Player/GSPlayerState.h"
-#include "Characters/Abilities/GSAttributeSetBase.h"
+#include "Characters/Abilities/AttributeSets/GSAmmoAttributeSet.h"
+#include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Player/GSPlayerController.h"
 #include "UI/GSFloatingStatusBarWidget.h"
 #include "UI/GSHUDWidget.h"
-#include "Weapons/GSWeaponAttributeSet.h"
+#include "Weapons/GSWeapon.h"
 
 AGSPlayerState::AGSPlayerState()
 {
@@ -24,6 +25,8 @@ AGSPlayerState::AGSPlayerState()
 	// Adding it as a subobject of the owning actor of an AbilitySystemComponent
 	// automatically registers the AttributeSet with the AbilitySystemComponent
 	AttributeSetBase = CreateDefaultSubobject<UGSAttributeSetBase>(TEXT("AttributeSetBase"));
+
+	AmmoAttributeSet = CreateDefaultSubobject<UGSAmmoAttributeSet>(TEXT("AmmoAttributeSet"));
 
 	// Set PlayerState's NetUpdateFrequency to the same as the Character.
 	// Default is very low for PlayerStates and introduces perceived lag in the ability system.
@@ -42,6 +45,11 @@ UAbilitySystemComponent* AGSPlayerState::GetAbilitySystemComponent() const
 UGSAttributeSetBase* AGSPlayerState::GetAttributeSetBase() const
 {
 	return AttributeSetBase;
+}
+
+UGSAmmoAttributeSet* AGSPlayerState::GetAmmoAttributeSet() const
+{
+	return AmmoAttributeSet;
 }
 
 bool AGSPlayerState::IsAlive() const
@@ -131,12 +139,28 @@ int32 AGSPlayerState::GetGoldBounty() const
 
 int32 AGSPlayerState::GetPrimaryClipAmmo() const
 {
-	return AbilitySystemComponent->GetNumericAttribute(UGSWeaponAttributeSet::GetPrimaryClipAmmoAttribute());
+	AGSHeroCharacter* Hero = GetPawn<AGSHeroCharacter>();
+	if (Hero)
+	{
+		return Hero->GetPrimaryClipAmmo();
+	}
+
+	return 0;
 }
 
 int32 AGSPlayerState::GetPrimaryReserveAmmo() const
 {
-	return AbilitySystemComponent->GetNumericAttribute(UGSWeaponAttributeSet::GetPrimaryReserveAmmoAttribute());
+	AGSHeroCharacter* Hero = GetPawn<AGSHeroCharacter>();
+	if (Hero && Hero->GetCurrentWeapon() && AmmoAttributeSet)
+	{
+		FGameplayAttribute Attribute = AmmoAttributeSet->GetReserveAmmoAttributeFromTag(Hero->GetCurrentWeapon()->PrimaryAmmoType);
+		if (Attribute.IsValid())
+		{
+			return AbilitySystemComponent->GetNumericAttribute(Attribute);
+		}
+	}
+
+	return 0;
 }
 
 void AGSPlayerState::BeginPlay()
