@@ -57,6 +57,8 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker) override;
+
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -103,6 +105,12 @@ public:
 	void ServerEquipWeapon(AGSWeapon* NewWeapon);
 	void ServerEquipWeapon_Implementation(AGSWeapon* NewWeapon);
 	bool ServerEquipWeapon_Validate(AGSWeapon* NewWeapon);
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
+	virtual void NextWeapon();
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
+	virtual void PreviousWeapon();
 
 	FName GetWeaponAttachPoint();
 
@@ -189,6 +197,7 @@ protected:
 
 	// Cache tags
 	FGameplayTag NoWeaponTag;
+	FGameplayTag WeaponChangingTag;
 
 	// Attribute changed delegate handles
 	FDelegateHandle PrimaryReserveAmmoChangedDelegateHandle;

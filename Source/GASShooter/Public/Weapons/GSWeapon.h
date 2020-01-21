@@ -195,6 +195,12 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon")
 	FText DefaultStatusText;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|Animation")
+	UAnimMontage* Equip1PMontage;
+
+	UPROPERTY(BlueprintReadonly, EditAnywhere, Category = "GASShooter|Animation")
+	UAnimMontage* Equip3PMontage;
+
 	// Cache tags
 	FGameplayTag WeaponPrimaryInstantAbilityTag;
 	FGameplayTag WeaponSecondaryInstantAbilityTag;

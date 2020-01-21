@@ -29,6 +29,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	Default1PFOV = 90.0f;
 	Default3PFOV = 80.0f;
 	NoWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
+	WeaponChangingTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChanging"));
 	CurrentWeaponTag = NoWeaponTag;
 	Inventory = FGSHeroInventory();
 	
@@ -85,6 +86,13 @@ void AGSHeroCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(AGSHeroCharacter, Inventory);
 	DOREPLIFETIME(AGSHeroCharacter, CurrentWeapon);
+}
+
+void AGSHeroCharacter::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker)
+{
+	Super::PreReplication(ChangedPropertyTracker);
+
+	DOREPLIFETIME_ACTIVE_OVERRIDE(AGSHeroCharacter, CurrentWeapon, IsValid(AbilitySystemComponent) && !AbilitySystemComponent->HasMatchingGameplayTag(WeaponChangingTag));
 }
 
 // Called to bind functionality to input
@@ -272,6 +280,7 @@ void AGSHeroCharacter::EquipWeapon(AGSWeapon* NewWeapon)
 	if (GetLocalRole() < ROLE_Authority)
 	{
 		ServerEquipWeapon(NewWeapon);
+		SetCurrentWeapon(NewWeapon, CurrentWeapon);
 	}
 	else
 	{
@@ -289,6 +298,46 @@ void AGSHeroCharacter::ServerEquipWeapon_Implementation(AGSWeapon* NewWeapon)
 bool AGSHeroCharacter::ServerEquipWeapon_Validate(AGSWeapon* NewWeapon)
 {
 	return true;
+}
+
+void AGSHeroCharacter::NextWeapon()
+{
+	if (Inventory.Weapons.Num() < 1)
+	{
+		return;
+	}
+
+	int32 CurrentWeaponIndex = Inventory.Weapons.Find(CurrentWeapon);
+	UnEquipCurrentWeapon();
+
+	if (CurrentWeaponIndex == INDEX_NONE)
+	{
+		EquipWeapon(Inventory.Weapons[0]);
+	}
+	else
+	{
+		EquipWeapon(Inventory.Weapons[(CurrentWeaponIndex + 1) % Inventory.Weapons.Num()]);
+	}
+}
+
+void AGSHeroCharacter::PreviousWeapon()
+{
+	if (Inventory.Weapons.Num() < 1)
+	{
+		return;
+	}
+
+	int32 CurrentWeaponIndex = Inventory.Weapons.Find(CurrentWeapon);
+	UnEquipCurrentWeapon();
+
+	if (CurrentWeaponIndex == INDEX_NONE)
+	{
+		EquipWeapon(Inventory.Weapons[0]);
+	}
+	else
+	{
+		EquipWeapon(Inventory.Weapons[FMath::Abs(Inventory.Weapons.Num() - CurrentWeaponIndex - 1) % Inventory.Weapons.Num()]);
+	}
 }
 
 FName AGSHeroCharacter::GetWeaponAttachPoint()
@@ -658,6 +707,11 @@ bool AGSHeroCharacter::DoesWeaponExistInInventory(AGSWeapon* InWeapon)
 
 void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWeapon)
 {
+	if (NewWeapon == LastWeapon)
+	{
+		return;
+	}
+
 	UnEquipWeapon(LastWeapon);
 
 	if (NewWeapon)
