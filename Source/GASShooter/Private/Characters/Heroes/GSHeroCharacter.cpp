@@ -510,7 +510,7 @@ void AGSHeroCharacter::SetPerspective(bool InIsFirstPersonPerspective)
 			FirstPersonMesh->SetVisibility(true, true);
 
 			// Move third person mesh back so that the shadow doesn't look disconnected
-			GetMesh()->AddLocalOffset(FVector(0.0f, -100.0f, 0.0f));
+			GetMesh()->SetRelativeLocation(StartingThirdPersonMeshLocation + FVector(-120.0f, 0.0f, 0.0f));
 		}
 		else
 		{
