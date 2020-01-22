@@ -117,7 +117,7 @@ void AGSWeapon::SetOwningCharacter(AGSHeroCharacter* InOwningCharacter)
 	{
 		AbilitySystemComponent = nullptr;
 		SetOwner(nullptr);
-		Root->DetachFromParent(true);
+		Root->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	}
 }
 
