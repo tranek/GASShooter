@@ -7,6 +7,11 @@
 #define ACTOR_ROLE_FSTRING *(FindObject<UEnum>(ANY_PACKAGE, TEXT("ENetRole"), true)->GetNameStringByValue(GetLocalRole()))
 #define GET_ACTOR_ROLE_FSTRING(Actor) *(FindObject<UEnum>(ANY_PACKAGE, TEXT("ENetRole"), true)->GetNameStringByValue(Actor->GetLocalRole()))
 
+#define COLLISION_ABILITY						ECC_GameTraceChannel1
+#define COLLISION_PROJECTILE					ECC_GameTraceChannel2
+#define COLLISION_ABILITYOVERLAPPROJECTILE		ECC_GameTraceChannel3
+#define COLLISION_PICKUP						ECC_GameTraceChannel4
+
 UENUM(BlueprintType)
 enum class EGSHitReactDirection : uint8
 {

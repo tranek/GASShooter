@@ -10,6 +10,7 @@
 #include "Components/WidgetComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GASShooter/GASShooterGameModeBase.h"
+#include "GSBlueprintFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -849,7 +850,7 @@ void AGSHeroCharacter::OnAbilityActivationFailed(const UGameplayAbility* FailedA
 	if (FailedAbility && FailedAbility->AbilityTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChanging"))))
 	{
 		// Ask the Server to resync the CurrentWeapon that we predictively changed
-		UE_LOG(LogTemp, Warning, TEXT("%s Weapon Changing ability activation failed. Resyncing CurrentWeapon."), TEXT(__FUNCTION__));
+		UE_LOG(LogTemp, Warning, TEXT("%s Weapon Changing ability activation failed. Resyncing CurrentWeapon. %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
 		ServerResyncCurrentWeapon();
 	}
 }
