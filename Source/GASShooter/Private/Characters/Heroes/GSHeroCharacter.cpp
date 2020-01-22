@@ -585,6 +585,8 @@ void AGSHeroCharacter::OnRep_PlayerState()
 		// Bind player input to the AbilitySystemComponent. Also called in SetupPlayerInputComponent because of a potential race condition.
 		BindASCInput();
 
+		AbilitySystemComponent->AbilityFailedCallbacks.AddUObject(this, &AGSHeroCharacter::OnAbilityActivationFailed);
+
 		// Set the AttributeSetBase for convenience attribute functions
 		AttributeSetBase = PS->GetAttributeSetBase();
 		
@@ -840,4 +842,36 @@ void AGSHeroCharacter::CurrentWeaponSecondaryReserveAmmoChanged(const FOnAttribu
 void AGSHeroCharacter::OnRep_CurrentWeapon(AGSWeapon* LastWeapon)
 {
 	SetCurrentWeapon(CurrentWeapon, LastWeapon);
+}
+
+void AGSHeroCharacter::OnAbilityActivationFailed(const UGameplayAbility* FailedAbility, const FGameplayTagContainer& FailTags)
+{
+	if (FailedAbility && FailedAbility->AbilityTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChanging"))))
+	{
+		// Ask the Server to resync the CurrentWeapon that we predictively changed
+		UE_LOG(LogTemp, Warning, TEXT("%s Weapon Changing ability activation failed. Resyncing CurrentWeapon."), TEXT(__FUNCTION__));
+		ServerResyncCurrentWeapon();
+	}
+}
+
+void AGSHeroCharacter::ServerResyncCurrentWeapon_Implementation()
+{
+	ClientResyncCurrentWeapon(CurrentWeapon);
+}
+
+bool AGSHeroCharacter::ServerResyncCurrentWeapon_Validate()
+{
+	return true;
+}
+
+void AGSHeroCharacter::ClientResyncCurrentWeapon_Implementation(AGSWeapon* InWeapon)
+{
+	AGSWeapon* LastWeapon = CurrentWeapon;
+	CurrentWeapon = InWeapon;
+	OnRep_CurrentWeapon(LastWeapon);
+}
+
+bool AGSHeroCharacter::ClientResyncCurrentWeapon_Validate(AGSWeapon* InWeapon)
+{
+	return true;
 }

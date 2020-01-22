@@ -273,4 +273,16 @@ protected:
 
 	UFUNCTION()
 	void OnRep_CurrentWeapon(AGSWeapon* LastWeapon);
+
+	void OnAbilityActivationFailed(const UGameplayAbility* FailedAbility, const FGameplayTagContainer& FailTags);
+	
+	UFUNCTION(Server, Reliable)
+	void ServerResyncCurrentWeapon();
+	void ServerResyncCurrentWeapon_Implementation();
+	bool ServerResyncCurrentWeapon_Validate();
+	
+	UFUNCTION(Client, Reliable)
+	void ClientResyncCurrentWeapon(AGSWeapon* InWeapon);
+	void ClientResyncCurrentWeapon_Implementation(AGSWeapon* InWeapon);
+	bool ClientResyncCurrentWeapon_Validate(AGSWeapon* InWeapon);
 };
