@@ -46,7 +46,8 @@ AGSWeapon::AGSWeapon()
 	//TODO for now no collision. No Collision while equipped, collision when sitting in the world waiting to be picked up.
 	WeaponMesh3P->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponMesh3P->SetupAttachment(RootComponent);
-	WeaponMesh3P->bCastHiddenShadow = true;
+	WeaponMesh3P->CastShadow = false;
+	WeaponMesh3P->SetVisibility(false, true);
 	WeaponMesh3P->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
 
 	WeaponPrimaryInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Primary.Instant"));
@@ -108,11 +109,15 @@ void AGSWeapon::SetOwningCharacter(AGSHeroCharacter* InOwningCharacter)
 	{
 		AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(OwningCharacter->GetAbilitySystemComponent());
 		SetOwner(InOwningCharacter);
+
+		FName AttachPoint = OwningCharacter->GetWeaponAttachPoint();
+		Root->AttachToComponent(OwningCharacter->GetThirdPersonMesh(), FAttachmentTransformRules::KeepRelativeTransform, AttachPoint);
 	}
 	else
 	{
 		AbilitySystemComponent = nullptr;
 		SetOwner(nullptr);
+		Root->DetachFromParent(true);
 	}
 }
 
@@ -134,8 +139,6 @@ void AGSWeapon::Equip()
 
 	FName AttachPoint = OwningCharacter->GetWeaponAttachPoint();
 
-	Root->AttachToComponent(OwningCharacter->GetThirdPersonMesh(), FAttachmentTransformRules::KeepRelativeTransform, AttachPoint);
-
 	if (WeaponMesh1P)
 	{
 		WeaponMesh1P->AttachToComponent(OwningCharacter->GetFirstPersonMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, AttachPoint);
@@ -155,9 +158,12 @@ void AGSWeapon::Equip()
 	{
 		WeaponMesh3P->AttachToComponent(OwningCharacter->GetThirdPersonMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, AttachPoint);
 		WeaponMesh3P->SetRelativeRotation(FRotator(0, 0, -90.0f));
+		WeaponMesh3P->CastShadow = true;
+		WeaponMesh3P->bCastHiddenShadow = true;
 
 		if (OwningCharacter->IsInFirstPersonPerspective())
 		{
+			WeaponMesh3P->SetVisibility(true, true); // Without this, the weapon's 3p shadow doesn't show
 			WeaponMesh3P->SetVisibility(false, true);
 		}
 		else
@@ -171,10 +177,13 @@ void AGSWeapon::UnEquip()
 {
 	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
 
-	WeaponMesh1P->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+	//WeaponMesh1P->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
 	WeaponMesh1P->SetVisibility(false, true);
 
-	WeaponMesh3P->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+	//WeaponMesh3P->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
+	WeaponMesh3P->CastShadow = false;
+	WeaponMesh3P->bCastHiddenShadow = false;
+	WeaponMesh3P->SetVisibility(true, true); // Without this, the unequipped weapon's 3p shadow hangs around
 	WeaponMesh3P->SetVisibility(false, true);
 }
 
