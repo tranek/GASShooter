@@ -57,8 +57,6 @@ public:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	virtual void PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker) override;
-
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -183,7 +181,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "GASShooter|UI")
 	class UWidgetComponent* UIFloatingStatusBarComponent;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_Inventory)
 	FGSHeroInventory Inventory;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|Inventory")
@@ -202,6 +200,9 @@ protected:
 	// Attribute changed delegate handles
 	FDelegateHandle PrimaryReserveAmmoChangedDelegateHandle;
 	FDelegateHandle SecondaryReserveAmmoChangedDelegateHandle;
+
+	// Tag changed delegate handles
+	FDelegateHandle WeaponChangingTagChangedDelegateHandle;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -271,18 +272,24 @@ protected:
 	virtual void CurrentWeaponPrimaryReserveAmmoChanged(const FOnAttributeChangeData& Data);
 	virtual void CurrentWeaponSecondaryReserveAmmoChanged(const FOnAttributeChangeData& Data);
 
+	// Tag changed callbacks
+	virtual void WeaponChangingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+
 	UFUNCTION()
 	void OnRep_CurrentWeapon(AGSWeapon* LastWeapon);
+
+	UFUNCTION()
+	void OnRep_Inventory();
 
 	void OnAbilityActivationFailed(const UGameplayAbility* FailedAbility, const FGameplayTagContainer& FailTags);
 	
 	UFUNCTION(Server, Reliable)
-	void ServerResyncCurrentWeapon();
-	void ServerResyncCurrentWeapon_Implementation();
-	bool ServerResyncCurrentWeapon_Validate();
+	void ServerSyncCurrentWeapon();
+	void ServerSyncCurrentWeapon_Implementation();
+	bool ServerSyncCurrentWeapon_Validate();
 	
 	UFUNCTION(Client, Reliable)
-	void ClientResyncCurrentWeapon(AGSWeapon* InWeapon);
-	void ClientResyncCurrentWeapon_Implementation(AGSWeapon* InWeapon);
-	bool ClientResyncCurrentWeapon_Validate(AGSWeapon* InWeapon);
+	void ClientSyncCurrentWeapon(AGSWeapon* InWeapon);
+	void ClientSyncCurrentWeapon_Implementation(AGSWeapon* InWeapon);
+	bool ClientSyncCurrentWeapon_Validate(AGSWeapon* InWeapon);
 };

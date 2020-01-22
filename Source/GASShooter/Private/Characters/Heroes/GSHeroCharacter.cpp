@@ -86,14 +86,9 @@ void AGSHeroCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AGSHeroCharacter, Inventory);
-	DOREPLIFETIME(AGSHeroCharacter, CurrentWeapon);
-}
-
-void AGSHeroCharacter::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker)
-{
-	Super::PreReplication(ChangedPropertyTracker);
-
-	DOREPLIFETIME_ACTIVE_OVERRIDE(AGSHeroCharacter, CurrentWeapon, IsValid(AbilitySystemComponent) && !AbilitySystemComponent->HasMatchingGameplayTag(WeaponChangingTag));
+	// Only replicate CurrentWeapon to simulated clients and manually sync CurrentWeeapon with Owner when we're ready.
+	// This allows us to predict weapon changing.
+	DOREPLIFETIME_CONDITION(AGSHeroCharacter, CurrentWeapon, COND_SimulatedOnly);
 }
 
 // Called to bind functionality to input
@@ -128,6 +123,8 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 
 		// AI won't have PlayerControllers so we can init again here just to be sure. No harm in initing twice for heroes that have PlayerControllers.
 		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, this);
+
+		WeaponChangingTagChangedDelegateHandle = AbilitySystemComponent->RegisterGameplayTagEvent(WeaponChangingTag).AddUObject(this, &AGSHeroCharacter::WeaponChangingTagChanged);
 
 		// Set the AttributeSetBase for convenience attribute functions
 		AttributeSetBase = PS->GetAttributeSetBase();
@@ -189,6 +186,8 @@ void AGSHeroCharacter::Die()
 	SetPerspective(false);
 
 	RemoveAllWeaponsFromInventory();
+
+	AbilitySystemComponent->RegisterGameplayTagEvent(WeaponChangingTag).Remove(WeaponChangingTagChangedDelegateHandle);
 
 	Super::Die();
 }
@@ -427,6 +426,12 @@ void AGSHeroCharacter::BeginPlay()
 	// On respawn, they are set up in PossessedBy.
 	// When the player a client, the floating status bars are all set up in OnRep_PlayerState.
 	InitializeFloatingStatusBar();
+
+	// CurrentWeapon is replicated only to Simulated clients so sync the current weapon manually
+	if (GetLocalRole() == ROLE_AutonomousProxy)
+	{
+		ServerSyncCurrentWeapon();
+	}
 }
 
 void AGSHeroCharacter::PostInitializeComponents()
@@ -840,9 +845,36 @@ void AGSHeroCharacter::CurrentWeaponSecondaryReserveAmmoChanged(const FOnAttribu
 	}
 }
 
+void AGSHeroCharacter::WeaponChangingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	UE_LOG(LogTemp, Log, TEXT("%s %s %s TagCount: %d"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *CallbackTag.ToString(), NewCount);
+
+	if (CallbackTag == WeaponChangingTag)
+	{
+		if (NewCount < 1)
+		{
+			// We only replicate the current weapon to simulated proxies so manually sync it when the weapon changing tag is removed.
+			// We keep the weapon changing tag on for ~1s after the equip montage to allow for activating changing weapon again without
+			// the server trying to clobber the next locally predicted weapon.
+			ClientSyncCurrentWeapon(CurrentWeapon);
+		}
+	}
+}
+
 void AGSHeroCharacter::OnRep_CurrentWeapon(AGSWeapon* LastWeapon)
 {
 	SetCurrentWeapon(CurrentWeapon, LastWeapon);
+}
+
+void AGSHeroCharacter::OnRep_Inventory()
+{
+	if (GetLocalRole() == ROLE_AutonomousProxy && Inventory.Weapons.Num() > 0 && !CurrentWeapon)
+	{
+		// Since we don't replicate the CurrentWeapon to the owning client, this is a way to ask the Server to sync
+		// the CurrentWeapon after it's been spawned via replication from the Server.
+		// The weapon spawning is replicated but the variable CurrentWeapon is not on the owning client.
+		ServerSyncCurrentWeapon();
+	}
 }
 
 void AGSHeroCharacter::OnAbilityActivationFailed(const UGameplayAbility* FailedAbility, const FGameplayTagContainer& FailTags)
@@ -850,29 +882,31 @@ void AGSHeroCharacter::OnAbilityActivationFailed(const UGameplayAbility* FailedA
 	if (FailedAbility && FailedAbility->AbilityTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChanging"))))
 	{
 		// Ask the Server to resync the CurrentWeapon that we predictively changed
-		UE_LOG(LogTemp, Warning, TEXT("%s Weapon Changing ability activation failed. Resyncing CurrentWeapon. %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
-		ServerResyncCurrentWeapon();
+		UE_LOG(LogTemp, Warning, TEXT("%s Weapon Changing ability activation failed. Syncing CurrentWeapon. %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
+		ServerSyncCurrentWeapon();
 	}
 }
 
-void AGSHeroCharacter::ServerResyncCurrentWeapon_Implementation()
+void AGSHeroCharacter::ServerSyncCurrentWeapon_Implementation()
 {
-	ClientResyncCurrentWeapon(CurrentWeapon);
+	UE_LOG(LogTemp, Log, TEXT("%s %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
+
+	ClientSyncCurrentWeapon(CurrentWeapon);
 }
 
-bool AGSHeroCharacter::ServerResyncCurrentWeapon_Validate()
+bool AGSHeroCharacter::ServerSyncCurrentWeapon_Validate()
 {
 	return true;
 }
 
-void AGSHeroCharacter::ClientResyncCurrentWeapon_Implementation(AGSWeapon* InWeapon)
+void AGSHeroCharacter::ClientSyncCurrentWeapon_Implementation(AGSWeapon* InWeapon)
 {
 	AGSWeapon* LastWeapon = CurrentWeapon;
 	CurrentWeapon = InWeapon;
 	OnRep_CurrentWeapon(LastWeapon);
 }
 
-bool AGSHeroCharacter::ClientResyncCurrentWeapon_Validate(AGSWeapon* InWeapon)
+bool AGSHeroCharacter::ClientSyncCurrentWeapon_Validate(AGSWeapon* InWeapon)
 {
 	return true;
 }
