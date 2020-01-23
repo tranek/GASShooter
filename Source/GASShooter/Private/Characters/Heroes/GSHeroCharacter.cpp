@@ -27,6 +27,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	bStartInFirstPersonPerspective = true;
 	bIsFirstPersonPerspective = false;
 	bASCInputBound = false;
+	bChangedWeaponLocally = false;
 	Default1PFOV = 90.0f;
 	Default3PFOV = 80.0f;
 	NoWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
@@ -287,6 +288,7 @@ void AGSHeroCharacter::EquipWeapon(AGSWeapon* NewWeapon)
 		UE_LOG(LogTemp, Log, TEXT("%s Equipping %s"), TEXT(__FUNCTION__), *NewWeapon->GetName());
 
 		SetCurrentWeapon(NewWeapon, CurrentWeapon);
+		bChangedWeaponLocally = true;
 	}
 }
 
@@ -863,6 +865,7 @@ void AGSHeroCharacter::WeaponChangingTagChanged(const FGameplayTag CallbackTag, 
 
 void AGSHeroCharacter::OnRep_CurrentWeapon(AGSWeapon* LastWeapon)
 {
+	bChangedWeaponLocally = false;
 	SetCurrentWeapon(CurrentWeapon, LastWeapon);
 }
 
@@ -881,9 +884,14 @@ void AGSHeroCharacter::OnAbilityActivationFailed(const UGameplayAbility* FailedA
 {
 	if (FailedAbility && FailedAbility->AbilityTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChanging"))))
 	{
-		// Ask the Server to resync the CurrentWeapon that we predictively changed
-		UE_LOG(LogTemp, Warning, TEXT("%s Weapon Changing ability activation failed. Syncing CurrentWeapon. %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
-		ServerSyncCurrentWeapon();
+		if (bChangedWeaponLocally)
+		{
+			// Ask the Server to resync the CurrentWeapon that we predictively changed
+			UE_LOG(LogTemp, Warning, TEXT("%s Weapon Changing ability activation failed. Syncing CurrentWeapon. %s. %s"), TEXT(__FUNCTION__),
+				*UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *FailTags.ToString());
+
+			ServerSyncCurrentWeapon();
+		}
 	}
 }
 
