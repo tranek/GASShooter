@@ -74,15 +74,4 @@ void UGSDamageExecutionCalc::Execute_Implementation(const FGameplayEffectCustomE
 		// Set the Target's damage meta attribute
 		OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(DamageStatics().DamageProperty, EGameplayModOp::Additive, MitigatedDamage));
 	}
-
-	//TODO
-	/*
-	// Broadcast damages to Target ASC
-	UGSAbilitySystemComponent* TargetASC = Cast<UGSAbilitySystemComponent>(TargetAbilitySystemComponent);
-	if (TargetASC)
-	{
-		UGSAbilitySystemComponent* SourceASC = Cast<UGSAbilitySystemComponent>(SourceAbilitySystemComponent);
-		TargetASC->ReceiveDamage(SourceASC, UnmitigatedDamage, MitigatedDamage);
-	}
-	*/
 }
