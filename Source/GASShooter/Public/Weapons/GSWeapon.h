@@ -142,6 +142,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
 	TSubclassOf<class UGSHUDReticle> GetPrimaryHUDReticleClass() const;
 
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
+	virtual bool HasInfiniteAmmo() const;
+
 protected:
 	UPROPERTY()
 	UGSAbilitySystemComponent* AbilitySystemComponent;
@@ -159,6 +162,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_MaxSecondaryClipAmmo, Category = "GASShooter|GSWeapon|Ammo")
 	int32 MaxSecondaryClipAmmo;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon|Ammo")
+	bool bInfiniteAmmo;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|UI")
 	TSubclassOf<class UGSHUDReticle> PrimaryHUDReticleClass;

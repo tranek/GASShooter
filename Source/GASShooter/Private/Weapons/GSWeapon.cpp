@@ -25,6 +25,7 @@ AGSWeapon::AGSWeapon()
 	MaxPrimaryClipAmmo = 0;
 	SecondaryClipAmmo = 0;
 	MaxSecondaryClipAmmo = 0;
+	bInfiniteAmmo = false;
 	PrimaryAmmoType = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.None"));
 	SecondaryAmmoType = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.None"));
 	bEnableSingleLineTraceTargetActor = false;
@@ -306,6 +307,11 @@ void AGSWeapon::SetMaxSecondaryClipAmmo(int32 NewMaxSecondaryClipAmmo)
 TSubclassOf<UGSHUDReticle> AGSWeapon::GetPrimaryHUDReticleClass() const
 {
 	return PrimaryHUDReticleClass;
+}
+
+bool AGSWeapon::HasInfiniteAmmo() const
+{
+	return bInfiniteAmmo;
 }
 
 void AGSWeapon::BeginPlay()
