@@ -102,6 +102,21 @@ float AGSPlayerState::GetStaminaRegenRate() const
 	return AttributeSetBase->GetStaminaRegenRate();
 }
 
+float AGSPlayerState::GetShield() const
+{
+	return AttributeSetBase->GetShield();
+}
+
+float AGSPlayerState::GetMaxShield() const
+{
+	return AttributeSetBase->GetMaxShield();
+}
+
+float AGSPlayerState::GetShieldRegenRate() const
+{
+	return AttributeSetBase->GetShieldRegenRate();
+}
+
 float AGSPlayerState::GetArmor() const
 {
 	return AttributeSetBase->GetArmor();

@@ -71,6 +71,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSCharacter|Attributes")
 	float GetMaxStamina() const;
 
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSCharacter|Attributes")
+	float GetShield() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSCharacter|Attributes")
+	float GetMaxShield() const;
+
 	// Gets the Current value of MoveSpeed
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSCharacter|Attributes")
 	float GetMoveSpeed() const;
@@ -80,10 +86,6 @@ public:
 	float GetMoveSpeedBaseValue() const;
 
 protected:
-	FGameplayTag HitDirectionFrontTag;
-	FGameplayTag HitDirectionBackTag;
-	FGameplayTag HitDirectionRightTag;
-	FGameplayTag HitDirectionLeftTag;
 	FGameplayTag DeadTag;
 	FGameplayTag EffectRemoveOnDeathTag;
 	
@@ -137,4 +139,5 @@ protected:
 	virtual void SetHealth(float Health);
 	virtual void SetMana(float Mana);
 	virtual void SetStamina(float Stamina);
+	virtual void SetShield(float Shield);
 };

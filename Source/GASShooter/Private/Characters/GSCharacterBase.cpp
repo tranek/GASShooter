@@ -20,10 +20,6 @@ AGSCharacterBase::AGSCharacterBase(const class FObjectInitializer& ObjectInitial
 	bAlwaysRelevant = true;
 
 	// Cache tags
-	HitDirectionFrontTag = FGameplayTag::RequestGameplayTag(FName("Effect.HitReact.Front"));
-	HitDirectionBackTag = FGameplayTag::RequestGameplayTag(FName("Effect.HitReact.Back"));
-	HitDirectionRightTag = FGameplayTag::RequestGameplayTag(FName("Effect.HitReact.Right"));
-	HitDirectionLeftTag = FGameplayTag::RequestGameplayTag(FName("Effect.HitReact.Left"));
 	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
 	EffectRemoveOnDeathTag = FGameplayTag::RequestGameplayTag(FName("Effect.RemoveOnDeath"));
 }
@@ -173,6 +169,26 @@ float AGSCharacterBase::GetMaxStamina() const
 	return 0.0f;
 }
 
+float AGSCharacterBase::GetShield() const
+{
+	if (IsValid(AttributeSetBase))
+	{
+		return AttributeSetBase->GetShield();
+	}
+
+	return 0.0f;
+}
+
+float AGSCharacterBase::GetMaxShield() const
+{
+	if (IsValid(AttributeSetBase))
+	{
+		return AttributeSetBase->GetMaxShield();
+	}
+
+	return 0.0f;
+}
+
 float AGSCharacterBase::GetMoveSpeed() const
 {
 	if (IsValid(AttributeSetBase))
@@ -283,5 +299,13 @@ void AGSCharacterBase::SetStamina(float Stamina)
 	if (IsValid(AttributeSetBase))
 	{
 		AttributeSetBase->SetStamina(Stamina);
+	}
+}
+
+void AGSCharacterBase::SetShield(float Shield)
+{
+	if (IsValid(AttributeSetBase))
+	{
+		AttributeSetBase->SetShield(Shield);
 	}
 }

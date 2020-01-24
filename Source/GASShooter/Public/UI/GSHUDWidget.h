@@ -91,6 +91,18 @@ public:
 	void SetManaRegenRate(float ManaRegenRate);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetMaxShield(float MaxShield);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetCurrentShield(float CurrentShield);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetShieldPercentage(float ShieldPercentage);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void SetShieldRegenRate(float ShieldRegenRate);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetExperience(int32 Experience);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)

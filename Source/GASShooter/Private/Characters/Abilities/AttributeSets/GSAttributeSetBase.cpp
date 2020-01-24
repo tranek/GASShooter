@@ -119,9 +119,21 @@ void UGSAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCall
 				//UE_LOG(LogTemp, Warning, TEXT("%s() %s is NOT alive when receiving damage"), TEXT(__FUNCTION__), *TargetCharacter->GetName());
 			}
 
-			// Apply the health change and then clamp it
-			const float NewHealth = GetHealth() - LocalDamageDone;
-			SetHealth(FMath::Clamp(NewHealth, 0.0f, GetMaxHealth()));
+			// Apply the damage to shield first if it exists
+			const float OldShield = GetShield();
+			float DamageAfterShield = LocalDamageDone - OldShield;
+			if (OldShield > 0)
+			{
+				float NewShield = OldShield - LocalDamageDone;
+				SetShield(FMath::Clamp<float>(NewShield, 0.0f, GetMaxShield()));
+			}
+
+			if (DamageAfterShield > 0)
+			{
+				// Apply the health change and then clamp it
+				const float NewHealth = GetHealth() - DamageAfterShield;
+				SetHealth(FMath::Clamp(NewHealth, 0.0f, GetMaxHealth()));
+			}
 
 			if (TargetCharacter && WasAlive)
 			{
@@ -183,6 +195,11 @@ void UGSAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCall
 		// Handle stamina changes.
 		SetStamina(FMath::Clamp(GetStamina(), 0.0f, GetMaxStamina()));
 	}
+	else if (Data.EvaluatedData.Attribute == GetShieldAttribute())
+	{
+		// Handle shield changes.
+		SetShield(FMath::Clamp(GetShield(), 0.0f, GetMaxShield()));
+	}
 }
 
 void UGSAttributeSetBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -198,6 +215,9 @@ void UGSAttributeSetBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME_CONDITION_NOTIFY(UGSAttributeSetBase, Stamina, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGSAttributeSetBase, MaxStamina, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGSAttributeSetBase, StaminaRegenRate, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGSAttributeSetBase, Shield, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGSAttributeSetBase, MaxShield, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGSAttributeSetBase, ShieldRegenRate, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGSAttributeSetBase, Armor, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGSAttributeSetBase, MoveSpeed, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGSAttributeSetBase, CharacterLevel, COND_None, REPNOTIFY_Always);
@@ -264,6 +284,21 @@ void UGSAttributeSetBase::OnRep_MaxStamina()
 void UGSAttributeSetBase::OnRep_StaminaRegenRate()
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAttributeSetBase, StaminaRegenRate);
+}
+
+void UGSAttributeSetBase::OnRep_Shield()
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAttributeSetBase, Shield);
+}
+
+void UGSAttributeSetBase::OnRep_MaxShield()
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAttributeSetBase, MaxShield);
+}
+
+void UGSAttributeSetBase::OnRep_ShieldRegenRate()
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAttributeSetBase, ShieldRegenRate);
 }
 
 void UGSAttributeSetBase::OnRep_Armor()

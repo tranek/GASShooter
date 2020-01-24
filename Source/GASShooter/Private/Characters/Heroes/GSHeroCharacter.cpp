@@ -152,6 +152,7 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 			SetHealth(GetMaxHealth());
 			SetMana(GetMaxMana());
 			SetStamina(GetMaxStamina());
+			SetShield(GetMaxShield());
 		}
 
 		// Forcibly set the DeadTag count to 0. This is only necessary for *Respawn*.
@@ -569,6 +570,7 @@ void AGSHeroCharacter::InitializeFloatingStatusBar()
 				// Setup the floating status bar
 				UIFloatingStatusBar->SetHealthPercentage(GetHealth() / GetMaxHealth());
 				UIFloatingStatusBar->SetManaPercentage(GetMana() / GetMaxMana());
+				UIFloatingStatusBar->SetShieldPercentage(GetShield() / GetMaxShield());
 				UIFloatingStatusBar->OwningCharacter = this;
 				UIFloatingStatusBar->SetCharacterName(CharacterName);
 			}
@@ -629,10 +631,11 @@ void AGSHeroCharacter::OnRep_PlayerState()
 
 		if (AbilitySystemComponent->GetTagCount(DeadTag) > 0)
 		{
-			// Set Health/Mana/Stamina to their max. This is only necessary for *Respawn*.
+			// Set Health/Mana/Stamina/Shield to their max. This is only necessary for *Respawn*.
 			SetHealth(GetMaxHealth());
 			SetMana(GetMaxMana());
 			SetStamina(GetMaxStamina());
+			SetShield(GetMaxShield());
 		}
 
 		// Forcibly set the DeadTag count to 0. This is only necessary for *Respawn*.

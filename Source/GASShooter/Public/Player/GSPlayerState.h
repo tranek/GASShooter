@@ -63,6 +63,15 @@ public:
 	float GetStaminaRegenRate() const;
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSPlayerState|Attributes")
+	float GetShield() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSPlayerState|Attributes")
+	float GetMaxShield() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSPlayerState|Attributes")
+	float GetShieldRegenRate() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSPlayerState|Attributes")
 	float GetArmor() const;
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSPlayerState|Attributes")

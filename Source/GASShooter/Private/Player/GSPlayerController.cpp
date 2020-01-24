@@ -53,6 +53,10 @@ void AGSPlayerController::CreateHUD()
 	UIHUDWidget->SetMaxStamina(PS->GetMaxStamina());
 	UIHUDWidget->SetStaminaPercentage(PS->GetStamina() / PS->GetMaxStamina());
 	UIHUDWidget->SetStaminaRegenRate(PS->GetStaminaRegenRate());
+	UIHUDWidget->SetCurrentShield(PS->GetShield());
+	UIHUDWidget->SetMaxShield(PS->GetMaxShield());
+	UIHUDWidget->SetShieldRegenRate(PS->GetShieldRegenRate());
+	UIHUDWidget->SetShieldPercentage(PS->GetShield() / PS->GetMaxShield());
 	UIHUDWidget->SetExperience(PS->GetXP());
 	UIHUDWidget->SetGold(PS->GetGold());
 	UIHUDWidget->SetHeroLevel(PS->GetCharacterLevel());
