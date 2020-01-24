@@ -128,34 +128,6 @@ void UGSAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCall
 				// This is the log statement for damage received. Turned off for live games.
 				//UE_LOG(LogTemp, Log, TEXT("%s() %s Damage Received: %f"), TEXT(__FUNCTION__), *GetOwningActor()->GetName(), LocalDamageDone);
 
-				// Play HitReact animation and sound with a multicast RPC.
-				const FHitResult* Hit = Data.EffectSpec.GetContext().GetHitResult();
-
-				if (Hit)
-				{
-					EGSHitReactDirection HitDirection = TargetCharacter->GetHitReactDirection(Data.EffectSpec.GetContext().GetHitResult()->Location);
-					switch (HitDirection)
-					{
-					case EGSHitReactDirection::Left:
-						TargetCharacter->PlayHitReact(HitDirectionLeftTag, SourceCharacter);
-						break;
-					case EGSHitReactDirection::Front:
-						TargetCharacter->PlayHitReact(HitDirectionFrontTag, SourceCharacter);
-						break;
-					case EGSHitReactDirection::Right:
-						TargetCharacter->PlayHitReact(HitDirectionRightTag, SourceCharacter);
-						break;
-					case EGSHitReactDirection::Back:
-						TargetCharacter->PlayHitReact(HitDirectionBackTag, SourceCharacter);
-						break;
-					}
-				}
-				else
-				{
-					// No hit result. Default to front.
-					TargetCharacter->PlayHitReact(HitDirectionFrontTag, SourceCharacter);
-				}
-
 				// Show damage number for the Source player unless it was self damage
 				if (SourceActor != TargetActor)
 				{

@@ -9,7 +9,6 @@
 #include "GASShooter/GASShooter.h"
 #include "GSCharacterBase.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterBaseHitReactDelegate, EGSHitReactDirection, Direction);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, AGSCharacterBase*, Character);
 
 /**
@@ -24,10 +23,6 @@ class GASSHOOTER_API AGSCharacterBase : public ACharacter, public IAbilitySystem
 public:
 	// Sets default values for this character's properties
 	AGSCharacterBase(const class FObjectInitializer& ObjectInitializer);
-
-	// Set the Hit React direction in the Animation Blueprint
-	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSCharacter")
-	FCharacterBaseHitReactDelegate ShowHitReact;
 
 	UPROPERTY(BlueprintAssignable, Category = "GASShooter|GSCharacter")
 	FCharacterDiedDelegate OnCharacterDied;
@@ -44,14 +39,6 @@ public:
 
 	// Removes all CharacterAbilities. Can only be called by the Server. Removing on the Server will remove from Client too.
 	virtual void RemoveCharacterAbilities();
-
-	UFUNCTION(BlueprintCallable)
-	EGSHitReactDirection GetHitReactDirection(const FVector& ImpactPoint);
-
-	UFUNCTION(NetMulticast, Reliable, WithValidation)
-	virtual void PlayHitReact(FGameplayTag HitDirection, AActor* DamageCauser);
-	virtual void PlayHitReact_Implementation(FGameplayTag HitDirection, AActor* DamageCauser);
-	virtual bool PlayHitReact_Validate(FGameplayTag HitDirection, AActor* DamageCauser);
 
 	virtual void Die();
 
