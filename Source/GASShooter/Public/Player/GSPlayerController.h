@@ -67,6 +67,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, Category = "GASShooter|UI")
 	class UGSHUDWidget* UIHUDWidget;
 
+	UPROPERTY(EditAnywhere, Category = "GASShooter|UI")
+	TSubclassOf<class UGSDamageTextWidgetComponent> DamageNumberClass;
+
 	// Server only
 	virtual void OnPossess(APawn* InPawn) override;
 
