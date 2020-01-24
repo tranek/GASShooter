@@ -3,6 +3,7 @@
 
 #include "Player/GSPlayerController.h"
 #include "Characters/Abilities/AttributeSets/GSAmmoAttributeSet.h"
+#include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Player/GSPlayerState.h"
@@ -205,4 +206,23 @@ void AGSPlayerController::OnRep_PlayerState()
 
 	// For edge cases where the PlayerState is repped before the Hero is possessed.
 	CreateHUD();
+}
+
+void AGSPlayerController::Kill()
+{
+	ServerKill();
+}
+
+void AGSPlayerController::ServerKill_Implementation()
+{
+	AGSPlayerState* PS = GetPlayerState<AGSPlayerState>();
+	if (PS)
+	{
+		PS->GetAttributeSetBase()->SetHealth(0.0f);
+	}
+}
+
+bool AGSPlayerController::ServerKill_Validate()
+{
+	return true;
 }

@@ -74,4 +74,12 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override;
 
 	virtual void OnRep_PlayerState() override;
+
+	UFUNCTION(Exec)
+	void Kill();
+
+	UFUNCTION(Server, Reliable)
+	void ServerKill();
+	void ServerKill_Implementation();
+	bool ServerKill_Validate();
 };
