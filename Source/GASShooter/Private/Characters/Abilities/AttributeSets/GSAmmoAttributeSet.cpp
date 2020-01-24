@@ -2,6 +2,8 @@
 
 
 #include "Characters/Abilities/AttributeSets/GSAmmoAttributeSet.h"
+#include "GameplayEffect.h"
+#include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
 
 UGSAmmoAttributeSet::UGSAmmoAttributeSet()
@@ -18,6 +20,17 @@ void UGSAmmoAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute
 void UGSAmmoAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
 {
 	Super::PostGameplayEffectExecute(Data);
+
+	if (Data.EvaluatedData.Attribute == GetRifleReserveAmmoAttribute())
+	{
+		float Ammo = GetRifleReserveAmmo();
+		SetRifleReserveAmmo(FMath::Clamp<float>(Ammo, 0, GetMaxRifleReserveAmmo()));
+	}
+	else if (Data.EvaluatedData.Attribute == GetRocketReserveAmmoAttribute())
+	{
+		float Ammo = GetRocketReserveAmmo();
+		SetRocketReserveAmmo(FMath::Clamp<float>(Ammo, 0, GetMaxRocketReserveAmmo()));
+	}
 }
 
 void UGSAmmoAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
