@@ -110,9 +110,7 @@ void AGSWeapon::SetOwningCharacter(AGSHeroCharacter* InOwningCharacter)
 	{
 		AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(OwningCharacter->GetAbilitySystemComponent());
 		SetOwner(InOwningCharacter);
-
-		FName AttachPoint = OwningCharacter->GetWeaponAttachPoint();
-		Root->AttachToComponent(OwningCharacter->GetThirdPersonMesh(), FAttachmentTransformRules::KeepRelativeTransform, AttachPoint);
+		Root->AttachToComponent(OwningCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 	}
 	else
 	{
