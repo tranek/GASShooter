@@ -99,6 +99,26 @@ FGameplayAbilitySpecHandle UGSAbilitySystemComponent::FindAbilitySpecHandleForCl
 	return FGameplayAbilitySpecHandle();
 }
 
+void UGSAbilitySystemComponent::K2_AddLooseGameplayTag(const FGameplayTag& GameplayTag, int32 Count)
+{
+	AddLooseGameplayTag(GameplayTag, Count);
+}
+
+void UGSAbilitySystemComponent::K2_AddLooseGameplayTags(const FGameplayTagContainer& GameplayTags, int32 Count)
+{
+	AddLooseGameplayTags(GameplayTags, Count);
+}
+
+void UGSAbilitySystemComponent::K2_RemoveLooseGameplayTag(const FGameplayTag& GameplayTag, int32 Count)
+{
+	RemoveLooseGameplayTag(GameplayTag, Count);
+}
+
+void UGSAbilitySystemComponent::K2_RemoveLooseGameplayTags(const FGameplayTagContainer& GameplayTags, int32 Count)
+{
+	RemoveLooseGameplayTags(GameplayTags, Count);
+}
+
 bool UGSAbilitySystemComponent::BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool EndAbilityImmediately)
 {
 	bool AbilityActivated = false;

@@ -85,7 +85,7 @@ public:
 	static UGSAbilitySystemComponent* GetAbilitySystemComponentFromActor(const AActor* Actor, bool LookForComponent = false);
 
 	// Exposes GetTagCount to Blueprint
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Abilities", meta = (DisplayName = "GetTagCount", ScriptName = "GetTagCount"))
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Abilities", Meta = (DisplayName = "GetTagCount", ScriptName = "GetTagCount"))
 	int32 K2_GetTagCount(FGameplayTag TagToCheck) const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Abilities")
@@ -93,6 +93,22 @@ public:
 
 	// Turn on RPC batching in ASC. Off by default.
 	virtual bool ShouldDoServerAbilityRPCBatch() const override { return true; }
+
+	// Exposes AddLooseGameplayTag to Blueprint. This tag is *not* replicated.
+	UFUNCTION(BlueprintCallable, Category = "Abilities", Meta = (DisplayName = "AddLooseGameplayTag"))
+	void K2_AddLooseGameplayTag(const FGameplayTag& GameplayTag, int32 Count = 1);
+
+	// Exposes AddLooseGameplayTags to Blueprint. These tags are *not* replicated.
+	UFUNCTION(BlueprintCallable, Category = "Abilities", Meta = (DisplayName = "AddLooseGameplayTags"))
+	void K2_AddLooseGameplayTags(const FGameplayTagContainer& GameplayTags, int32 Count = 1);
+
+	// Exposes RemoveLooseGameplayTag to Blueprint. This tag is *not* replicated.
+	UFUNCTION(BlueprintCallable, Category = "Abilities", Meta = (DisplayName = "RemoveLooseGameplayTag"))
+	void K2_RemoveLooseGameplayTag(const FGameplayTag& GameplayTag, int32 Count = 1);
+
+	// Exposes RemoveLooseGameplayTags to Blueprint. These tags are *not* replicated.
+	UFUNCTION(BlueprintCallable, Category = "Abilities", Meta = (DisplayName = "RemoveLooseGameplayTags"))
+	void K2_RemoveLooseGameplayTags(const FGameplayTagContainer& GameplayTags, int32 Count = 1);
 
 	// Attempts to activate the given ability handle and batch all RPCs into one. This will only batch all RPCs that happen
 	// in one frame. Best case scenario we batch ActivateAbility, SendTargetData, and EndAbility into one RPC instead of three.

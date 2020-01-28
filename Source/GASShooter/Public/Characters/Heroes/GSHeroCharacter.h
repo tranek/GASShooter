@@ -112,23 +112,26 @@ public:
 
 	FName GetWeaponAttachPoint();
 
-	UFUNCTION(BlueprintCallable, Category = "GASShooter|GASShooter|Inventory")
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
 	int32 GetPrimaryClipAmmo() const;
 
-	UFUNCTION(BlueprintCallable, Category = "GASShooter|GASShooter|Inventory")
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
 	int32 GetMaxPrimaryClipAmmo() const;
 
-	UFUNCTION(BlueprintCallable, Category = "GASShooter|GASShooter|Inventory")
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
 	int32 GetPrimaryReserveAmmo() const;
 
-	UFUNCTION(BlueprintCallable, Category = "GASShooter|GASShooter|Inventory")
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
 	int32 GetSecondaryClipAmmo() const;
 
-	UFUNCTION(BlueprintCallable, Category = "GASShooter|GASShooter|Inventory")
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
 	int32 GetMaxSecondaryClipAmmo() const;
 
-	UFUNCTION(BlueprintCallable, Category = "GASShooter|GASShooter|Inventory")
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
 	int32 GetSecondaryReserveAmmo() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
+	int32 GetNumWeapons() const;
 
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|Camera")
@@ -200,7 +203,7 @@ protected:
 
 	// Cache tags
 	FGameplayTag NoWeaponTag;
-	FGameplayTag WeaponChangingTag;
+	FGameplayTag WeaponChangingDelayReplicationTag;
 	FGameplayTag WeaponAmmoTypeNoneTag;
 
 	// Attribute changed delegate handles
@@ -208,7 +211,7 @@ protected:
 	FDelegateHandle SecondaryReserveAmmoChangedDelegateHandle;
 
 	// Tag changed delegate handles
-	FDelegateHandle WeaponChangingTagChangedDelegateHandle;
+	FDelegateHandle WeaponChangingDelayReplicationTagChangedDelegateHandle;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -279,7 +282,7 @@ protected:
 	virtual void CurrentWeaponSecondaryReserveAmmoChanged(const FOnAttributeChangeData& Data);
 
 	// Tag changed callbacks
-	virtual void WeaponChangingTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
+	virtual void WeaponChangingDelayReplicationTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 
 	UFUNCTION()
 	void OnRep_CurrentWeapon(AGSWeapon* LastWeapon);

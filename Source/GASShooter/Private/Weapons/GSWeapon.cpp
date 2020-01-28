@@ -366,6 +366,16 @@ bool AGSWeapon::HasInfiniteAmmo() const
 	return bInfiniteAmmo;
 }
 
+UAnimMontage* AGSWeapon::GetEquip1PMontage() const
+{
+	return Equip1PMontage;
+}
+
+UAnimMontage* AGSWeapon::GetEquip3PMontage() const
+{
+	return Equip3PMontage;
+}
+
 void AGSWeapon::BeginPlay()
 {
 	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));

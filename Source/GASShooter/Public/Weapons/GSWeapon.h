@@ -155,6 +155,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
 	virtual bool HasInfiniteAmmo() const;
 
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Animation")
+	UAnimMontage* GetEquip1PMontage() const;
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Animation")
+	UAnimMontage* GetEquip3PMontage() const;
+
 protected:
 	UPROPERTY()
 	UGSAbilitySystemComponent* AbilitySystemComponent;

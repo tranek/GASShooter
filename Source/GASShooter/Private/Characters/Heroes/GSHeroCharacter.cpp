@@ -2,6 +2,7 @@
 
 
 #include "Characters/Heroes/GSHeroCharacter.h"
+#include "Animation/AnimInstance.h"
 #include "AI/GSHeroAIController.h"
 #include "Camera/CameraComponent.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
@@ -31,7 +32,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	Default1PFOV = 90.0f;
 	Default3PFOV = 80.0f;
 	NoWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
-	WeaponChangingTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChanging"));
+	WeaponChangingDelayReplicationTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChangingDelayReplication"));
 	WeaponAmmoTypeNoneTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.None"));
 	CurrentWeaponTag = NoWeaponTag;
 	Inventory = FGSHeroInventory();
@@ -126,7 +127,8 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 		// AI won't have PlayerControllers so we can init again here just to be sure. No harm in initing twice for heroes that have PlayerControllers.
 		PS->GetAbilitySystemComponent()->InitAbilityActorInfo(PS, this);
 
-		WeaponChangingTagChangedDelegateHandle = AbilitySystemComponent->RegisterGameplayTagEvent(WeaponChangingTag).AddUObject(this, &AGSHeroCharacter::WeaponChangingTagChanged);
+		WeaponChangingDelayReplicationTagChangedDelegateHandle = AbilitySystemComponent->RegisterGameplayTagEvent(WeaponChangingDelayReplicationTag)
+			.AddUObject(this, &AGSHeroCharacter::WeaponChangingDelayReplicationTagChanged);
 
 		// Set the AttributeSetBase for convenience attribute functions
 		AttributeSetBase = PS->GetAttributeSetBase();
@@ -190,7 +192,7 @@ void AGSHeroCharacter::Die()
 
 	RemoveAllWeaponsFromInventory();
 
-	AbilitySystemComponent->RegisterGameplayTagEvent(WeaponChangingTag).Remove(WeaponChangingTagChangedDelegateHandle);
+	AbilitySystemComponent->RegisterGameplayTagEvent(WeaponChangingDelayReplicationTag).Remove(WeaponChangingDelayReplicationTagChangedDelegateHandle);
 
 	Super::Die();
 }
@@ -490,6 +492,11 @@ int32 AGSHeroCharacter::GetSecondaryReserveAmmo() const
 	}
 
 	return 0;
+}
+
+int32 AGSHeroCharacter::GetNumWeapons() const
+{
+	return Inventory.Weapons.Num();
 }
 
 /**
@@ -849,6 +856,18 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 			PrimaryReserveAmmoChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UGSAmmoAttributeSet::GetReserveAmmoAttributeFromTag(CurrentWeapon->PrimaryAmmoType)).AddUObject(this, &AGSHeroCharacter::CurrentWeaponPrimaryReserveAmmoChanged);
 			SecondaryReserveAmmoChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UGSAmmoAttributeSet::GetReserveAmmoAttributeFromTag(CurrentWeapon->SecondaryAmmoType)).AddUObject(this, &AGSHeroCharacter::CurrentWeaponSecondaryReserveAmmoChanged);
 		}
+
+		UAnimMontage* Equip1PMontage = CurrentWeapon->GetEquip1PMontage();
+		if (Equip1PMontage && GetFirstPersonMesh())
+		{
+			GetFirstPersonMesh()->GetAnimInstance()->Montage_Play(Equip1PMontage);
+		}
+
+		UAnimMontage* Equip3PMontage = CurrentWeapon->GetEquip3PMontage();
+		if (Equip3PMontage && GetThirdPersonMesh())
+		{
+			GetThirdPersonMesh()->GetAnimInstance()->Montage_Play(Equip3PMontage);
+		}
 	}
 	else
 	{
@@ -935,17 +954,17 @@ void AGSHeroCharacter::CurrentWeaponSecondaryReserveAmmoChanged(const FOnAttribu
 	}
 }
 
-void AGSHeroCharacter::WeaponChangingTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+void AGSHeroCharacter::WeaponChangingDelayReplicationTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	UE_LOG(LogTemp, Log, TEXT("%s %s %s TagCount: %d"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *CallbackTag.ToString(), NewCount);
 
-	if (CallbackTag == WeaponChangingTag)
+	if (CallbackTag == WeaponChangingDelayReplicationTag)
 	{
 		if (NewCount < 1)
 		{
-			// We only replicate the current weapon to simulated proxies so manually sync it when the weapon changing tag is removed.
-			// We keep the weapon changing tag on for ~1s after the equip montage to allow for activating changing weapon again without
-			// the server trying to clobber the next locally predicted weapon.
+			// We only replicate the current weapon to simulated proxies so manually sync it when the weapon changing delay replication
+			// tag is removed. We keep the weapon changing tag on for ~1s after the equip montage to allow for activating changing weapon
+			// again without the server trying to clobber the next locally predicted weapon.
 			ClientSyncCurrentWeapon(CurrentWeapon);
 		}
 	}
