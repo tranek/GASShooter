@@ -86,7 +86,7 @@ public:
 	// Adds a new weapon to the inventory.
 	// Returns false if the weapon already exists in the inventory, true if it's a new weapon.
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
-	bool AddWeaponToInventory(AGSWeapon* NewWeapon);
+	bool AddWeaponToInventory(AGSWeapon* NewWeapon, bool bEquipWeapon = false);
 
 	// Removes a weapon from the inventory.
 	// Returns true if the weapon exists and was removed. False if the weapon didn't exist in the inventory.
@@ -201,6 +201,7 @@ protected:
 	// Cache tags
 	FGameplayTag NoWeaponTag;
 	FGameplayTag WeaponChangingTag;
+	FGameplayTag WeaponAmmoTypeNoneTag;
 
 	// Attribute changed delegate handles
 	FDelegateHandle PrimaryReserveAmmoChangedDelegateHandle;

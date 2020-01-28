@@ -27,6 +27,11 @@ public:
 	// Sets default values for this actor's properties
 	AGSWeapon();
 
+	// Whether or not to spawn this weapon with collision enabled (pickup mode).
+	// Set to false when spawning directly into a player's inventory or true when spawning into the world in pickup mode.
+	UPROPERTY(BlueprintReadWrite)
+	bool bSpawnWithCollision;
+
 	// This tag will be used by the Characters when they equip a weapon to gate activation of abilities
 	// since abilities are granted on adding to inventory and removed when the weapon is removed from the
 	// inventory - not on equip/unequip.
@@ -115,6 +120,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
 	virtual void ResetWeapon();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void OnDropped(FVector NewLocation);
+	virtual void OnDropped_Implementation(FVector NewLocation);
+	virtual bool OnDropped_Validate(FVector NewLocation);
+
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
 	virtual int32 GetPrimaryClipAmmo() const;
 
@@ -177,7 +187,7 @@ protected:
 
 	// Generic Root component so that we can hide visibility of one mesh without affecting the other if they were parent/child
 	UPROPERTY(VisibleAnywhere)
-	USceneComponent* Root;
+	class UCapsuleComponent* CollisionComp;
 
 	UPROPERTY(VisibleAnywhere, Category = "GASShooter|GSWeapon")
 	USkeletalMeshComponent* WeaponMesh1P;

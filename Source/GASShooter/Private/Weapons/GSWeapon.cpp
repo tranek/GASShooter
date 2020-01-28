@@ -6,6 +6,7 @@
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "Characters/Abilities/GSGATA_SingleLineTrace.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GSBlueprintFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -19,8 +20,8 @@ AGSWeapon::AGSWeapon()
 
 	bReplicates = true;
 	bNetUseOwnerRelevancy = true;
-	// Set this to a value that's appropriate for your game
-	NetUpdateFrequency = 100.0f;
+	NetUpdateFrequency = 100.0f; // Set this to a value that's appropriate for your game
+	bSpawnWithCollision = true;
 	PrimaryClipAmmo = 0;
 	MaxPrimaryClipAmmo = 0;
 	SecondaryClipAmmo = 0;
@@ -31,24 +32,26 @@ AGSWeapon::AGSWeapon()
 	bEnableSingleLineTraceTargetActor = false;
 	bEnableSphereTraceTargetActor = false;
 
-	Root = CreateDefaultSubobject<USceneComponent>(FName("Root"));
-	Root->SetVisibility(false, false);
-	RootComponent = Root;
+	CollisionComp = CreateDefaultSubobject<UCapsuleComponent>(FName("CollisionComponent"));
+	CollisionComp->InitCapsuleSize(40.0f, 50.0f);
+	CollisionComp->SetCollisionObjectType(COLLISION_PICKUP);
+	CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision); // Manually enable when in pickup mode
+	CollisionComp->SetCollisionResponseToAllChannels(ECR_Ignore);
+	CollisionComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	RootComponent = CollisionComp;
 
 	WeaponMesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(FName("WeaponMesh1P"));
-	//TODO for now no collision. No Collision while equipped, collision when sitting in the world waiting to be picked up.
 	WeaponMesh1P->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponMesh1P->CastShadow = false;
 	WeaponMesh1P->SetVisibility(false, true);
-	WeaponMesh1P->SetupAttachment(RootComponent);
+	WeaponMesh1P->SetupAttachment(CollisionComp);
 	WeaponMesh1P->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
 
 	WeaponMesh3P = CreateDefaultSubobject<USkeletalMeshComponent>(FName("WeaponMesh3P"));
-	//TODO for now no collision. No Collision while equipped, collision when sitting in the world waiting to be picked up.
 	WeaponMesh3P->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	WeaponMesh3P->SetupAttachment(RootComponent);
-	WeaponMesh3P->CastShadow = false;
-	WeaponMesh3P->SetVisibility(false, true);
+	WeaponMesh3P->SetupAttachment(CollisionComp);
+	WeaponMesh3P->CastShadow = true;
+	WeaponMesh3P->SetVisibility(true, true);
 	WeaponMesh3P->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
 
 	WeaponPrimaryInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Primary.Instant"));
@@ -108,22 +111,35 @@ void AGSWeapon::SetOwningCharacter(AGSHeroCharacter* InOwningCharacter)
 	OwningCharacter = InOwningCharacter;
 	if (OwningCharacter)
 	{
+		// Called when added to inventory
 		AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(OwningCharacter->GetAbilitySystemComponent());
 		SetOwner(InOwningCharacter);
-		Root->AttachToComponent(OwningCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		CollisionComp->AttachToComponent(OwningCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		if (OwningCharacter->GetCurrentWeapon() != this)
+		{
+			WeaponMesh3P->CastShadow = false;
+			WeaponMesh3P->SetVisibility(true, true);
+			WeaponMesh3P->SetVisibility(false, true);
+		}
 	}
 	else
 	{
 		AbilitySystemComponent = nullptr;
 		SetOwner(nullptr);
-		Root->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		CollisionComp->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	}
 }
 
 void AGSWeapon::NotifyActorBeginOverlap(AActor* Other)
 {
 	Super::NotifyActorBeginOverlap(Other);
-	PickUpOnTouch(Cast<AGSHeroCharacter>(Other));
+
+	if (!IsPendingKill() && !OwningCharacter)
+	{
+		PickUpOnTouch(Cast<AGSHeroCharacter>(Other));
+	}
 }
 
 void AGSWeapon::Equip()
@@ -175,6 +191,13 @@ void AGSWeapon::Equip()
 void AGSWeapon::UnEquip()
 {
 	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
+
+	if (OwningCharacter == nullptr)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("%s %s %s OwningCharacter was nullptr"), TEXT(__FUNCTION__), *GetName(),
+		//	*UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
+		return;
+	}
 
 	//WeaponMesh1P->DetachFromComponent(FDetachmentTransformRules::KeepRelativeTransform);
 	WeaponMesh1P->SetVisibility(false, true);
@@ -254,6 +277,37 @@ void AGSWeapon::ResetWeapon()
 	StatusText = DefaultStatusText;
 }
 
+void AGSWeapon::OnDropped_Implementation(FVector NewLocation)
+{
+	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *GetName());
+
+	SetOwningCharacter(nullptr);
+	ResetWeapon();
+
+	SetActorLocation(NewLocation);
+	CollisionComp->SetHiddenInGame(false, false);
+	CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+	if (WeaponMesh1P)
+	{
+		WeaponMesh1P->AttachToComponent(CollisionComp, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		WeaponMesh1P->SetVisibility(false, true);
+	}
+
+	if (WeaponMesh3P)
+	{
+		WeaponMesh3P->AttachToComponent(CollisionComp, FAttachmentTransformRules::SnapToTargetIncludingScale);
+		WeaponMesh3P->SetRelativeLocation(FVector(0.0f, -25.0f, 0.0f));
+		WeaponMesh3P->CastShadow = true;
+		WeaponMesh3P->SetVisibility(true, true);
+	}
+}
+
+bool AGSWeapon::OnDropped_Validate(FVector NewLocation)
+{
+	return true;
+}
+
 int32 AGSWeapon::GetPrimaryClipAmmo() const
 {
 	return PrimaryClipAmmo;
@@ -314,6 +368,8 @@ bool AGSWeapon::HasInfiniteAmmo() const
 
 void AGSWeapon::BeginPlay()
 {
+	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
+
 	ResetWeapon();
 
 	if (bEnableSingleLineTraceTargetActor)
@@ -326,18 +382,33 @@ void AGSWeapon::BeginPlay()
 	{
 		//TODO
 	}
+
+	if (!OwningCharacter && bSpawnWithCollision)
+	{
+		// Spawned into the world without an owner, enable collision as we are in pickup mode
+		UE_LOG(LogTemp, Log, TEXT("%s %s %s Spawning with collision enabled"), TEXT(__FUNCTION__), *GetName(),
+			*UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
+		CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	}
+
+	Super::BeginPlay();
 }
 
 void AGSWeapon::PickUpOnTouch(AGSHeroCharacter* InCharacter)
 {
-	if (!InCharacter)
+	if (!InCharacter || !InCharacter->IsAlive())
 	{
 		return;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *InCharacter->GetName(), *GetName());
+	UE_LOG(LogTemp, Log, TEXT("%s %s %s %s"), TEXT(__FUNCTION__), *InCharacter->GetName(), *GetName(),
+		*UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
 
-	//TODO call add to inventory on incharacter. Check if alive first.
+	InCharacter->AddWeaponToInventory(this, true);
+
+	WeaponMesh3P->CastShadow = false;
+	WeaponMesh3P->SetVisibility(true, true);
+	WeaponMesh3P->SetVisibility(false, true);
 }
 
 void AGSWeapon::OnRep_PrimaryClipAmmo(int32 OldPrimaryClipAmmo)

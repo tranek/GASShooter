@@ -32,6 +32,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	Default3PFOV = 80.0f;
 	NoWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
 	WeaponChangingTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChanging"));
+	WeaponAmmoTypeNoneTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.None"));
 	CurrentWeaponTag = NoWeaponTag;
 	Inventory = FGSHeroInventory();
 	
@@ -229,11 +230,56 @@ AGSWeapon* AGSHeroCharacter::GetCurrentWeapon() const
 	return CurrentWeapon;
 }
 
-bool AGSHeroCharacter::AddWeaponToInventory(AGSWeapon* NewWeapon)
+bool AGSHeroCharacter::AddWeaponToInventory(AGSWeapon* NewWeapon, bool bEquipWeapon)
 {
+	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *GetName());
+
+	if (GetLocalRole() < ROLE_Authority)
+	{
+		return false;
+	}
+
 	if (DoesWeaponExistInInventory(NewWeapon))
 	{
 		//TODO grab ammo from it if we're not full and destroy it in the world
+
+		UE_LOG(LogTemp, Log, TEXT("%s %s %s Weapon already exists in Inventory, collecting %d ammo and destorying"),
+			TEXT(__FUNCTION__), *GetName(), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), NewWeapon->GetPrimaryClipAmmo());
+
+		//TODO Make an instant GE to add the weapon's primary ammo to our reserve ammo attribute for this ammo type, same for secondary
+
+		// Create a dynamic instant Gameplay Effect to give the primary and secondary ammo
+		UGameplayEffect* GEAmmo = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("Ammo")));
+		GEAmmo->DurationPolicy = EGameplayEffectDurationType::Instant;
+
+		if (NewWeapon->PrimaryAmmoType != WeaponAmmoTypeNoneTag)
+		{
+			int32 Idx = GEAmmo->Modifiers.Num();
+			GEAmmo->Modifiers.SetNum(Idx + 1);
+
+			FGameplayModifierInfo& InfoPrimaryAmmo = GEAmmo->Modifiers[Idx];
+			InfoPrimaryAmmo.ModifierMagnitude = FScalableFloat(NewWeapon->GetPrimaryClipAmmo());
+			InfoPrimaryAmmo.ModifierOp = EGameplayModOp::Additive;
+			InfoPrimaryAmmo.Attribute = UGSAmmoAttributeSet::GetReserveAmmoAttributeFromTag(NewWeapon->PrimaryAmmoType);
+		}
+
+		if (NewWeapon->SecondaryAmmoType != WeaponAmmoTypeNoneTag)
+		{
+			int32 Idx = GEAmmo->Modifiers.Num();
+			GEAmmo->Modifiers.SetNum(Idx + 1);
+
+			FGameplayModifierInfo& InfoSecondaryAmmo = GEAmmo->Modifiers[Idx];
+			InfoSecondaryAmmo.ModifierMagnitude = FScalableFloat(NewWeapon->GetSecondaryClipAmmo());
+			InfoSecondaryAmmo.ModifierOp = EGameplayModOp::Additive;
+			InfoSecondaryAmmo.Attribute = UGSAmmoAttributeSet::GetReserveAmmoAttributeFromTag(NewWeapon->SecondaryAmmoType);
+		}
+
+		if (GEAmmo->Modifiers.Num() > 0)
+		{
+			AbilitySystemComponent->ApplyGameplayEffectToSelf(GEAmmo, 1.0f, AbilitySystemComponent->MakeEffectContext());
+		}
+
+		bool WeaponDestroyed = NewWeapon->Destroy();
 
 		return false;
 	}
@@ -242,6 +288,12 @@ bool AGSHeroCharacter::AddWeaponToInventory(AGSWeapon* NewWeapon)
 	NewWeapon->SetOwningCharacter(this);
 	NewWeapon->AddAbilities();
 
+	if (bEquipWeapon)
+	{
+		EquipWeapon(NewWeapon);
+		ClientSyncCurrentWeapon(CurrentWeapon);
+	}
+
 	return true;
 }
 
@@ -249,13 +301,19 @@ bool AGSHeroCharacter::RemoveWeaponFromInventory(AGSWeapon* WeaponToRemove)
 {
 	if (DoesWeaponExistInInventory(WeaponToRemove))
 	{
+		if (WeaponToRemove == CurrentWeapon)
+		{
+			UnEquipCurrentWeapon();
+		}
+
+		Inventory.Weapons.Remove(WeaponToRemove);
 		WeaponToRemove->RemoveAbilities();
 		WeaponToRemove->SetOwningCharacter(nullptr);
 		WeaponToRemove->ResetWeapon();
-		Inventory.Weapons.Remove(WeaponToRemove);
 
-		//TODO check if equipped and unequip it if it is
-		// probably need a function IsEquipped() or something either here or on the weapon or both?
+		// Add parameter to drop weapon?
+
+		return true;
 	}
 
 	return false;
@@ -263,17 +321,35 @@ bool AGSHeroCharacter::RemoveWeaponFromInventory(AGSWeapon* WeaponToRemove)
 
 void AGSHeroCharacter::RemoveAllWeaponsFromInventory()
 {
-	UnEquipCurrentWeapon();
+	UE_LOG(LogTemp, Log, TEXT("%s %s %s %s Num Weapons in Inventory: %d"), TEXT(__FUNCTION__),
+		*UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), ACTOR_ROLE_FSTRING, *GetName(), Inventory.Weapons.Num());
 
 	if (GetLocalRole() < ROLE_Authority)
 	{
 		return;
 	}
 
+	UnEquipCurrentWeapon();
+
+	float radius = 50.0f;
+	float NumWeapons = Inventory.Weapons.Num();
+
 	for (int32 i = Inventory.Weapons.Num() - 1; i >= 0; i--)
 	{
 		AGSWeapon* Weapon = Inventory.Weapons[i];
 		RemoveWeaponFromInventory(Weapon);
+
+		// Set the weapon up as a pickup
+
+		// Add parameter to drop weapons and pass to RemoveWeaponFromInventory()?
+
+		//TODO Set location based on num of weapons in a circle
+		// x = radius * cos(angle)
+		// y = radius * sin(angle)
+		// angle = i / 360 if degrees
+		float OffsetX = radius * FMath::Cos((i / NumWeapons) * 2.0f * PI);
+		float OffsetY = radius * FMath::Sin((i / NumWeapons) * 2.0f * PI);
+		Weapon->OnDropped(GetActorLocation() + FVector(OffsetX, OffsetY, 0.0f));
 	}
 }
 
@@ -676,20 +752,29 @@ void AGSHeroCharacter::SpawnDefaultInventory()
 	int32 NumWeaponClasses = DefaultInventoryWeaponClasses.Num();
 	for (int32 i = 0; i < NumWeaponClasses; i++)
 	{
-		if (DefaultInventoryWeaponClasses[i])
+		if (!DefaultInventoryWeaponClasses[i])
 		{
-			FActorSpawnParameters SpawnInfo;
-			SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-			AGSWeapon* NewWeapon = GetWorld()->SpawnActor<AGSWeapon>(DefaultInventoryWeaponClasses[i], SpawnInfo);
-			AddWeaponToInventory(NewWeapon);
+			// An empty item was added to the Array in blueprint
+			continue;
 		}
+
+		FActorSpawnParameters SpawnInfo;
+		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		//AGSWeapon* NewWeapon = GetWorld()->SpawnActor<AGSWeapon>(DefaultInventoryWeaponClasses[i], SpawnInfo);
+		AGSWeapon* NewWeapon = GetWorld()->SpawnActorDeferred<AGSWeapon>(DefaultInventoryWeaponClasses[i],
+			FTransform::Identity, this, this, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+		NewWeapon->bSpawnWithCollision = false;
+		NewWeapon->FinishSpawning(FTransform::Identity);
+
+		bool bEquipFirstWeapon = i == 0;
+		AddWeaponToInventory(NewWeapon, bEquipFirstWeapon);
 	}
 
 	// Equip first weapon in inventory
-	if (Inventory.Weapons.Num() > 0)
-	{
-		EquipWeapon(Inventory.Weapons[0]);
-	}
+	//if (Inventory.Weapons.Num() > 0)
+	//{
+	//	EquipWeapon(Inventory.Weapons[0]);
+	//}
 }
 
 void AGSHeroCharacter::SetupStartupPerspective()
@@ -736,9 +821,9 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 		}
 
 		// Weapons coming from OnRep_CurrentWeapon won't have the owner set
-		NewWeapon->SetOwningCharacter(this);
-		NewWeapon->Equip();
 		CurrentWeapon = NewWeapon;
+		CurrentWeapon->SetOwningCharacter(this);
+		CurrentWeapon->Equip();
 		CurrentWeaponTag = CurrentWeapon->WeaponTag;
 
 		if (AbilitySystemComponent)
