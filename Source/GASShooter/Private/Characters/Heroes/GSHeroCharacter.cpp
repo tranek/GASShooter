@@ -34,6 +34,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	NoWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
 	WeaponChangingDelayReplicationTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChangingDelayReplication"));
 	WeaponAmmoTypeNoneTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.None"));
+	WeaponAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon"));
 	CurrentWeaponTag = NoWeaponTag;
 	Inventory = FGSHeroInventory();
 	
@@ -808,6 +809,13 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 	if (NewWeapon == LastWeapon)
 	{
 		return;
+	}
+
+	// Cancel active weapon abilities
+	if (AbilitySystemComponent)
+	{
+		FGameplayTagContainer AbilityTagsToCancel = FGameplayTagContainer(WeaponAbilityTag);
+		AbilitySystemComponent->CancelAbilities(&AbilityTagsToCancel);
 	}
 
 	UnEquipWeapon(LastWeapon);

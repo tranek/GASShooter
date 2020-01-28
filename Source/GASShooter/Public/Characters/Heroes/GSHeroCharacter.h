@@ -205,6 +205,7 @@ protected:
 	FGameplayTag NoWeaponTag;
 	FGameplayTag WeaponChangingDelayReplicationTag;
 	FGameplayTag WeaponAmmoTypeNoneTag;
+	FGameplayTag WeaponAbilityTag;
 
 	// Attribute changed delegate handles
 	FDelegateHandle PrimaryReserveAmmoChangedDelegateHandle;
