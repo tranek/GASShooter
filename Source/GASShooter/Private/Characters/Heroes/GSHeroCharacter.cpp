@@ -767,7 +767,6 @@ void AGSHeroCharacter::SpawnDefaultInventory()
 
 		FActorSpawnParameters SpawnInfo;
 		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		//AGSWeapon* NewWeapon = GetWorld()->SpawnActor<AGSWeapon>(DefaultInventoryWeaponClasses[i], SpawnInfo);
 		AGSWeapon* NewWeapon = GetWorld()->SpawnActorDeferred<AGSWeapon>(DefaultInventoryWeaponClasses[i],
 			FTransform::Identity, this, this, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		NewWeapon->bSpawnWithCollision = false;
@@ -776,12 +775,6 @@ void AGSHeroCharacter::SpawnDefaultInventory()
 		bool bEquipFirstWeapon = i == 0;
 		AddWeaponToInventory(NewWeapon, bEquipFirstWeapon);
 	}
-
-	// Equip first weapon in inventory
-	//if (Inventory.Weapons.Num() > 0)
-	//{
-	//	EquipWeapon(Inventory.Weapons[0]);
-	//}
 }
 
 void AGSHeroCharacter::SetupStartupPerspective()

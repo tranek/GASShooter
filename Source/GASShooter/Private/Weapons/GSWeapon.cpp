@@ -285,7 +285,7 @@ void AGSWeapon::OnDropped_Implementation(FVector NewLocation)
 	ResetWeapon();
 
 	SetActorLocation(NewLocation);
-	CollisionComp->SetHiddenInGame(false, false);
+	//CollisionComp->SetHiddenInGame(false, false);
 	CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	if (WeaponMesh1P)
@@ -414,11 +414,12 @@ void AGSWeapon::PickUpOnTouch(AGSHeroCharacter* InCharacter)
 	UE_LOG(LogTemp, Log, TEXT("%s %s %s %s"), TEXT(__FUNCTION__), *InCharacter->GetName(), *GetName(),
 		*UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
 
-	InCharacter->AddWeaponToInventory(this, true);
-
-	WeaponMesh3P->CastShadow = false;
-	WeaponMesh3P->SetVisibility(true, true);
-	WeaponMesh3P->SetVisibility(false, true);
+	if (InCharacter->AddWeaponToInventory(this, true))
+	{
+		WeaponMesh3P->CastShadow = false;
+		WeaponMesh3P->SetVisibility(true, true);
+		WeaponMesh3P->SetVisibility(false, true);
+	}
 }
 
 void AGSWeapon::OnRep_PrimaryClipAmmo(int32 OldPrimaryClipAmmo)
