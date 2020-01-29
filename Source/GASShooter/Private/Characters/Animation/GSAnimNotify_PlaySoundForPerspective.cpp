@@ -20,10 +20,27 @@ void UGSAnimNotify_PlaySoundForPerspective::Notify(USkeletalMeshComponent* MeshC
 
 	if (SoundToPlay)
 	{
+		if (SoundToPlay->IsLooping())
+		{
+			UE_LOG(LogAudio, Warning, TEXT("PlaySound notify: Anim %s tried to spawn infinitely looping sound asset %s. Spawning suppressed."), *GetNameSafe(Animation), *GetNameSafe(SoundToPlay));
+			return;
+		}
+
 		AGSHeroCharacter* OwningHero = Cast<AGSHeroCharacter>(MeshComp->GetOwner());
 
 		if (!OwningHero)
 		{
+			// We're in the Montage Editor Window, always play the sounds
+
+			if (bFollow)
+			{
+				UGameplayStatics::SpawnSoundAttached(SoundToPlay, MeshComp, AttachName, FVector(ForceInit), EAttachLocation::SnapToTarget, false, VolumeMultiplier, PitchMultiplier);
+			}
+			else
+			{
+				UGameplayStatics::PlaySoundAtLocation(MeshComp->GetWorld(), SoundToPlay, MeshComp->GetComponentLocation(), VolumeMultiplier, PitchMultiplier);
+			}
+
 			return;
 		}
 
@@ -40,12 +57,6 @@ void UGSAnimNotify_PlaySoundForPerspective::Notify(USkeletalMeshComponent* MeshC
 		if ((!bPlayForFirstPersonPerspective && !OwningHero->IsLocallyControlled() && !OwningHero->IsPlayerControlled())
 			|| bPlayForFirstPersonPerspective == OwningHero->IsInFirstPersonPerspective())
 		{
-			if (SoundToPlay->IsLooping())
-			{
-				UE_LOG(LogAudio, Warning, TEXT("PlaySound notify: Anim %s tried to spawn infinitely looping sound asset %s. Spawning suppressed."), *GetNameSafe(Animation), *GetNameSafe(SoundToPlay));
-					return;
-			}
-
 			if (bFollow)
 			{
 				UGameplayStatics::SpawnSoundAttached(SoundToPlay, MeshComp, AttachName, FVector(ForceInit), EAttachLocation::SnapToTarget, false, VolumeMultiplier, PitchMultiplier);
