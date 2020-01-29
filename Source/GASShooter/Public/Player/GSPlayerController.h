@@ -60,6 +60,11 @@ public:
 	void SetRespawnCountdown_Implementation(float RespawnTimeRemaining);
 	bool SetRespawnCountdown_Validate(float RespawnTimeRemaining);
 
+	UFUNCTION(Client, Reliable, WithValidation)
+	void ClientSetControlRotation(FRotator NewRotation);
+	void ClientSetControlRotation_Implementation(FRotator NewRotation);
+	bool ClientSetControlRotation_Validate(FRotator NewRotation);
+
 protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|UI")
 	TSubclassOf<class UGSHUDWidget> UIHUDWidgetClass;

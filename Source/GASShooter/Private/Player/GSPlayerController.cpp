@@ -188,6 +188,16 @@ bool AGSPlayerController::SetRespawnCountdown_Validate(float RespawnTimeRemainin
 	return true;
 }
 
+void AGSPlayerController::ClientSetControlRotation_Implementation(FRotator NewRotation)
+{
+	SetControlRotation(NewRotation);
+}
+
+bool AGSPlayerController::ClientSetControlRotation_Validate(FRotator NewRotation)
+{
+	return true;
+}
+
 void AGSPlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);

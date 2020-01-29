@@ -82,6 +82,12 @@ void AGASShooterGameModeBase::RespawnHero(AController* Controller)
 		Controller->UnPossess();
 		OldSpectatorPawn->Destroy();
 		Controller->Possess(Hero);
+		
+		AGSPlayerController* PC = Cast<AGSPlayerController>(Controller);
+		if (PC)
+		{
+			PC->ClientSetControlRotation(PlayerStart->GetActorRotation());
+		}
 	}
 	else
 	{
