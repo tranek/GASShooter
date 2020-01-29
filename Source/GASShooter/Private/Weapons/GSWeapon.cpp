@@ -114,7 +114,7 @@ void AGSWeapon::SetOwningCharacter(AGSHeroCharacter* InOwningCharacter)
 		// Called when added to inventory
 		AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(OwningCharacter->GetAbilitySystemComponent());
 		SetOwner(InOwningCharacter);
-		CollisionComp->AttachToComponent(OwningCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		AttachToComponent(OwningCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 		CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 		if (OwningCharacter->GetCurrentWeapon() != this)
@@ -128,7 +128,7 @@ void AGSWeapon::SetOwningCharacter(AGSHeroCharacter* InOwningCharacter)
 	{
 		AbilitySystemComponent = nullptr;
 		SetOwner(nullptr);
-		CollisionComp->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+		DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
 	}
 }
 

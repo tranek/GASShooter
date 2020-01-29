@@ -191,7 +191,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon")
 	bool bEnableSphereTraceTargetActor;
 
-	// Generic Root component so that we can hide visibility of one mesh without affecting the other if they were parent/child
+	// Collision capsule for when weapon is in pickup mode
 	UPROPERTY(VisibleAnywhere)
 	class UCapsuleComponent* CollisionComp;
 
