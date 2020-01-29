@@ -160,6 +160,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|Animation")
 	UAnimMontage* GetEquip3PMontage() const;
+	
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Audio")
+	class USoundCue* GetPickupSound() const;
 
 protected:
 	UPROPERTY()
@@ -222,6 +225,10 @@ protected:
 
 	UPROPERTY(BlueprintReadonly, EditAnywhere, Category = "GASShooter|Animation")
 	UAnimMontage* Equip3PMontage;
+
+	// Sound played when player picks it up
+	UPROPERTY(EditDefaultsOnly, Category = "GASShooter|Audio")
+	class USoundCue* PickupSound;
 
 	// Cache tags
 	FGameplayTag WeaponPrimaryInstantAbilityTag;

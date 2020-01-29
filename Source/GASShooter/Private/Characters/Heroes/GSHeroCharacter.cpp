@@ -17,6 +17,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Player/GSPlayerController.h"
 #include "Player/GSPlayerState.h"
+#include "Sound/SoundCue.h"
 #include "TimerManager.h"
 #include "UI/GSFloatingStatusBarWidget.h"
 #include "Weapons/GSWeapon.h"
@@ -237,19 +238,22 @@ bool AGSHeroCharacter::AddWeaponToInventory(AGSWeapon* NewWeapon, bool bEquipWea
 {
 	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *GetName());
 
-	if (GetLocalRole() < ROLE_Authority)
-	{
-		return false;
-	}
-
 	if (DoesWeaponExistInInventory(NewWeapon))
 	{
-		//TODO grab ammo from it if we're not full and destroy it in the world
-
 		UE_LOG(LogTemp, Log, TEXT("%s %s %s Weapon already exists in Inventory, collecting %d ammo and destorying"),
 			TEXT(__FUNCTION__), *GetName(), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), NewWeapon->GetPrimaryClipAmmo());
 
-		//TODO Make an instant GE to add the weapon's primary ammo to our reserve ammo attribute for this ammo type, same for secondary
+		USoundCue* PickupSound = NewWeapon->GetPickupSound();
+
+		if (PickupSound && IsLocallyControlled())
+		{
+			UGameplayStatics::SpawnSoundAttached(PickupSound, GetRootComponent());
+		}
+
+		if (GetLocalRole() < ROLE_Authority)
+		{
+			return false;
+		}
 
 		// Create a dynamic instant Gameplay Effect to give the primary and secondary ammo
 		UGameplayEffect* GEAmmo = NewObject<UGameplayEffect>(GetTransientPackage(), FName(TEXT("Ammo")));
@@ -282,8 +286,13 @@ bool AGSHeroCharacter::AddWeaponToInventory(AGSWeapon* NewWeapon, bool bEquipWea
 			AbilitySystemComponent->ApplyGameplayEffectToSelf(GEAmmo, 1.0f, AbilitySystemComponent->MakeEffectContext());
 		}
 
-		bool WeaponDestroyed = NewWeapon->Destroy();
+		NewWeapon->Destroy();
 
+		return false;
+	}
+
+	if (GetLocalRole() < ROLE_Authority)
+	{
 		return false;
 	}
 

@@ -376,6 +376,11 @@ UAnimMontage* AGSWeapon::GetEquip3PMontage() const
 	return Equip3PMontage;
 }
 
+USoundCue* AGSWeapon::GetPickupSound() const
+{
+	return PickupSound;
+}
+
 void AGSWeapon::BeginPlay()
 {
 	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
