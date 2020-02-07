@@ -39,7 +39,7 @@ public:
 	FGameplayTag WeaponTag;
 
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
-	class AGSGATA_SingleLineTrace* SingleLineTraceTargetActor;
+	class AGSGATA_LineTrace* LineTraceTargetActor;
 	
 	// UI HUD Primary Icon when equipped. Using Sprites because of the texture atlas from ShooterGame.
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|UI")
@@ -189,7 +189,7 @@ protected:
 	TSubclassOf<class UGSHUDReticle> PrimaryHUDReticleClass;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon")
-	bool bEnableSingleLineTraceTargetActor;
+	bool bEnableLineTraceTargetActor;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon")
 	bool bEnableSphereTraceTargetActor;

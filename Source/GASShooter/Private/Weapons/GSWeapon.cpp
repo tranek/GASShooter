@@ -4,7 +4,7 @@
 #include "Weapons/GSWeapon.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
-#include "Characters/Abilities/GSGATA_SingleLineTrace.h"
+#include "Characters/Abilities/GSGATA_LineTrace.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -29,7 +29,7 @@ AGSWeapon::AGSWeapon()
 	bInfiniteAmmo = false;
 	PrimaryAmmoType = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.None"));
 	SecondaryAmmoType = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.None"));
-	bEnableSingleLineTraceTargetActor = false;
+	bEnableLineTraceTargetActor = false;
 	bEnableSphereTraceTargetActor = false;
 
 	CollisionComp = CreateDefaultSubobject<UCapsuleComponent>(FName("CollisionComponent"));
@@ -387,10 +387,10 @@ void AGSWeapon::BeginPlay()
 
 	ResetWeapon();
 
-	if (bEnableSingleLineTraceTargetActor)
+	if (bEnableLineTraceTargetActor)
 	{
-		SingleLineTraceTargetActor = GetWorld()->SpawnActor<AGSGATA_SingleLineTrace>();
-		SingleLineTraceTargetActor->SetOwner(this);
+		LineTraceTargetActor = GetWorld()->SpawnActor<AGSGATA_LineTrace>();
+		LineTraceTargetActor->SetOwner(this);
 	}
 
 	if (bEnableSphereTraceTargetActor)
