@@ -419,7 +419,7 @@ void AGSWeapon::PickUpOnTouch(AGSHeroCharacter* InCharacter)
 	UE_LOG(LogTemp, Log, TEXT("%s %s %s %s"), TEXT(__FUNCTION__), *InCharacter->GetName(), *GetName(),
 		*UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
 
-	if (InCharacter->AddWeaponToInventory(this, true))
+	if (InCharacter->AddWeaponToInventory(this, true) && OwningCharacter->IsInFirstPersonPerspective())
 	{
 		WeaponMesh3P->CastShadow = false;
 		WeaponMesh3P->SetVisibility(true, true);
