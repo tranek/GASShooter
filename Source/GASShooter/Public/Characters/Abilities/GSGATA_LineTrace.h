@@ -73,9 +73,9 @@ public:
 	bool bTraceFromPlayerViewPoint;
 
 	UFUNCTION(BlueprintCallable)
-	void ResetSpread();
+	virtual void ResetSpread();
 
-	float GetCurrentSpread() const;
+	virtual float GetCurrentSpread() const;
 
 	/**
 	* Configure the TargetActor for use. This TargetActor could be used in multiple abilities and there's no guarantee
@@ -139,7 +139,7 @@ public:
 
 	// Expose to Blueprint
 	UFUNCTION(BlueprintCallable)
-	void SetShouldProduceTargetDataOnServer(bool bInShouldProduceTargetDataOnServer);
+	virtual void SetShouldProduceTargetDataOnServer(bool bInShouldProduceTargetDataOnServer);
 
 	// Expose to Blueprint
 	UFUNCTION(BlueprintCallable)
@@ -158,17 +158,20 @@ public:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	// Traces as normal, but will manually filter all hit actors
-	void LineTraceWithFilter(TArray<FHitResult>& OutHitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params);
+	virtual void LineTraceWithFilter(TArray<FHitResult>& OutHitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params);
 
-	void AimWithPlayerController(const AActor* InSourceActor, FCollisionQueryParams Params, const FVector& TraceStart, FVector& OutTraceEnd, bool bIgnorePitch = false);
+	virtual void AimWithPlayerController(const AActor* InSourceActor, FCollisionQueryParams Params, const FVector& TraceStart, FVector& OutTraceEnd, bool bIgnorePitch = false);
 
-	bool ClipCameraRayToAbilityRange(FVector CameraLocation, FVector CameraDirection, FVector AbilityCenter, float AbilityRange, FVector& ClippedPosition);
+	virtual bool ClipCameraRayToAbilityRange(FVector CameraLocation, FVector CameraDirection, FVector AbilityCenter, float AbilityRange, FVector& ClippedPosition);
 
 protected:
 	TArray<TWeakObjectPtr<AGameplayAbilityWorldReticle>> ReticleActors;
 
 	virtual FGameplayAbilityTargetDataHandle MakeTargetData(const TArray<FHitResult>& HitResults) const;
 	virtual TArray<FHitResult> PerformTrace(AActor* InSourceActor);
+
+	virtual void SpawnReticleActor(FVector Location, FRotator Rotation);
+	virtual void DestroyReticleActors();
 
 #if ENABLE_DRAW_DEBUG
 	// Util for drawing result of multi line trace from KismetTraceUtils.h
