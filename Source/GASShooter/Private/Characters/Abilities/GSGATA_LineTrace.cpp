@@ -118,38 +118,41 @@ void AGSGATA_LineTrace::StartTargeting(UGameplayAbility* Ability)
 	OwningAbility = Ability;
 	SourceActor = Ability->GetCurrentActorInfo()->AvatarActor.Get();
 
-	//TODO Need to handle infinite MaxHitResults
-
-	// This is a lazy way of emptying and repopulating the ReticleActors.
-	// We could come up with a solution that reuses them.
-	for (int32 i = ReticleActors.Num() - 1; i >= 0; i++)
+	if (MasterPC)
 	{
-		if (ReticleActors[i].IsValid())
-		{
-			ReticleActors[i].Get()->Destroy();
-		}
-	}
+		//TODO Need to handle infinite MaxHitResults
 
-	ReticleActors.Empty();
-
-	if (ReticleClass)
-	{
-		for (int32 i = 0; i < MaxHitResults; i++)
+		// This is a lazy way of emptying and repopulating the ReticleActors.
+		// We could come up with a solution that reuses them.
+		for (int32 i = ReticleActors.Num() - 1; i >= 0; i++)
 		{
-			AGameplayAbilityWorldReticle* SpawnedReticleActor = GetWorld()->SpawnActor<AGameplayAbilityWorldReticle>(ReticleClass, GetActorLocation(), GetActorRotation());
-			if (SpawnedReticleActor)
+			if (ReticleActors[i].IsValid())
 			{
-				SpawnedReticleActor->InitializeReticle(this, MasterPC, ReticleParams);
-				ReticleActors.Add(SpawnedReticleActor);
+				ReticleActors[i].Get()->Destroy();
+			}
+		}
 
-				// This is to catch cases of playing on a listen server where we are using a replicated reticle actor.
-				// (In a client controlled player, this would only run on the client and therefor never replicate. If it runs
-				// on a listen server, the reticle actor may replicate. We want consistancy between client/listen server players.
-				// Just saying 'make the reticle actor non replicated' isnt a good answer, since we want to mix and match reticle
-				// actors and there may be other targeting types that want to replicate the same reticle actor class).
-				if (!ShouldProduceTargetDataOnServer)
+		ReticleActors.Empty();
+
+		if (ReticleClass)
+		{
+			for (int32 i = 0; i < MaxHitResults; i++)
+			{
+				AGameplayAbilityWorldReticle* SpawnedReticleActor = GetWorld()->SpawnActor<AGameplayAbilityWorldReticle>(ReticleClass, GetActorLocation(), GetActorRotation());
+				if (SpawnedReticleActor)
 				{
-					SpawnedReticleActor->SetReplicates(false);
+					SpawnedReticleActor->InitializeReticle(this, MasterPC, ReticleParams);
+					ReticleActors.Add(SpawnedReticleActor);
+
+					// This is to catch cases of playing on a listen server where we are using a replicated reticle actor.
+					// (In a client controlled player, this would only run on the client and therefor never replicate. If it runs
+					// on a listen server, the reticle actor may replicate. We want consistancy between client/listen server players.
+					// Just saying 'make the reticle actor non replicated' isnt a good answer, since we want to mix and match reticle
+					// actors and there may be other targeting types that want to replicate the same reticle actor class).
+					if (!ShouldProduceTargetDataOnServer)
+					{
+						SpawnedReticleActor->SetReplicates(false);
+					}
 				}
 			}
 		}
@@ -166,15 +169,11 @@ void AGSGATA_LineTrace::ConfirmTargetingAndContinue()
 		TargetDataReadyDelegate.Broadcast(Handle);
 
 #if ENABLE_DRAW_DEBUG
-		if (bDebug && HitResults.Num() > 0)
+		if (bDebug && MasterPC && HitResults.Num() > 0)
 		{
-			//TODO fall back to HitResults[0].TraceStart for AIControllers
-			APlayerController* PC = MasterPC;
-			check(PC);
-
 			FVector ViewStart;
 			FRotator ViewRot;
-			PC->GetPlayerViewPoint(ViewStart, ViewRot);
+			MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
 
 			DrawDebugLineTraceMulti(GetWorld(), bTraceFromPlayerViewPoint ? ViewStart : HitResults[0].TraceStart,
 				HitResults[0].TraceEnd, EDrawDebugTrace::ForDuration, true, HitResults, FLinearColor::Green, FLinearColor::Red, 2.0f);
@@ -271,17 +270,14 @@ void AGSGATA_LineTrace::LineTraceWithFilter(TArray<FHitResult>& OutHitResults, c
 
 void AGSGATA_LineTrace::AimWithPlayerController(const AActor* InSourceActor, FCollisionQueryParams Params, const FVector& TraceStart, FVector& OutTraceEnd, bool bIgnorePitch)
 {
-	if (!OwningAbility) // Server and launching client only
+	if (!OwningAbility || !MasterPC) // Server and launching client only
 	{
 		return;
 	}
 
-	APlayerController* PC = OwningAbility->GetCurrentActorInfo()->PlayerController.Get();
-	check(PC);
-
 	FVector ViewStart;
 	FRotator ViewRot;
-	PC->GetPlayerViewPoint(ViewStart, ViewRot);
+	MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
 
 	const FVector ViewDir = ViewRot.Vector();
 	FVector ViewEnd = ViewStart + (ViewDir * MaxRange);
@@ -378,18 +374,18 @@ TArray<FHitResult> AGSGATA_LineTrace::PerformTrace(AActor* InSourceActor)
 	Params.AddIgnoredActors(ActorsToIgnore);
 	Params.bIgnoreBlocks = bIgnoreBlockingHits;
 
-	//TODO Fallback to StartLocation for AIControllers
-
-	APlayerController* PC = OwningAbility->GetCurrentActorInfo()->PlayerController.Get();
-	check(PC);
-
-	FVector ViewStart;
-	FRotator ViewRot;
-	PC->GetPlayerViewPoint(ViewStart, ViewRot);
-
-	FVector TraceStart = bTraceFromPlayerViewPoint ? ViewStart : StartLocation.GetTargetingTransform().GetLocation();
+	FVector TraceStart = StartLocation.GetTargetingTransform().GetLocation();
 	FVector TraceEnd;
-	AimWithPlayerController(InSourceActor, Params, TraceStart, TraceEnd);		//Effective on server and launching client only
+
+	if (MasterPC)
+	{
+		FVector ViewStart;
+		FRotator ViewRot;
+		MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
+
+		TraceStart = bTraceFromPlayerViewPoint ? ViewStart : TraceStart;
+		AimWithPlayerController(InSourceActor, Params, TraceStart, TraceEnd);		//Effective on server and launching client only
+	}
 
 	// ------------------------------------------------------
 
