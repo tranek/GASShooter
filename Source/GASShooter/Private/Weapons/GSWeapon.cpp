@@ -5,6 +5,7 @@
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "Characters/Abilities/GSGATA_LineTrace.h"
+#include "Characters/Abilities/GSGATA_SphereTrace.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -397,7 +398,8 @@ void AGSWeapon::BeginPlay()
 
 	if (bEnableSphereTraceTargetActor)
 	{
-		//TODO
+		SphereTraceTargetActor = GetWorld()->SpawnActor<AGSGATA_SphereTrace>();
+		SphereTraceTargetActor->SetOwner(this);
 	}
 
 	if (!OwningCharacter && bSpawnWithCollision)

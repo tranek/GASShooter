@@ -3,11 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/GameplayAbilityTargetActor.h"
+#include "Characters/Abilities/GSGATA_Trace.h"
 #include "CollisionQueryParams.h"
 #include "DrawDebugHelpers.h"
 #include "Engine/CollisionProfile.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "WorldCollision.h"
 #include "GSGATA_LineTrace.generated.h"
 
@@ -17,65 +16,12 @@
  * one will destroy the TargetActor.
  */
 UCLASS()
-class GASSHOOTER_API AGSGATA_LineTrace : public AGameplayAbilityTargetActor
+class GASSHOOTER_API AGSGATA_LineTrace : public AGSGATA_Trace
 {
 	GENERATED_BODY()
 
 public:
 	AGSGATA_LineTrace();
-
-	// Base weapon spread (degrees)
-	UPROPERTY(BlueprintReadWrite, Category = "Accuracy")
-	float WeaponSpread;
-
-	// Aiming spread modifier
-	UPROPERTY(BlueprintReadWrite, Category = "Accuracy")
-	float AimingSpreadMod;
-
-	// Continuous firing: spread increment
-	UPROPERTY(BlueprintReadWrite, Category = "Accuracy")
-	float FiringSpreadIncrement;
-
-	// Continuous firing: max increment
-	UPROPERTY(BlueprintReadWrite, Category = "Accuracy")
-	float FiringSpreadMax;
-
-	// Current spread from continuous firing
-	float CurrentFiringSpread;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Accuracy")
-	bool bUseAimingSpreadMod;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Accuracy")
-	FGameplayTag AimingTag;
-	
-	UPROPERTY(BlueprintReadWrite, Category = "Accuracy")
-	FGameplayTag AimingRemovalTag;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
-	float MaxRange;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, config, meta = (ExposeOnSpawn = true), Category = "Trace")
-	FCollisionProfileName TraceProfile;
-
-	// Does the trace affect the aiming pitch
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
-	bool bTraceAffectsAimPitch;
-
-	// Maximum hit results to return. 0 just returns the trace end point. < 0 returns infinite hit results.
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
-	int32 MaxHitResults;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
-	bool bIgnoreBlockingHits;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
-	bool bTraceFromPlayerViewPoint;
-
-	UFUNCTION(BlueprintCallable)
-	virtual void ResetSpread();
-
-	virtual float GetCurrentSpread() const;
 
 	/**
 	* Configure the TargetActor for use. This TargetActor could be used in multiple abilities and there's no guarantee
@@ -103,10 +49,10 @@ public:
 	* @param bInUseAImingSpreadMod Should we modify spread based on if we're aiming? If true, must set InAimingTag and
 	* InAimingRemovalTag.
 	* @param InMaxRange Max range for this trace.
-	* @param InWeaponSpread Base weapon spread in degrees.
+	* @param InBaseSpread Base targeting spread in degrees.
 	* @param InAimingSpreadMod Optional. Multiplicative modifier to spread if aiming.
-	* @param InFiringSpreadIncrement Amount spread increments from continuous fire in degrees.
-	* @param InFiringSpreadMax Maximum amount of spread for continuous fire in degrees.
+	* @param InTargetingSpreadIncrement Amount spread increments from continuous targeting in degrees.
+	* @param InTargetingSpreadMax Maximum amount of spread for continuous targeting in degrees.
 	* @param InMaxHitResults Max hit results that a trace can return. 0 just returns the trace end point. < 0 returns infinite
 	* hit results.
 	*/
@@ -126,52 +72,19 @@ public:
 		UPARAM(DisplayName = "Trace From Player ViewPoint") bool bInTraceFromPlayerViewPoint = false,
 		UPARAM(DisplayName = "Use Aiming Spread Mod") bool bInUseAimingSpreadMod = false,
 		UPARAM(DisplayName = "Max Range") float InMaxRange = 999999.0f,
-		UPARAM(DisplayName = "Weapon Spread") float InWeaponSpread = 0.0f,
+		UPARAM(DisplayName = "Base Targeting Spread") float InBaseSpread = 0.0f,
 		UPARAM(DisplayName = "Aiming Spread Mod") float InAimingSpreadMod = 0.0f,
-		UPARAM(DisplayName = "Firing Spread Increment") float InFiringSpreadIncrement = 0.0f,
-		UPARAM(DisplayName = "Firing Spread Max") float InFiringSpreadMax = 0.0f,
+		UPARAM(DisplayName = "Targeting Spread Increment") float InTargetingSpreadIncrement = 0.0f,
+		UPARAM(DisplayName = "Targeting Spread Max") float InTargetingSpreadMax = 0.0f,
 		UPARAM(DisplayName = "Max Hit Results") int32 InMaxHitResults = 1
 	);
 
-	// Expose to Blueprint
-	UFUNCTION(BlueprintCallable)
-	void SetStartLocation(const FGameplayAbilityTargetingLocationInfo& InStartLocation);
-
-	// Expose to Blueprint
-	UFUNCTION(BlueprintCallable)
-	virtual void SetShouldProduceTargetDataOnServer(bool bInShouldProduceTargetDataOnServer);
-
-	// Expose to Blueprint
-	UFUNCTION(BlueprintCallable)
-	void SetDestroyOnConfirmation(bool bInDestroyOnConfirmation = false);
-
-	virtual void StartTargeting(UGameplayAbility* Ability) override;
-
 	virtual void ConfirmTargetingAndContinue() override;
-
-	virtual void CancelTargeting() override;
-
-	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-	// Traces as normal, but will manually filter all hit actors
-	virtual void LineTraceWithFilter(TArray<FHitResult>& OutHitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params);
-
-	virtual void AimWithPlayerController(const AActor* InSourceActor, FCollisionQueryParams Params, const FVector& TraceStart, FVector& OutTraceEnd, bool bIgnorePitch = false);
-
-	virtual bool ClipCameraRayToAbilityRange(FVector CameraLocation, FVector CameraDirection, FVector AbilityCenter, float AbilityRange, FVector& ClippedPosition);
-
 protected:
-	TArray<TWeakObjectPtr<AGameplayAbilityWorldReticle>> ReticleActors;
-
-	virtual FGameplayAbilityTargetDataHandle MakeTargetData(const TArray<FHitResult>& HitResults) const;
-	virtual TArray<FHitResult> PerformTrace(AActor* InSourceActor);
-
-	virtual void SpawnReticleActor(FVector Location, FRotator Rotation);
-	virtual void DestroyReticleActors();
+	virtual TArray<FHitResult> PerformTrace(AActor* InSourceActor) override;
 
 #if ENABLE_DRAW_DEBUG
 	// Util for drawing result of multi line trace from KismetTraceUtils.h

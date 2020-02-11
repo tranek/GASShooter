@@ -3,74 +3,100 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/GameplayAbilityTargetActor.h"
-#include "Abilities/GameplayAbilityTargetDataFilter.h"
-#include "Abilities/GameplayAbilityTargetTypes.h"
+#include "Characters/Abilities/GSGATA_Trace.h"
 #include "CollisionQueryParams.h"
+#include "DrawDebugHelpers.h"
 #include "Engine/CollisionProfile.h"
-#include "Engine/EngineTypes.h"
-#include "UObject/ObjectMacros.h"
 #include "WorldCollision.h"
 #include "GSGATA_SphereTrace.generated.h"
 
 /**
- * Reusable sphere trace that can return multiple overlapping actors. Stops tracing at the first blocking hit.
+ * Reusable, configurable sphere trace TargetActor.
+ * Meant to be used with GSAT_WaitTargetDataUsingActor instead of the default WaitTargetData AbilityTask as the default
+ * one will destroy the TargetActor.
  */
 UCLASS()
-class GASSHOOTER_API AGSGATA_SphereTrace : public AGameplayAbilityTargetActor
+class GASSHOOTER_API AGSGATA_SphereTrace : public AGSGATA_Trace
 {
 	GENERATED_BODY()
 	
 public:
 	AGSGATA_SphereTrace();
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = Trace)
-	float MaxRange;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
+	float TraceSphereRadius;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, config, meta = (ExposeOnSpawn = true), Category = Trace)
-	FCollisionProfileName TraceProfile;
-
-	// Does the trace affect the aiming pitch
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = Trace)
-	bool bTraceAffectsAimPitch;
-
-	// Maximum number of targets that can be returned on confirmation
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = Trace)
-	int32 MaxTargetResults;
-
-	// Expose to Blueprint
+	/**
+		* Configure the TargetActor for use. This TargetActor could be used in multiple abilities and there's no guarantee
+		* what state it will be in. You will need to make sure that only one ability is using this TargetActor at a time.
+		*
+		* @param InStartLocation Location to trace from.
+		* @param InAimingTag Optional. Predicted GameplayTag for aiming. Only used if we mofify spread while aiming. If used,
+		* must set InAimingRemovalTag also.
+		* @param InAimingRemovalTag Optional. Predicted GameplayTag for aiming removal. Only used if we mofify spread while
+		* aiming. If used, must set InAimingTag also.
+		* @param InTraceProfile Collision profile to use for tracing.
+		* @param InFilter Hit Actors must pass this filter to be returned in the TargetData.
+		* @param InReticleClass Reticle that will appear on top of acquired targets. Reticles will be spawned/despawned as targets are acquired/lost.
+		* @param InReticleParams Parameters for world reticle. Usage of these parameters is dependent on the reticle.
+		* @param bInIgnoreBlockingHits Ignore blocking collision hits in the trace. Useful if you want to target through walls.
+		* @param bInShouldProduceTargetDataOnServer If set, this TargetActor will produce TargetData on the Server in addition
+		* to the client and the client will just send a generic "Confirm" event to the server. If false, the client will send
+		* the TargetData to the Server. This is handled by the WaitTargetDataUsingActor AbilityTask.
+		* @param bInDebug When true, this TargetActor will show debug lines of the trace and hit results.
+		* @param bInTraceAffectsAimPitch Does the trace affect the aiming pitch?
+		* @param bInTraceFromPlayerViewPoint Should we trace from the player ViewPoint instead of the StartLocation? The
+		* TargetData HitResults will still have the StartLocation for the TraceStart. This is useful for FPS where we want
+		* to trace from the player ViewPoint but draw the bullet tracer from the weapon muzzle.
+		* TODO: AI Controllers should fall back to muzzle location. Not implemented yet.
+		* @param bInUseAImingSpreadMod Should we modify spread based on if we're aiming? If true, must set InAimingTag and
+		* InAimingRemovalTag.
+		* @param InMaxRange Max range for this trace.
+		* @param InTraceSphereRadius Radius for the sphere trace.
+		* @param InBaseSpread Base targeting spread in degrees.
+		* @param InAimingSpreadMod Optional. Multiplicative modifier to spread if aiming.
+		* @param InTargetingSpreadIncrement Amount spread increments from continuous targeting in degrees.
+		* @param InTargetingSpreadMax Maximum amount of spread for continuous targeting in degrees.
+		* @param InMaxHitResults Max hit results that a trace can return. 0 just returns the trace end point. < 0 returns infinite
+		* hit results.
+		*/
 	UFUNCTION(BlueprintCallable)
-	void SetStartLocation(const FGameplayAbilityTargetingLocationInfo& InStartLocation);
-
-	// Expose to Blueprint
-	UFUNCTION(BlueprintCallable)
-	void SetShouldProduceTargetDataOnServer(bool InShouldProduceTargetDataOnServer);
-
-	// Expose to Blueprint
-	UFUNCTION(BlueprintCallable)
-	void SetDestroyOnConfirmation(bool DestroyOnConfirmation = false);
-
-	virtual void StartTargeting(UGameplayAbility* Ability) override;
-
-	virtual void CancelTargeting() override;
-
-	virtual void BeginPlay() override;
-
-	virtual void Tick(float DeltaSeconds) override;
+	void Configure(
+		UPARAM(DisplayName = "Start Location") const FGameplayAbilityTargetingLocationInfo& InStartLocation,
+		UPARAM(DisplayName = "Aiming Tag") FGameplayTag InAimingTag,
+		UPARAM(DisplayName = "Aiming Removal Tag") FGameplayTag InAimingRemovalTag,
+		UPARAM(DisplayName = "Trace Profile") FCollisionProfileName InTraceProfile,
+		UPARAM(DisplayName = "Filter") FGameplayTargetDataFilterHandle InFilter,
+		UPARAM(DisplayName = "Reticle Class") TSubclassOf<AGameplayAbilityWorldReticle> InReticleClass,
+		UPARAM(DisplayName = "Reticle Params") FWorldReticleParameters InReticleParams,
+		UPARAM(DisplayName = "Ignore Blocking Hits") bool bInIgnoreBlockingHits = false,
+		UPARAM(DisplayName = "Should Produce Target Data on Server") bool bInShouldProduceTargetDataOnServer = false,
+		UPARAM(DisplayName = "Debug") bool bInDebug = false,
+		UPARAM(DisplayName = "Trace Affects Aim Pitch") bool bInTraceAffectsAimPitch = true,
+		UPARAM(DisplayName = "Trace From Player ViewPoint") bool bInTraceFromPlayerViewPoint = false,
+		UPARAM(DisplayName = "Use Aiming Spread Mod") bool bInUseAimingSpreadMod = false,
+		UPARAM(DisplayName = "Max Range") float InMaxRange = 999999.0f,
+		UPARAM(DisplayName = "Trace Sphere Radius") float InTraceSphereRadius = 100.0f,
+		UPARAM(DisplayName = "Base Targeting Spread") float InBaseSpread = 0.0f,
+		UPARAM(DisplayName = "Aiming Spread Mod") float InAimingSpreadMod = 0.0f,
+		UPARAM(DisplayName = "Targeting Spread Increment") float InTargetingSpreadIncrement = 0.0f,
+		UPARAM(DisplayName = "Targeting Spread Max") float InTargetingSpreadMax = 0.0f,
+		UPARAM(DisplayName = "Max Hit Results") int32 InMaxHitResults = 1
+	);
 
 	virtual void ConfirmTargetingAndContinue() override;
 
-	/** Traces as normal, but will manually filter all hit actors */
-	static void LineTraceWithFilter(FHitResult& OutHitResult, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params);
+	virtual void Tick(float DeltaSeconds) override;
 
-	void AimWithPlayerController(const AActor* InSourceActor, FCollisionQueryParams Params, const FVector& TraceStart, FVector& OutTraceEnd, bool bIgnorePitch = false) const;
-
-	static bool ClipCameraRayToAbilityRange(FVector CameraLocation, FVector CameraDirection, FVector AbilityCenter, float AbilityRange, FVector& ClippedPosition);
+	virtual void SphereTraceWithFilter(TArray<FHitResult>& OutHitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, float Radius, FName ProfileName, const FCollisionQueryParams Params);
 
 protected:
-	FGameplayAbilityTargetDataHandle MakeTargetData(const TArray<FHitResult>& HitActors) const;
+	virtual TArray<FHitResult> PerformTrace(AActor* InSourceActor) override;
 
-	virtual TArray<FHitResult> PerformTrace(AActor* InSourceActor);
+#if ENABLE_DRAW_DEBUG
+	void DrawDebugSweptSphere(const UWorld* InWorld, FVector const& Start, FVector const& End, float Radius, FColor const& Color, bool bPersistentLines = false, float LifeTime = -1.f, uint8 DepthPriority = 0);
 
-	TArray<FHitResult> Hits;
+	// Util for drawing result of multi line trace from KismetTraceUtils.h
+	void DrawDebugSphereTraceMulti(const UWorld* World, const FVector& Start, const FVector& End, float Radius, EDrawDebugTrace::Type DrawDebugType, bool bHit, const TArray<FHitResult>& OutHits, FLinearColor TraceColor, FLinearColor TraceHitColor, float DrawTime);
+#endif // ENABLE_DRAW_DEBUG
 };

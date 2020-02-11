@@ -150,7 +150,8 @@ void AGSPlayerController::SetSecondaryReserveAmmo(int32 SecondaryReserveAmmo)
 
 void AGSPlayerController::SetHUDReticle(TSubclassOf<UGSHUDReticle> ReticleClass)
 {
-	if (UIHUDWidget)
+	// !GetWorld()->bIsTearingDown Stops an error when quitting PIE while targeting when the EndAbility resets the HUD reticle
+	if (UIHUDWidget && GetWorld() && !GetWorld()->bIsTearingDown)
 	{
 		UIHUDWidget->SetReticle(ReticleClass);
 	}

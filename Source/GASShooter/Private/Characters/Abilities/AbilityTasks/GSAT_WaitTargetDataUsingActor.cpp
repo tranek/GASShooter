@@ -3,6 +3,7 @@
 
 #include "Characters/Abilities/AbilityTasks/GSAT_WaitTargetDataUsingActor.h"
 #include "AbilitySystemComponent.h"
+#include "Characters/Abilities/GSGATA_Trace.h"
 
 UGSAT_WaitTargetDataUsingActor::UGSAT_WaitTargetDataUsingActor(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -239,19 +240,23 @@ void UGSAT_WaitTargetDataUsingActor::OnDestroy(bool AbilityEnded)
 {
 	if (TargetActor)
 	{
-		// TargetActor doesn't have a StopTargeting function which is where this should go
-		TargetActor->SetActorTickEnabled(false);
-		TargetActor->SourceActor = nullptr;
-		TargetActor->OwningAbility = nullptr;
+		AGSGATA_Trace* TraceTargetActor = Cast<AGSGATA_Trace>(TargetActor);
+		if (TraceTargetActor)
+		{
+			TraceTargetActor->StopTargeting();
+		}
+		else
+		{
+			// TargetActor doesn't have a StopTargeting function
+			TargetActor->SetActorTickEnabled(false);
 
-		//TODO handle/clean up Reticle if it exists
+			// Clear added callbacks
+			TargetActor->TargetDataReadyDelegate.RemoveAll(this);
+			TargetActor->CanceledDelegate.RemoveAll(this);
 
-		// Clear added callbacks
-		TargetActor->TargetDataReadyDelegate.RemoveAll(this);
-		TargetActor->CanceledDelegate.RemoveAll(this);
-
-		AbilitySystemComponent->GenericLocalConfirmCallbacks.RemoveDynamic(TargetActor, &AGameplayAbilityTargetActor::ConfirmTargeting);
-		AbilitySystemComponent->GenericLocalCancelCallbacks.RemoveDynamic(TargetActor, &AGameplayAbilityTargetActor::CancelTargeting);
+			AbilitySystemComponent->GenericLocalConfirmCallbacks.RemoveDynamic(TargetActor, &AGameplayAbilityTargetActor::ConfirmTargeting);
+			AbilitySystemComponent->GenericLocalCancelCallbacks.RemoveDynamic(TargetActor, &AGameplayAbilityTargetActor::CancelTargeting);
+		}
 	}
 
 	Super::OnDestroy(AbilityEnded);
