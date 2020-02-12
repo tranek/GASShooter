@@ -79,12 +79,10 @@ public:
 		UPARAM(DisplayName = "Max Hit Results") int32 InMaxHitResults = 1
 	);
 
-	virtual void ConfirmTargetingAndContinue() override;
-
-	virtual void Tick(float DeltaSeconds) override;
-
 protected:
-	virtual TArray<FHitResult> PerformTrace(AActor* InSourceActor) override;
+
+	virtual void DoTrace(TArray<FHitResult>& HitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params) override;
+	virtual void ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDebugTrace::Type DrawDebugType, float Duration = 2.0f) override;
 
 #if ENABLE_DRAW_DEBUG
 	// Util for drawing result of multi line trace from KismetTraceUtils.h

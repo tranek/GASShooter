@@ -90,13 +90,16 @@ void AGSGATA_Trace::StartTargeting(UGameplayAbility* Ability)
 
 void AGSGATA_Trace::ConfirmTargetingAndContinue()
 {
-	// Children can completely replace this
 	check(ShouldProduceTargetData());
 	if (SourceActor)
 	{
 		TArray<FHitResult> HitResults = PerformTrace(SourceActor);
 		FGameplayAbilityTargetDataHandle Handle = MakeTargetData(HitResults);
 		TargetDataReadyDelegate.Broadcast(Handle);
+
+#if ENABLE_DRAW_DEBUG
+		ShowDebugTrace(HitResults, EDrawDebugTrace::Type::ForDuration, 2.0f);
+#endif
 	}
 }
 
@@ -122,9 +125,8 @@ void AGSGATA_Trace::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Start with Tick disabled. We'll enable it in StartTargeting() and disable it again in the WaitTargetDataUsingActor task.
-	// Ideally we would have a StopTargeting() function on the TargetActor base class.
-	// For instant confirmations, tick will never happen because we StartTargeting(), ConfirmTargeting(), and immediately disable tick.
+	// Start with Tick disabled. We'll enable it in StartTargeting() and disable it again in StopTargeting().
+	// For instant confirmations, tick will never happen because we StartTargeting(), ConfirmTargeting(), and immediately StopTargeting().
 	SetActorTickEnabled(false);
 }
 
@@ -133,6 +135,19 @@ void AGSGATA_Trace::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	DestroyReticleActors();
 
 	Super::EndPlay(EndPlayReason);
+}
+
+void AGSGATA_Trace::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+#if ENABLE_DRAW_DEBUG
+	if (SourceActor)
+	{
+		TArray<FHitResult> HitResults = PerformTrace(SourceActor);
+		ShowDebugTrace(HitResults, EDrawDebugTrace::Type::ForOneFrame);
+	}
+#endif
 }
 
 void AGSGATA_Trace::LineTraceWithFilter(TArray<FHitResult>& OutHitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params)
@@ -220,8 +235,6 @@ void AGSGATA_Trace::AimWithPlayerController(const AActor* InSourceActor, FCollis
 
 	const float CurrentSpread = GetCurrentSpread();
 
-	UE_LOG(LogTemp, Log, TEXT("%s Current Spread: %f"), TEXT(__FUNCTION__), CurrentSpread);
-
 	const float ConeHalfAngle = FMath::DegreesToRadians(CurrentSpread * 0.5f);
 	const int32 RandomSeed = FMath::Rand();
 	FRandomStream WeaponRandomStream(RandomSeed);
@@ -281,7 +294,97 @@ FGameplayAbilityTargetDataHandle AGSGATA_Trace::MakeTargetData(const TArray<FHit
 	return ReturnDataHandle;
 }
 
-void AGSGATA_Trace::SpawnReticleActor(FVector Location, FRotator Rotation)
+TArray<FHitResult> AGSGATA_Trace::PerformTrace(AActor* InSourceActor)
+{
+	bool bTraceComplex = false;
+	TArray<AActor*> ActorsToIgnore;
+
+	ActorsToIgnore.Add(InSourceActor);
+
+	FCollisionQueryParams Params(SCENE_QUERY_STAT(AGSGATA_LineTrace), bTraceComplex);
+	Params.bReturnPhysicalMaterial = true;
+	Params.AddIgnoredActors(ActorsToIgnore);
+	Params.bIgnoreBlocks = bIgnoreBlockingHits;
+
+	FVector TraceStart = StartLocation.GetTargetingTransform().GetLocation();
+	FVector TraceEnd;
+
+	if (MasterPC)
+	{
+		FVector ViewStart;
+		FRotator ViewRot;
+		MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
+
+		TraceStart = bTraceFromPlayerViewPoint ? ViewStart : TraceStart;
+	}
+
+	AimWithPlayerController(InSourceActor, Params, TraceStart, TraceEnd);		//Effective on server and launching client only
+
+
+	// ------------------------------------------------------
+
+	SetActorLocationAndRotation(TraceEnd, SourceActor->GetActorRotation());
+
+	TArray<FHitResult> ReturnHitResults;
+	DoTrace(ReturnHitResults, InSourceActor->GetWorld(), Filter, TraceStart, TraceEnd, TraceProfile.Name, Params);
+
+	for (int32 i = ReturnHitResults.Num() - 1; i >= 0; i--)
+	{
+		if (MaxHitResults >= 0 && i + 1 > MaxHitResults)
+		{
+			// Trim to MaxHitResults
+			ReturnHitResults.RemoveAt(i);
+			continue;
+		}
+
+		FHitResult& HitResult = ReturnHitResults[i];
+
+		if (MaxHitResults > 0)
+		{
+			if (i < ReticleActors.Num())
+			{
+				if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[i].Get())
+				{
+					const bool bHitActor = HitResult.Actor != nullptr;
+					const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitResult.Actor->GetActorLocation() : HitResult.Location;
+
+					LocalReticleActor->SetActorLocation(ReticleLocation);
+					LocalReticleActor->SetIsTargetAnActor(bHitActor);
+					LocalReticleActor->SetActorHiddenInGame(false);
+				}
+			}
+		}
+		else
+		{
+			// Infinite MaxHitResults, spawn a new ReticleActor for each hit result
+			if (AGameplayAbilityWorldReticle* LocalReticleActor = SpawnReticleActor(GetActorLocation(), GetActorRotation()))
+			{
+				const bool bHitActor = HitResult.Actor != nullptr;
+				const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitResult.Actor->GetActorLocation() : HitResult.Location;
+
+				LocalReticleActor->SetActorLocation(ReticleLocation);
+				LocalReticleActor->SetIsTargetAnActor(bHitActor);
+				LocalReticleActor->SetActorHiddenInGame(false);
+			}
+		}
+	}
+
+	if (ReturnHitResults.Num() < 1)
+	{
+		// If there were no hits, add a default HitResult at the end of the trace
+		FHitResult HitResult;
+		// Start param could be player ViewPoint. We want HitResult to always display the StartLocation.
+		HitResult.TraceStart = StartLocation.GetTargetingTransform().GetLocation();
+		HitResult.TraceEnd = TraceEnd;
+		HitResult.Location = TraceEnd;
+		HitResult.ImpactPoint = TraceEnd;
+		ReturnHitResults.Add(HitResult);
+	}
+
+	return ReturnHitResults;
+}
+
+AGameplayAbilityWorldReticle* AGSGATA_Trace::SpawnReticleActor(FVector Location, FRotator Rotation)
 {
 	if (ReticleClass)
 	{
@@ -289,6 +392,7 @@ void AGSGATA_Trace::SpawnReticleActor(FVector Location, FRotator Rotation)
 		if (SpawnedReticleActor)
 		{
 			SpawnedReticleActor->InitializeReticle(this, MasterPC, ReticleParams);
+			SpawnedReticleActor->SetActorHiddenInGame(true);
 			ReticleActors.Add(SpawnedReticleActor);
 
 			// This is to catch cases of playing on a listen server where we are using a replicated reticle actor.
@@ -300,8 +404,12 @@ void AGSGATA_Trace::SpawnReticleActor(FVector Location, FRotator Rotation)
 			{
 				SpawnedReticleActor->SetReplicates(false);
 			}
+
+			return SpawnedReticleActor;
 		}
 	}
+
+	return nullptr;
 }
 
 void AGSGATA_Trace::DestroyReticleActors()

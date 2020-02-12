@@ -55,49 +55,6 @@ void AGSGATA_SphereTrace::Configure(
 	MaxHitResults = InMaxHitResults;
 }
 
-void AGSGATA_SphereTrace::ConfirmTargetingAndContinue()
-{
-	check(ShouldProduceTargetData());
-	if (SourceActor)
-	{
-		TArray<FHitResult> HitResults = PerformTrace(SourceActor);
-		FGameplayAbilityTargetDataHandle Handle = MakeTargetData(HitResults);
-		TargetDataReadyDelegate.Broadcast(Handle);
-
-#if ENABLE_DRAW_DEBUG
-		if (bDebug && HitResults.Num() > 0)
-		{
-			FVector ViewStart = HitResults[0].TraceStart;
-			FRotator ViewRot;
-			if (MasterPC)
-			{
-				MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
-			}
-
-			DrawDebugSphereTraceMulti(GetWorld(), bTraceFromPlayerViewPoint ? ViewStart : HitResults[0].TraceStart,
-				HitResults[0].TraceEnd, TraceSphereRadius, EDrawDebugTrace::ForDuration, true, HitResults, FLinearColor::Green, FLinearColor::Red, 2.0f);
-		}
-#endif
-	}
-}
-
-void AGSGATA_SphereTrace::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	if (SourceActor)
-	{
-		TArray<FHitResult> HitResults = PerformTrace(SourceActor);
-
-#if ENABLE_DRAW_DEBUG
-		if (bDebug && HitResults.Num() > 0)
-		{
-			DrawDebugSphereTraceMulti(GetWorld(), HitResults[0].TraceStart, HitResults[0].TraceEnd, TraceSphereRadius, EDrawDebugTrace::ForOneFrame, true, HitResults, FLinearColor::Green, FLinearColor::Red, 2.0f);
-		}
-#endif
-	}
-}
-
 void AGSGATA_SphereTrace::SphereTraceWithFilter(TArray<FHitResult>& OutHitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, float Radius, FName ProfileName, const FCollisionQueryParams Params)
 {
 	check(World);
@@ -128,85 +85,27 @@ void AGSGATA_SphereTrace::SphereTraceWithFilter(TArray<FHitResult>& OutHitResult
 	return;
 }
 
-TArray<FHitResult> AGSGATA_SphereTrace::PerformTrace(AActor* InSourceActor)
+void AGSGATA_SphereTrace::DoTrace(TArray<FHitResult>& HitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params)
 {
-	bool bTraceComplex = false;
-	TArray<AActor*> ActorsToIgnore;
+	SphereTraceWithFilter(HitResults, World, FilterHandle, Start, End, TraceSphereRadius, ProfileName, Params);
+}
 
-	ActorsToIgnore.Add(InSourceActor);
-
-	FCollisionQueryParams Params(SCENE_QUERY_STAT(AGSGATA_LineTrace), bTraceComplex);
-	Params.bReturnPhysicalMaterial = true;
-	Params.AddIgnoredActors(ActorsToIgnore);
-	Params.bIgnoreBlocks = bIgnoreBlockingHits;
-
-	FVector TraceStart = StartLocation.GetTargetingTransform().GetLocation();
-	FVector TraceEnd;
-
-	if (MasterPC)
+void AGSGATA_SphereTrace::ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDebugTrace::Type DrawDebugType, float Duration)
+{
+#if ENABLE_DRAW_DEBUG
+	if (bDebug && HitResults.Num() > 0)
 	{
-		FVector ViewStart;
+		FVector ViewStart = HitResults[0].TraceStart;
 		FRotator ViewRot;
-		MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
-
-		TraceStart = bTraceFromPlayerViewPoint ? ViewStart : TraceStart;
-	}
-
-	AimWithPlayerController(InSourceActor, Params, TraceStart, TraceEnd);		//Effective on server and launching client only
-
-
-	// ------------------------------------------------------
-
-	SetActorLocationAndRotation(TraceEnd, SourceActor->GetActorRotation());
-
-	TArray<FHitResult> ReturnHitResults;
-	SphereTraceWithFilter(ReturnHitResults, InSourceActor->GetWorld(), Filter, TraceStart, TraceEnd, TraceSphereRadius, TraceProfile.Name, Params);
-
-	for (int32 i = ReturnHitResults.Num() - 1; i >= 0; i--)
-	{
-		if (MaxHitResults >= 0 && i + 1 > MaxHitResults)
+		if (MasterPC)
 		{
-			// Trim to MaxHitResults
-			ReturnHitResults.RemoveAt(i);
-			continue;
+			MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
 		}
 
-		FHitResult& HitResult = ReturnHitResults[i];
-
-		if (MaxHitResults > 0)
-		{
-			if (i < ReticleActors.Num())
-			{
-				if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[i].Get())
-				{
-					const bool bHitActor = HitResult.Actor != nullptr;
-					const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitResult.Actor->GetActorLocation() : HitResult.Location;
-
-					LocalReticleActor->SetActorLocation(ReticleLocation);
-					LocalReticleActor->SetIsTargetAnActor(bHitActor);
-				}
-			}
-		}
-		else
-		{
-			// Infinite MaxHitResults, spawn a new ReticleActor for each hit result
-			SpawnReticleActor(GetActorLocation(), GetActorRotation());
-		}
+		DrawDebugSphereTraceMulti(GetWorld(), bTraceFromPlayerViewPoint ? ViewStart : HitResults[0].TraceStart,
+			HitResults[0].TraceEnd, TraceSphereRadius, DrawDebugType, true, HitResults, FLinearColor::Green, FLinearColor::Red, Duration);
 	}
-
-	if (ReturnHitResults.Num() < 1)
-	{
-		// If there were no hits, add a default HitResult at the end of the trace
-		FHitResult HitResult;
-		// Start param could be player ViewPoint. We want HitResult to always display the StartLocation.
-		HitResult.TraceStart = StartLocation.GetTargetingTransform().GetLocation();
-		HitResult.TraceEnd = TraceEnd;
-		HitResult.Location = TraceEnd;
-		HitResult.ImpactPoint = TraceEnd;
-		ReturnHitResults.Add(HitResult);
-	}
-
-	return ReturnHitResults;
+#endif
 }
 
 #if ENABLE_DRAW_DEBUG

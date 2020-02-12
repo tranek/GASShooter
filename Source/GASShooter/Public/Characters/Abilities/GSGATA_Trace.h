@@ -99,6 +99,8 @@ public:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	virtual void Tick(float DeltaSeconds) override;
+
 	// Traces as normal, but will manually filter all hit actors
 	virtual void LineTraceWithFilter(TArray<FHitResult>& OutHitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params);
 
@@ -112,8 +114,11 @@ protected:
 	TArray<TWeakObjectPtr<AGameplayAbilityWorldReticle>> ReticleActors;
 
 	virtual FGameplayAbilityTargetDataHandle MakeTargetData(const TArray<FHitResult>& HitResults) const;
-	virtual TArray<FHitResult> PerformTrace(AActor* InSourceActor)  PURE_VIRTUAL(AGSGATA_Trace, return TArray<FHitResult>(););
+	virtual TArray<FHitResult> PerformTrace(AActor* InSourceActor);
 
-	virtual void SpawnReticleActor(FVector Location, FRotator Rotation);
+	virtual void DoTrace(TArray<FHitResult>& HitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params) PURE_VIRTUAL(AGSGATA_Trace, return;);
+	virtual void ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDebugTrace::Type DrawDebugType, float Duration = 2.0f) PURE_VIRTUAL(AGSGATA_Trace, return;);
+
+	virtual AGameplayAbilityWorldReticle* SpawnReticleActor(FVector Location, FRotator Rotation);
 	virtual void DestroyReticleActors();
 };
