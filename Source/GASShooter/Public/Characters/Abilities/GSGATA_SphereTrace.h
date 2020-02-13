@@ -43,6 +43,8 @@ public:
 		* @param bInShouldProduceTargetDataOnServer If set, this TargetActor will produce TargetData on the Server in addition
 		* to the client and the client will just send a generic "Confirm" event to the server. If false, the client will send
 		* the TargetData to the Server. This is handled by the WaitTargetDataUsingActor AbilityTask.
+		* @param bInUsePersistentHitResults Should HitResults persist while targeting? HitResults are cleared on Confirm/Cancel or
+		* when new HitResults take their place.
 		* @param bInDebug When true, this TargetActor will show debug lines of the trace and hit results.
 		* @param bInTraceAffectsAimPitch Does the trace affect the aiming pitch?
 		* @param bInTraceFromPlayerViewPoint Should we trace from the player ViewPoint instead of the StartLocation? The
@@ -57,8 +59,7 @@ public:
 		* @param InAimingSpreadMod Optional. Multiplicative modifier to spread if aiming.
 		* @param InTargetingSpreadIncrement Amount spread increments from continuous targeting in degrees.
 		* @param InTargetingSpreadMax Maximum amount of spread for continuous targeting in degrees.
-		* @param InMaxHitResults Max hit results that a trace can return. 0 just returns the trace end point. < 0 returns infinite
-		* hit results.
+		* @param InMaxHitResults Max hit results that a trace can return. < 1 just returns the trace end point.
 		*/
 	UFUNCTION(BlueprintCallable)
 	void Configure(
@@ -71,6 +72,7 @@ public:
 		UPARAM(DisplayName = "Reticle Params") FWorldReticleParameters InReticleParams,
 		UPARAM(DisplayName = "Ignore Blocking Hits") bool bInIgnoreBlockingHits = false,
 		UPARAM(DisplayName = "Should Produce Target Data on Server") bool bInShouldProduceTargetDataOnServer = false,
+		UPARAM(DisplayName = "Use Persistent Hit Results") bool bInUsePersistentHitResults = false,
 		UPARAM(DisplayName = "Debug") bool bInDebug = false,
 		UPARAM(DisplayName = "Trace Affects Aim Pitch") bool bInTraceAffectsAimPitch = true,
 		UPARAM(DisplayName = "Trace From Player ViewPoint") bool bInTraceFromPlayerViewPoint = false,

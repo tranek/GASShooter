@@ -19,6 +19,7 @@ void AGSGATA_LineTrace::Configure(
 	FWorldReticleParameters InReticleParams,
 	bool bInIgnoreBlockingHits,
 	bool bInShouldProduceTargetDataOnServer,
+	bool bInUsePersistentHitResults,
 	bool bInDebug,
 	bool bInTraceAffectsAimPitch,
 	bool bInTraceFromPlayerViewPoint,
@@ -39,6 +40,7 @@ void AGSGATA_LineTrace::Configure(
 	ReticleParams = InReticleParams;
 	bIgnoreBlockingHits = bInIgnoreBlockingHits;
 	ShouldProduceTargetDataOnServer = bInShouldProduceTargetDataOnServer;
+	bUsePersistentHitResults = bInUsePersistentHitResults;
 	bDebug = bInDebug;
 	bTraceAffectsAimPitch = bInTraceAffectsAimPitch;
 	bTraceFromPlayerViewPoint = bInTraceFromPlayerViewPoint;
@@ -59,17 +61,16 @@ void AGSGATA_LineTrace::DoTrace(TArray<FHitResult>& HitResults, const UWorld* Wo
 void AGSGATA_LineTrace::ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDebugTrace::Type DrawDebugType, float Duration)
 {
 #if ENABLE_DRAW_DEBUG
-	if (bDebug && HitResults.Num() > 0)
+	if (bDebug)
 	{
-		FVector ViewStart = HitResults[0].TraceStart;
+		FVector ViewStart = StartLocation.GetTargetingTransform().GetLocation();
 		FRotator ViewRot;
-		if (MasterPC)
+		if (MasterPC && bTraceFromPlayerViewPoint)
 		{
 			MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
 		}
 
-		DrawDebugLineTraceMulti(GetWorld(), bTraceFromPlayerViewPoint ? ViewStart : HitResults[0].TraceStart,
-			HitResults[0].TraceEnd, DrawDebugType, true, HitResults, FLinearColor::Green, FLinearColor::Red, Duration);
+		DrawDebugLineTraceMulti(GetWorld(), ViewStart, CurrentTraceEnd, DrawDebugType, true, HitResults, FLinearColor::Green, FLinearColor::Red, Duration);
 	}
 #endif
 }

@@ -62,7 +62,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
 	bool bTraceAffectsAimPitch;
 
-	// Maximum hit results to return. 0 just returns the trace end point. < 0 returns infinite hit results.
+	// Maximum hit results to return. 0 just returns the trace end point.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
 	int32 MaxHitResults;
 
@@ -71,6 +71,10 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
 	bool bTraceFromPlayerViewPoint;
+
+	// HitResults will persist until Confirmation/Cancellation or until a new HitResult takes its place
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
+	bool bUsePersistentHitResults;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void ResetSpread();
@@ -111,7 +115,11 @@ public:
 	virtual void StopTargeting();
 
 protected:
+	// Trace End point, useful for debug drawing
+	FVector CurrentTraceEnd;
+	
 	TArray<TWeakObjectPtr<AGameplayAbilityWorldReticle>> ReticleActors;
+	TArray<FHitResult> PersistentHitResults;
 
 	virtual FGameplayAbilityTargetDataHandle MakeTargetData(const TArray<FHitResult>& HitResults) const;
 	virtual TArray<FHitResult> PerformTrace(AActor* InSourceActor);

@@ -23,6 +23,7 @@ AGSGATA_Trace::AGSGATA_Trace()
 	TargetingSpreadIncrement = 0.0f;
 	TargetingSpreadMax = 0.0f;
 	CurrentTargetingSpread = 0.0f;
+	bUsePersistentHitResults = false;
 }
 
 void AGSGATA_Trace::ResetSpread()
@@ -86,6 +87,11 @@ void AGSGATA_Trace::StartTargeting(UGameplayAbility* Ability)
 			SpawnReticleActor(GetActorLocation(), GetActorRotation());
 		}
 	}
+
+	if (bUsePersistentHitResults)
+	{
+		PersistentHitResults.Empty();
+	}
 }
 
 void AGSGATA_Trace::ConfirmTargetingAndContinue()
@@ -100,6 +106,11 @@ void AGSGATA_Trace::ConfirmTargetingAndContinue()
 #if ENABLE_DRAW_DEBUG
 		ShowDebugTrace(HitResults, EDrawDebugTrace::Type::ForDuration, 2.0f);
 #endif
+	}
+
+	if (bUsePersistentHitResults)
+	{
+		PersistentHitResults.Empty();
 	}
 }
 
@@ -119,6 +130,11 @@ void AGSGATA_Trace::CancelTargeting()
 	CanceledDelegate.Broadcast(FGameplayAbilityTargetDataHandle());
 
 	SetActorTickEnabled(false);
+
+	if (bUsePersistentHitResults)
+	{
+		PersistentHitResults.Empty();
+	}
 }
 
 void AGSGATA_Trace::BeginPlay()
@@ -320,13 +336,29 @@ TArray<FHitResult> AGSGATA_Trace::PerformTrace(AActor* InSourceActor)
 
 	AimWithPlayerController(InSourceActor, Params, TraceStart, TraceEnd);		//Effective on server and launching client only
 
-
 	// ------------------------------------------------------
 
 	SetActorLocationAndRotation(TraceEnd, SourceActor->GetActorRotation());
 
+	CurrentTraceEnd = TraceEnd;
+
 	TArray<FHitResult> ReturnHitResults;
 	DoTrace(ReturnHitResults, InSourceActor->GetWorld(), Filter, TraceStart, TraceEnd, TraceProfile.Name, Params);
+
+	if (bUsePersistentHitResults)
+	{
+		// Clear any blocking hit results, invalid Actors, or actors out of range
+		// Check for visibility if we add AIPerceptionComponent in the future
+		for (int32 i = PersistentHitResults.Num() - 1; i >= 0; i--)
+		{
+			FHitResult& HitResult = PersistentHitResults[i];
+
+			if (HitResult.bBlockingHit || !HitResult.Actor.IsValid() || FVector::DistSquared(TraceStart, HitResult.Actor.Get()->GetActorLocation()) > (MaxRange * MaxRange))
+			{
+				PersistentHitResults.RemoveAt(i);
+			}
+		}
+	}
 
 	for (int32 i = ReturnHitResults.Num() - 1; i >= 0; i--)
 	{
@@ -339,32 +371,79 @@ TArray<FHitResult> AGSGATA_Trace::PerformTrace(AActor* InSourceActor)
 
 		FHitResult& HitResult = ReturnHitResults[i];
 
-		if (MaxHitResults > 0)
+		if (bUsePersistentHitResults)
 		{
+			// This is looping backwards so that further objects from player are added first to the queue.
+			// This results in closer actors taking precedence as the further actors will get bumped out of the TArray.
+			if (HitResult.Actor.IsValid() && (!HitResult.bBlockingHit || PersistentHitResults.Num() < 1))
+			{
+				bool bActorAlreadyInPersistentHits = false;
+
+				// Make sure PersistentHitResults doesn't have this hit actor already
+				for (int32 j = 0; j < PersistentHitResults.Num(); j++)
+				{
+					FHitResult& PersistentHitResult = PersistentHitResults[j];
+					
+					if (PersistentHitResult.Actor.Get() == HitResult.Actor.Get())
+					{
+						bActorAlreadyInPersistentHits = true;
+						break;
+					}
+				}
+
+				if (bActorAlreadyInPersistentHits)
+				{
+					continue;
+				}
+
+				if (PersistentHitResults.Num() >= MaxHitResults)
+				{
+					// Treat PersistentHitResults like a queue, remove first element
+					PersistentHitResults.RemoveAt(0);
+				}
+
+				PersistentHitResults.Add(HitResult);
+			}
+		}
+		else
+		{
+			// ReticleActors for PersistentHitResults are handled later
 			if (i < ReticleActors.Num())
 			{
 				if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[i].Get())
 				{
 					const bool bHitActor = HitResult.Actor != nullptr;
-					const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitResult.Actor->GetActorLocation() : HitResult.Location;
 
-					LocalReticleActor->SetActorLocation(ReticleLocation);
-					LocalReticleActor->SetIsTargetAnActor(bHitActor);
-					LocalReticleActor->SetActorHiddenInGame(false);
+					if (bHitActor && !HitResult.bBlockingHit)
+					{
+						LocalReticleActor->SetActorHiddenInGame(false);
+
+						const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitResult.Actor->GetActorLocation() : HitResult.Location;
+
+						LocalReticleActor->SetActorLocation(ReticleLocation);
+						LocalReticleActor->SetIsTargetAnActor(bHitActor);
+					}
+					else
+					{
+						LocalReticleActor->SetActorHiddenInGame(true);
+					}
 				}
 			}
 		}
-		else
-		{
-			// Infinite MaxHitResults, spawn a new ReticleActor for each hit result
-			if (AGameplayAbilityWorldReticle* LocalReticleActor = SpawnReticleActor(GetActorLocation(), GetActorRotation()))
-			{
-				const bool bHitActor = HitResult.Actor != nullptr;
-				const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitResult.Actor->GetActorLocation() : HitResult.Location;
+	}
 
-				LocalReticleActor->SetActorLocation(ReticleLocation);
-				LocalReticleActor->SetIsTargetAnActor(bHitActor);
-				LocalReticleActor->SetActorHiddenInGame(false);
+	if (!bUsePersistentHitResults)
+	{
+		if (ReturnHitResults.Num() < ReticleActors.Num())
+		{
+			// We have less hit results than ReticleActors, hide the extra ones
+			for (int32 i = ReturnHitResults.Num(); i < ReticleActors.Num(); i++)
+			{
+				if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[i].Get())
+				{
+					LocalReticleActor->SetIsTargetAnActor(false);
+					LocalReticleActor->SetActorHiddenInGame(true);
+				}
 			}
 		}
 	}
@@ -379,6 +458,54 @@ TArray<FHitResult> AGSGATA_Trace::PerformTrace(AActor* InSourceActor)
 		HitResult.Location = TraceEnd;
 		HitResult.ImpactPoint = TraceEnd;
 		ReturnHitResults.Add(HitResult);
+
+		if (bUsePersistentHitResults && PersistentHitResults.Num() < 1)
+		{
+			PersistentHitResults.Add(HitResult);
+		}
+	}
+
+	if (bUsePersistentHitResults && MaxHitResults > 0)
+	{
+		// Handle ReticleActors
+		for (int32 i = 0; i < PersistentHitResults.Num(); i++)
+		{
+			FHitResult& HitResult = PersistentHitResults[i];
+
+			if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[i].Get())
+			{
+				const bool bHitActor = HitResult.Actor != nullptr;
+
+				if (bHitActor && !HitResult.bBlockingHit)
+				{
+					LocalReticleActor->SetActorHiddenInGame(false);
+
+					const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitResult.Actor->GetActorLocation() : HitResult.Location;
+
+					LocalReticleActor->SetActorLocation(ReticleLocation);
+					LocalReticleActor->SetIsTargetAnActor(bHitActor);
+				}
+				else
+				{
+					LocalReticleActor->SetActorHiddenInGame(true);
+				}
+			}
+		}
+
+		if (PersistentHitResults.Num() < ReticleActors.Num())
+		{
+			// We have less hit results than ReticleActors, hide the extra ones
+			for (int32 i = PersistentHitResults.Num(); i < ReticleActors.Num(); i++)
+			{
+				if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[i].Get())
+				{
+					LocalReticleActor->SetIsTargetAnActor(false);
+					LocalReticleActor->SetActorHiddenInGame(true);
+				}
+			}
+		}
+
+		return PersistentHitResults;
 	}
 
 	return ReturnHitResults;
