@@ -104,7 +104,10 @@ void AGSGATA_Trace::ConfirmTargetingAndContinue()
 		TargetDataReadyDelegate.Broadcast(Handle);
 
 #if ENABLE_DRAW_DEBUG
-		ShowDebugTrace(HitResults, EDrawDebugTrace::Type::ForDuration, 2.0f);
+		if (bDebug)
+		{
+			ShowDebugTrace(HitResults, EDrawDebugTrace::Type::ForDuration, 2.0f);
+		}
 #endif
 	}
 
@@ -157,10 +160,16 @@ void AGSGATA_Trace::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-#if ENABLE_DRAW_DEBUG
-	if (SourceActor)
+	TArray<FHitResult> HitResults;
+	if (bDebug || bUsePersistentHitResults)
 	{
-		TArray<FHitResult> HitResults = PerformTrace(SourceActor);
+		// Only need to trace on Tick if we're showing debug or if we use persistent hit results, otherwise we just use the confirmation trace
+		HitResults = PerformTrace(SourceActor);
+	}
+
+#if ENABLE_DRAW_DEBUG
+	if (SourceActor && bDebug)
+	{
 		ShowDebugTrace(HitResults, EDrawDebugTrace::Type::ForOneFrame);
 	}
 #endif
