@@ -240,7 +240,7 @@ bool AGSHeroCharacter::AddWeaponToInventory(AGSWeapon* NewWeapon, bool bEquipWea
 
 	if (DoesWeaponExistInInventory(NewWeapon))
 	{
-		UE_LOG(LogTemp, Log, TEXT("%s %s %s Weapon already exists in Inventory, collecting %d ammo and destorying"),
+		UE_LOG(LogTemp, Log, TEXT("%s %s %s Weapon already exists in Inventory, collecting %d ammo and destroying"),
 			TEXT(__FUNCTION__), *GetName(), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), NewWeapon->GetPrimaryClipAmmo());
 
 		USoundCue* PickupSound = NewWeapon->GetPickupSound();
@@ -804,7 +804,7 @@ bool AGSHeroCharacter::DoesWeaponExistInInventory(AGSWeapon* InWeapon)
 
 	for (AGSWeapon* Weapon : Inventory.Weapons)
 	{
-		if (Weapon->GetClass() == InWeapon->GetClass())
+		if (Weapon && InWeapon && Weapon->GetClass() == InWeapon->GetClass())
 		{
 			return true;
 		}
