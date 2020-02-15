@@ -301,6 +301,7 @@ void AGSGATA_Trace::StopTargeting()
 	{
 		GenericDelegateBoundASC->GenericLocalConfirmCallbacks.RemoveDynamic(this, &AGameplayAbilityTargetActor::ConfirmTargeting);
 		GenericDelegateBoundASC->GenericLocalCancelCallbacks.RemoveDynamic(this, &AGameplayAbilityTargetActor::CancelTargeting);
+		GenericDelegateBoundASC = nullptr;
 	}
 }
 

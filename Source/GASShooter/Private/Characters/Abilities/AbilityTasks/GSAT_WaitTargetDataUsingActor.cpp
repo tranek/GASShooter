@@ -256,6 +256,7 @@ void UGSAT_WaitTargetDataUsingActor::OnDestroy(bool AbilityEnded)
 
 			AbilitySystemComponent->GenericLocalConfirmCallbacks.RemoveDynamic(TargetActor, &AGameplayAbilityTargetActor::ConfirmTargeting);
 			AbilitySystemComponent->GenericLocalCancelCallbacks.RemoveDynamic(TargetActor, &AGameplayAbilityTargetActor::CancelTargeting);
+			TargetActor->GenericDelegateBoundASC = nullptr;
 		}
 	}
 
