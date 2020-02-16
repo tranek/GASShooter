@@ -32,12 +32,6 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bSpawnWithCollision;
 
-	// This tag will be used by the Characters when they equip a weapon to gate activation of abilities
-	// since abilities are granted on adding to inventory and removed when the weapon is removed from the
-	// inventory - not on equip/unequip.
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSWeapon")
-	FGameplayTag WeaponTag;
-
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
 	class AGSGATA_LineTrace* LineTraceTargetActor;
 

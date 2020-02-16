@@ -32,11 +32,9 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	bChangedWeaponLocally = false;
 	Default1PFOV = 90.0f;
 	Default3PFOV = 80.0f;
-	NoWeaponTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Equipped.None"));
 	WeaponChangingDelayReplicationTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChangingDelayReplication"));
 	WeaponAmmoTypeNoneTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.None"));
 	WeaponAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon"));
-	CurrentWeaponTag = NoWeaponTag;
 	Inventory = FGSHeroInventory();
 	
 	ThirdPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("CameraBoom"));
@@ -707,8 +705,6 @@ void AGSHeroCharacter::OnRep_PlayerState()
 		
 		if (CurrentWeapon)
 		{
-			// If current weapon repped before PlayerState, set tag on ASC
-			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
 			// Update owning character and ASC just in case it repped before PlayerState
 			CurrentWeapon->SetOwningCharacter(this);
 
@@ -831,22 +827,10 @@ void AGSHeroCharacter::SetCurrentWeapon(AGSWeapon* NewWeapon, AGSWeapon* LastWea
 
 	if (NewWeapon)
 	{
-		if (AbilitySystemComponent)
-		{
-			// Clear out potential NoWeaponTag
-			AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
-		}
-
 		// Weapons coming from OnRep_CurrentWeapon won't have the owner set
 		CurrentWeapon = NewWeapon;
 		CurrentWeapon->SetOwningCharacter(this);
 		CurrentWeapon->Equip();
-		CurrentWeaponTag = CurrentWeapon->WeaponTag;
-
-		if (AbilitySystemComponent)
-		{
-			AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
-		}
 
 		AGSPlayerController* PC = GetController<AGSPlayerController>();
 		if (PC && PC->IsLocalController())
@@ -907,13 +891,6 @@ void AGSHeroCharacter::UnEquipWeapon(AGSWeapon* WeaponToUnEquip)
 
 void AGSHeroCharacter::UnEquipCurrentWeapon()
 {
-	if (AbilitySystemComponent)
-	{
-		AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
-		CurrentWeaponTag = NoWeaponTag;
-		AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
-	}
-
 	UnEquipWeapon(CurrentWeapon);
 	CurrentWeapon = nullptr;
 
