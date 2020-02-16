@@ -51,6 +51,7 @@ AGSWeapon::AGSWeapon()
 	WeaponMesh3P = CreateDefaultSubobject<USkeletalMeshComponent>(FName("WeaponMesh3P"));
 	WeaponMesh3P->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponMesh3P->SetupAttachment(CollisionComp);
+	WeaponMesh3P->SetRelativeLocation(FVector(0.0f, -25.0f, 0.0f));
 	WeaponMesh3P->CastShadow = true;
 	WeaponMesh3P->SetVisibility(true, true);
 	WeaponMesh3P->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
