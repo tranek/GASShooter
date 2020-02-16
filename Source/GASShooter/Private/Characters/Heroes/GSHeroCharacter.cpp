@@ -391,7 +391,7 @@ bool AGSHeroCharacter::ServerEquipWeapon_Validate(AGSWeapon* NewWeapon)
 
 void AGSHeroCharacter::NextWeapon()
 {
-	if (Inventory.Weapons.Num() < 1)
+	if (Inventory.Weapons.Num() < 2)
 	{
 		return;
 	}
@@ -411,12 +411,13 @@ void AGSHeroCharacter::NextWeapon()
 
 void AGSHeroCharacter::PreviousWeapon()
 {
-	if (Inventory.Weapons.Num() < 1)
+	if (Inventory.Weapons.Num() < 2)
 	{
 		return;
 	}
 
 	int32 CurrentWeaponIndex = Inventory.Weapons.Find(CurrentWeapon);
+
 	UnEquipCurrentWeapon();
 
 	if (CurrentWeaponIndex == INDEX_NONE)
@@ -425,7 +426,8 @@ void AGSHeroCharacter::PreviousWeapon()
 	}
 	else
 	{
-		EquipWeapon(Inventory.Weapons[FMath::Abs(Inventory.Weapons.Num() - CurrentWeaponIndex - 1) % Inventory.Weapons.Num()]);
+		int32 IndexOfPrevWeapon = FMath::Abs(CurrentWeaponIndex - 1 + Inventory.Weapons.Num()) % Inventory.Weapons.Num();
+		EquipWeapon(Inventory.Weapons[IndexOfPrevWeapon]);
 	}
 }
 
