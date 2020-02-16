@@ -201,6 +201,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category = "GASShooter|GSWeapon")
 	USkeletalMeshComponent* WeaponMesh3P;
 
+	// Relative Location of weapon 3P Mesh when in pickup mode
+	// 1P weapon mesh is invisible so it doesn't need one
+	UPROPERTY(EditDefaultsOnly, Category = "GASShooter|GSWeapon")
+	FVector WeaponMesh3PickupRelativeLocation;
+
+	// Relative Location of weapon 1P Mesh when equipped
+	UPROPERTY(EditDefaultsOnly, Category = "GASShooter|GSWeapon")
+	FVector WeaponMesh1PEquippedRelativeLocation;
+
+	// Relative Location of weapon 3P Mesh when equipped
+	UPROPERTY(EditDefaultsOnly, Category = "GASShooter|GSWeapon")
+	FVector WeaponMesh3PEquippedRelativeLocation;
+
 	UPROPERTY(BlueprintReadOnly, Replicated, Category = "GASShooter|GSWeapon")
 	AGSHeroCharacter* OwningCharacter;
 

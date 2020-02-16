@@ -48,10 +48,12 @@ AGSWeapon::AGSWeapon()
 	WeaponMesh1P->SetupAttachment(CollisionComp);
 	WeaponMesh1P->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
 
+	WeaponMesh3PickupRelativeLocation = FVector(0.0f, -25.0f, 0.0f);
+
 	WeaponMesh3P = CreateDefaultSubobject<USkeletalMeshComponent>(FName("WeaponMesh3P"));
 	WeaponMesh3P->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	WeaponMesh3P->SetupAttachment(CollisionComp);
-	WeaponMesh3P->SetRelativeLocation(FVector(0.0f, -25.0f, 0.0f));
+	WeaponMesh3P->SetRelativeLocation(WeaponMesh3PickupRelativeLocation);
 	WeaponMesh3P->CastShadow = true;
 	WeaponMesh3P->SetVisibility(true, true);
 	WeaponMesh3P->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
@@ -159,6 +161,7 @@ void AGSWeapon::Equip()
 	if (WeaponMesh1P)
 	{
 		WeaponMesh1P->AttachToComponent(OwningCharacter->GetFirstPersonMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, AttachPoint);
+		WeaponMesh1P->SetRelativeLocation(WeaponMesh1PEquippedRelativeLocation);
 		WeaponMesh1P->SetRelativeRotation(FRotator(0, 0, -90.0f));
 
 		if (OwningCharacter->IsInFirstPersonPerspective())
@@ -174,6 +177,7 @@ void AGSWeapon::Equip()
 	if (WeaponMesh3P)
 	{
 		WeaponMesh3P->AttachToComponent(OwningCharacter->GetThirdPersonMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, AttachPoint);
+		WeaponMesh3P->SetRelativeLocation(WeaponMesh3PEquippedRelativeLocation);
 		WeaponMesh3P->SetRelativeRotation(FRotator(0, 0, -90.0f));
 		WeaponMesh3P->CastShadow = true;
 		WeaponMesh3P->bCastHiddenShadow = true;
@@ -289,7 +293,7 @@ void AGSWeapon::OnDropped_Implementation(FVector NewLocation)
 	ResetWeapon();
 
 	SetActorLocation(NewLocation);
-	//CollisionComp->SetHiddenInGame(false, false);
+	CollisionComp->SetHiddenInGame(false, false);
 	CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	if (WeaponMesh1P)
@@ -301,7 +305,7 @@ void AGSWeapon::OnDropped_Implementation(FVector NewLocation)
 	if (WeaponMesh3P)
 	{
 		WeaponMesh3P->AttachToComponent(CollisionComp, FAttachmentTransformRules::SnapToTargetIncludingScale);
-		WeaponMesh3P->SetRelativeLocation(FVector(0.0f, -25.0f, 0.0f));
+		WeaponMesh3P->SetRelativeLocation(WeaponMesh3PickupRelativeLocation);
 		WeaponMesh3P->CastShadow = true;
 		WeaponMesh3P->SetVisibility(true, true);
 	}
