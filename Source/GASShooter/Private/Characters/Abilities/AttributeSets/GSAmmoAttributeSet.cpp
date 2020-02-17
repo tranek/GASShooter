@@ -10,6 +10,7 @@ UGSAmmoAttributeSet::UGSAmmoAttributeSet()
 {
 	RifleAmmoTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.Rifle"));
 	RocketAmmoTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.Rocket"));
+	ShotgunAmmoTag = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.Shotgun"));
 }
 
 void UGSAmmoAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -31,6 +32,11 @@ void UGSAmmoAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCall
 		float Ammo = GetRocketReserveAmmo();
 		SetRocketReserveAmmo(FMath::Clamp<float>(Ammo, 0, GetMaxRocketReserveAmmo()));
 	}
+	else if (Data.EvaluatedData.Attribute == GetShotgunReserveAmmoAttribute())
+	{
+		float Ammo = GetShotgunReserveAmmo();
+		SetShotgunReserveAmmo(FMath::Clamp<float>(Ammo, 0, GetMaxShotgunReserveAmmo()));
+	}
 }
 
 void UGSAmmoAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -41,6 +47,8 @@ void UGSAmmoAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 	DOREPLIFETIME_CONDITION_NOTIFY(UGSAmmoAttributeSet, MaxRifleReserveAmmo, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGSAmmoAttributeSet, RocketReserveAmmo, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGSAmmoAttributeSet, MaxRocketReserveAmmo, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGSAmmoAttributeSet, ShotgunReserveAmmo, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGSAmmoAttributeSet, MaxShotgunReserveAmmo, COND_None, REPNOTIFY_Always);
 }
 
 FGameplayAttribute UGSAmmoAttributeSet::GetReserveAmmoAttributeFromTag(FGameplayTag& PrimaryAmmoTag)
@@ -52,6 +60,10 @@ FGameplayAttribute UGSAmmoAttributeSet::GetReserveAmmoAttributeFromTag(FGameplay
 	else if (PrimaryAmmoTag == FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.Rocket")))
 	{
 		return GetRocketReserveAmmoAttribute();
+	}
+	else if (PrimaryAmmoTag == FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.Shotgun")))
+	{
+		return GetShotgunReserveAmmoAttribute();
 	}
 
 	return FGameplayAttribute();
@@ -66,6 +78,10 @@ FGameplayAttribute UGSAmmoAttributeSet::GetMaxReserveAmmoAttributeFromTag(FGamep
 	else if (PrimaryAmmoTag == FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.Rocket")))
 	{
 		return GetMaxRocketReserveAmmoAttribute();
+	}
+	else if (PrimaryAmmoTag == FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.Shotgun")))
+	{
+		return GetMaxShotgunReserveAmmoAttribute();
 	}
 
 	return FGameplayAttribute();
@@ -103,4 +119,14 @@ void UGSAmmoAttributeSet::OnRep_RocketReserveAmmo()
 void UGSAmmoAttributeSet::OnRep_MaxRocketReserveAmmo()
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, MaxRocketReserveAmmo);
+}
+
+void UGSAmmoAttributeSet::OnRep_ShotgunReserveAmmo()
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, ShotgunReserveAmmo);
+}
+
+void UGSAmmoAttributeSet::OnRep_MaxShotgunReserveAmmo()
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, MaxShotgunReserveAmmo);
 }
