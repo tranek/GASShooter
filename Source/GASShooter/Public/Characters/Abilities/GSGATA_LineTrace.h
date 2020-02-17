@@ -55,7 +55,10 @@ public:
 	* @param InAimingSpreadMod Optional. Multiplicative modifier to spread if aiming.
 	* @param InTargetingSpreadIncrement Amount spread increments from continuous targeting in degrees.
 	* @param InTargetingSpreadMax Maximum amount of spread for continuous targeting in degrees.
-	* @param InMaxHitResults Max hit results that a trace can return. < 1 just returns the trace end point.
+	* @param InMaxHitResultsPerTrace Max hit results that a trace can return. < 1 just returns the trace end point.
+	* @param InNumberOfTraces Number of traces to perform. Intended to be used with BaseSpread for multi-shot weapons
+	* like shotguns. Not intended to be used with PersistentHitsResults. If using PersistentHitResults, NumberOfTraces is
+	* hardcoded to 1. You will need to add support for this in your project if you need it.
 	*/
 	UFUNCTION(BlueprintCallable)
 	void Configure(
@@ -78,7 +81,8 @@ public:
 		UPARAM(DisplayName = "Aiming Spread Mod") float InAimingSpreadMod = 0.0f,
 		UPARAM(DisplayName = "Targeting Spread Increment") float InTargetingSpreadIncrement = 0.0f,
 		UPARAM(DisplayName = "Targeting Spread Max") float InTargetingSpreadMax = 0.0f,
-		UPARAM(DisplayName = "Max Hit Results") int32 InMaxHitResults = 1
+		UPARAM(DisplayName = "Max Hit Results Per Trace") int32 InMaxHitResultsPerTrace = 1,
+		UPARAM(DisplayName = "Number of Traces") int32 InNumberOfTraces = 1
 	);
 
 protected:

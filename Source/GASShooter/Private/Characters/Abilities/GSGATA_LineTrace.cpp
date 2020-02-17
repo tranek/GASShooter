@@ -29,7 +29,8 @@ void AGSGATA_LineTrace::Configure(
 	float InAimingSpreadMod,
 	float InTargetingSpreadIncrement,
 	float InTargetingSpreadMax,
-	int32 InMaxHitResults)
+	int32 InMaxHitResultsPerTrace,
+	int32 InNumberOfTraces)
 {
 	StartLocation = InStartLocation;
 	AimingTag = InAimingTag;
@@ -50,7 +51,13 @@ void AGSGATA_LineTrace::Configure(
 	AimingSpreadMod = InAimingSpreadMod;
 	TargetingSpreadIncrement = InTargetingSpreadIncrement;
 	TargetingSpreadMax = InTargetingSpreadMax;
-	MaxHitResults = InMaxHitResults;
+	MaxHitResultsPerTrace = InMaxHitResultsPerTrace;
+	NumberOfTraces = InNumberOfTraces;
+
+	if (bUsePersistentHitResults)
+	{
+		NumberOfTraces = 1;
+	}
 }
 
 void AGSGATA_LineTrace::DoTrace(TArray<FHitResult>& HitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, FName ProfileName, const FCollisionQueryParams Params)
@@ -70,7 +77,13 @@ void AGSGATA_LineTrace::ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDebu
 			MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
 		}
 
-		DrawDebugLineTraceMulti(GetWorld(), ViewStart, CurrentTraceEnd, DrawDebugType, true, HitResults, FLinearColor::Green, FLinearColor::Red, Duration);
+		FVector TraceEnd = HitResults[0].TraceEnd;
+		if (NumberOfTraces > 1 || bUsePersistentHitResults)
+		{
+			TraceEnd = CurrentTraceEnd;
+		}
+
+		DrawDebugLineTraceMulti(GetWorld(), ViewStart, TraceEnd, DrawDebugType, true, HitResults, FLinearColor::Green, FLinearColor::Red, Duration);
 	}
 #endif
 }

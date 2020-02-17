@@ -12,7 +12,8 @@ AGSGATA_Trace::AGSGATA_Trace()
 	bDestroyOnConfirmation = false;
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.TickGroup = TG_PostUpdateWork;
-	MaxHitResults = 1;
+	MaxHitResultsPerTrace = 1;
+	NumberOfTraces = 1;
 	bIgnoreBlockingHits = false;
 	bTraceAffectsAimPitch = true;
 	bTraceFromPlayerViewPoint = false;
@@ -82,7 +83,7 @@ void AGSGATA_Trace::StartTargeting(UGameplayAbility* Ability)
 
 	if (ReticleClass)
 	{
-		for (int32 i = 0; i < MaxHitResults; i++)
+		for (int32 i = 0; i < MaxHitResultsPerTrace * NumberOfTraces; i++)
 		{
 			SpawnReticleActor(GetActorLocation(), GetActorRotation());
 		}
@@ -344,21 +345,10 @@ TArray<FHitResult> AGSGATA_Trace::PerformTrace(AActor* InSourceActor)
 		TraceStart = bTraceFromPlayerViewPoint ? ViewStart : TraceStart;
 	}
 
-	AimWithPlayerController(InSourceActor, Params, TraceStart, TraceEnd);		//Effective on server and launching client only
-
-	// ------------------------------------------------------
-
-	SetActorLocationAndRotation(TraceEnd, SourceActor->GetActorRotation());
-
-	CurrentTraceEnd = TraceEnd;
-
-	TArray<FHitResult> ReturnHitResults;
-	DoTrace(ReturnHitResults, InSourceActor->GetWorld(), Filter, TraceStart, TraceEnd, TraceProfile.Name, Params);
-
 	if (bUsePersistentHitResults)
 	{
 		// Clear any blocking hit results, invalid Actors, or actors out of range
-		// Check for visibility if we add AIPerceptionComponent in the future
+		//TODO Check for visibility if we add AIPerceptionComponent in the future
 		for (int32 i = PersistentHitResults.Num() - 1; i >= 0; i--)
 		{
 			FHitResult& HitResult = PersistentHitResults[i];
@@ -370,122 +360,143 @@ TArray<FHitResult> AGSGATA_Trace::PerformTrace(AActor* InSourceActor)
 		}
 	}
 
-	for (int32 i = ReturnHitResults.Num() - 1; i >= 0; i--)
+	TArray<FHitResult> ReturnHitResults;
+
+	for (int32 TraceIndex = 0; TraceIndex < NumberOfTraces; TraceIndex++)
 	{
-		if (MaxHitResults >= 0 && i + 1 > MaxHitResults)
-		{
-			// Trim to MaxHitResults
-			ReturnHitResults.RemoveAt(i);
-			continue;
-		}
+		AimWithPlayerController(InSourceActor, Params, TraceStart, TraceEnd);		//Effective on server and launching client only
 
-		FHitResult& HitResult = ReturnHitResults[i];
+		// ------------------------------------------------------
 
-		if (bUsePersistentHitResults)
+		SetActorLocationAndRotation(TraceEnd, SourceActor->GetActorRotation());
+
+		CurrentTraceEnd = TraceEnd;
+
+		TArray<FHitResult> TraceHitResults;
+		DoTrace(TraceHitResults, InSourceActor->GetWorld(), Filter, TraceStart, TraceEnd, TraceProfile.Name, Params);
+
+		for (int32 j = TraceHitResults.Num() - 1; j >= 0; j--)
 		{
-			// This is looping backwards so that further objects from player are added first to the queue.
-			// This results in closer actors taking precedence as the further actors will get bumped out of the TArray.
-			if (HitResult.Actor.IsValid() && (!HitResult.bBlockingHit || PersistentHitResults.Num() < 1))
+			if (MaxHitResultsPerTrace >= 0 && j + 1 > MaxHitResultsPerTrace)
 			{
-				bool bActorAlreadyInPersistentHits = false;
-
-				// Make sure PersistentHitResults doesn't have this hit actor already
-				for (int32 j = 0; j < PersistentHitResults.Num(); j++)
-				{
-					FHitResult& PersistentHitResult = PersistentHitResults[j];
-					
-					if (PersistentHitResult.Actor.Get() == HitResult.Actor.Get())
-					{
-						bActorAlreadyInPersistentHits = true;
-						break;
-					}
-				}
-
-				if (bActorAlreadyInPersistentHits)
-				{
-					continue;
-				}
-
-				if (PersistentHitResults.Num() >= MaxHitResults)
-				{
-					// Treat PersistentHitResults like a queue, remove first element
-					PersistentHitResults.RemoveAt(0);
-				}
-
-				PersistentHitResults.Add(HitResult);
+				// Trim to MaxHitResultsPerTrace
+				TraceHitResults.RemoveAt(j);
+				continue;
 			}
-		}
-		else
-		{
-			// ReticleActors for PersistentHitResults are handled later
-			if (i < ReticleActors.Num())
+
+			FHitResult& HitResult = TraceHitResults[j];
+
+			// Reminder: if bUsePersistentHitResults, Number of Traces = 1
+			if (bUsePersistentHitResults)
 			{
-				if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[i].Get())
+				// This is looping backwards so that further objects from player are added first to the queue.
+				// This results in closer actors taking precedence as the further actors will get bumped out of the TArray.
+				if (HitResult.Actor.IsValid() && (!HitResult.bBlockingHit || PersistentHitResults.Num() < 1))
 				{
-					const bool bHitActor = HitResult.Actor != nullptr;
+					bool bActorAlreadyInPersistentHits = false;
 
-					if (bHitActor && !HitResult.bBlockingHit)
+					// Make sure PersistentHitResults doesn't have this hit actor already
+					for (int32 k = 0; k < PersistentHitResults.Num(); k++)
 					{
-						LocalReticleActor->SetActorHiddenInGame(false);
+						FHitResult& PersistentHitResult = PersistentHitResults[k];
 
-						const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitResult.Actor->GetActorLocation() : HitResult.Location;
-
-						LocalReticleActor->SetActorLocation(ReticleLocation);
-						LocalReticleActor->SetIsTargetAnActor(bHitActor);
+						if (PersistentHitResult.Actor.Get() == HitResult.Actor.Get())
+						{
+							bActorAlreadyInPersistentHits = true;
+							break;
+						}
 					}
-					else
+
+					if (bActorAlreadyInPersistentHits)
 					{
+						continue;
+					}
+
+					if (PersistentHitResults.Num() >= MaxHitResultsPerTrace)
+					{
+						// Treat PersistentHitResults like a queue, remove first element
+						PersistentHitResults.RemoveAt(0);
+					}
+
+					PersistentHitResults.Add(HitResult);
+				}
+			}
+			else
+			{
+				// ReticleActors for PersistentHitResults are handled later
+				int32 ReticleIndex = TraceIndex * MaxHitResultsPerTrace + j;
+				if (ReticleIndex < ReticleActors.Num())
+				{
+					if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[ReticleIndex].Get())
+					{
+						const bool bHitActor = HitResult.Actor != nullptr;
+
+						if (bHitActor && !HitResult.bBlockingHit)
+						{
+							LocalReticleActor->SetActorHiddenInGame(false);
+
+							const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitResult.Actor->GetActorLocation() : HitResult.Location;
+
+							LocalReticleActor->SetActorLocation(ReticleLocation);
+							LocalReticleActor->SetIsTargetAnActor(bHitActor);
+						}
+						else
+						{
+							LocalReticleActor->SetActorHiddenInGame(true);
+						}
+					}
+				}
+			}
+		} // for TraceHitResults
+
+		if (!bUsePersistentHitResults)
+		{
+			if (TraceHitResults.Num() < ReticleActors.Num())
+			{
+				// We have less hit results than ReticleActors, hide the extra ones
+				for (int32 j = TraceHitResults.Num(); j < ReticleActors.Num(); j++)
+				{
+					if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[j].Get())
+					{
+						LocalReticleActor->SetIsTargetAnActor(false);
 						LocalReticleActor->SetActorHiddenInGame(true);
 					}
 				}
 			}
 		}
-	}
 
-	if (!bUsePersistentHitResults)
-	{
-		if (ReturnHitResults.Num() < ReticleActors.Num())
+		if (TraceHitResults.Num() < 1)
 		{
-			// We have less hit results than ReticleActors, hide the extra ones
-			for (int32 i = ReturnHitResults.Num(); i < ReticleActors.Num(); i++)
+			// If there were no hits, add a default HitResult at the end of the trace
+			FHitResult HitResult;
+			// Start param could be player ViewPoint. We want HitResult to always display the StartLocation.
+			HitResult.TraceStart = StartLocation.GetTargetingTransform().GetLocation();
+			HitResult.TraceEnd = TraceEnd;
+			HitResult.Location = TraceEnd;
+			HitResult.ImpactPoint = TraceEnd;
+			TraceHitResults.Add(HitResult);
+
+			if (bUsePersistentHitResults && PersistentHitResults.Num() < 1)
 			{
-				if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[i].Get())
-				{
-					LocalReticleActor->SetIsTargetAnActor(false);
-					LocalReticleActor->SetActorHiddenInGame(true);
-				}
+				PersistentHitResults.Add(HitResult);
 			}
 		}
-	}
 
-	if (ReturnHitResults.Num() < 1)
-	{
-		// If there were no hits, add a default HitResult at the end of the trace
-		FHitResult HitResult;
-		// Start param could be player ViewPoint. We want HitResult to always display the StartLocation.
-		HitResult.TraceStart = StartLocation.GetTargetingTransform().GetLocation();
-		HitResult.TraceEnd = TraceEnd;
-		HitResult.Location = TraceEnd;
-		HitResult.ImpactPoint = TraceEnd;
-		ReturnHitResults.Add(HitResult);
+		ReturnHitResults.Append(TraceHitResults);
+	} // for NumberOfTraces
 
-		if (bUsePersistentHitResults && PersistentHitResults.Num() < 1)
-		{
-			PersistentHitResults.Add(HitResult);
-		}
-	}
-
-	if (bUsePersistentHitResults && MaxHitResults > 0)
+	// Reminder: if bUsePersistentHitResults, Number of Traces = 1
+	if (bUsePersistentHitResults && MaxHitResultsPerTrace > 0)
 	{
 		// Handle ReticleActors
-		for (int32 i = 0; i < PersistentHitResults.Num(); i++)
+		for (int32 PersistentHitResultIndex = 0; PersistentHitResultIndex < PersistentHitResults.Num(); PersistentHitResultIndex++)
 		{
-			FHitResult& HitResult = PersistentHitResults[i];
+			FHitResult& HitResult = PersistentHitResults[PersistentHitResultIndex];
 
 			// Update TraceStart because old persistent HitResults will have their original TraceStart and the player could have moved since then
 			HitResult.TraceStart = StartLocation.GetTargetingTransform().GetLocation();
 
-			if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[i].Get())
+			if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[PersistentHitResultIndex].Get())
 			{
 				const bool bHitActor = HitResult.Actor != nullptr;
 
@@ -508,9 +519,9 @@ TArray<FHitResult> AGSGATA_Trace::PerformTrace(AActor* InSourceActor)
 		if (PersistentHitResults.Num() < ReticleActors.Num())
 		{
 			// We have less hit results than ReticleActors, hide the extra ones
-			for (int32 i = PersistentHitResults.Num(); i < ReticleActors.Num(); i++)
+			for (int32 PersistentHitResultIndex = PersistentHitResults.Num(); PersistentHitResultIndex < ReticleActors.Num(); PersistentHitResultIndex++)
 			{
-				if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[i].Get())
+				if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[PersistentHitResultIndex].Get())
 				{
 					LocalReticleActor->SetIsTargetAnActor(false);
 					LocalReticleActor->SetActorHiddenInGame(true);

@@ -32,7 +32,8 @@ void AGSGATA_SphereTrace::Configure(
 	float InAimingSpreadMod,
 	float InTargetingSpreadIncrement,
 	float InTargetingSpreadMax,
-	int32 InMaxHitResults)
+	int32 InMaxHitResultsPerTrace,
+	int32 InNumberOfTraces)
 {
 	StartLocation = InStartLocation;
 	AimingTag = InAimingTag;
@@ -54,7 +55,13 @@ void AGSGATA_SphereTrace::Configure(
 	AimingSpreadMod = InAimingSpreadMod;
 	TargetingSpreadIncrement = InTargetingSpreadIncrement;
 	TargetingSpreadMax = InTargetingSpreadMax;
-	MaxHitResults = InMaxHitResults;
+	MaxHitResultsPerTrace = InMaxHitResultsPerTrace;
+	NumberOfTraces = InNumberOfTraces;
+
+	if (bUsePersistentHitResults)
+	{
+		NumberOfTraces = 1;
+	}
 }
 
 void AGSGATA_SphereTrace::SphereTraceWithFilter(TArray<FHitResult>& OutHitResults, const UWorld* World, const FGameplayTargetDataFilterHandle FilterHandle, const FVector& Start, const FVector& End, float Radius, FName ProfileName, const FCollisionQueryParams Params)
@@ -104,7 +111,13 @@ void AGSGATA_SphereTrace::ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDe
 			MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
 		}
 
-		DrawDebugSphereTraceMulti(GetWorld(), ViewStart, CurrentTraceEnd, TraceSphereRadius, DrawDebugType, true, HitResults, FLinearColor::Green, FLinearColor::Red, Duration);
+		FVector TraceEnd = HitResults[0].TraceEnd;
+		if (NumberOfTraces > 1 || bUsePersistentHitResults)
+		{
+			TraceEnd = CurrentTraceEnd;
+		}
+
+		DrawDebugSphereTraceMulti(GetWorld(), ViewStart, TraceEnd, TraceSphereRadius, DrawDebugType, true, HitResults, FLinearColor::Green, FLinearColor::Red, Duration);
 	}
 #endif
 }

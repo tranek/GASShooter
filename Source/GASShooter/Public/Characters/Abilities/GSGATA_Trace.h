@@ -62,9 +62,14 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
 	bool bTraceAffectsAimPitch;
 
-	// Maximum hit results to return. 0 just returns the trace end point.
+	// Maximum hit results to return per trace. 0 just returns the trace end point.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
-	int32 MaxHitResults;
+	int32 MaxHitResultsPerTrace;
+
+	// Number of traces to perform at one time. Single bullet weapons like rilfes will only do one trace.
+	// Multi-bullet weapons like shotguns can do multiple traces. Not intended to be used with PersistentHits.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
+	int32 NumberOfTraces;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, meta = (ExposeOnSpawn = true), Category = "Trace")
 	bool bIgnoreBlockingHits;
