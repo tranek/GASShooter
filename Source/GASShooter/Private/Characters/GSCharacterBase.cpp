@@ -9,6 +9,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
+#include "UI/GSDamageTextWidgetComponent.h"
 
 // Sets default values
 AGSCharacterBase::AGSCharacterBase(const class FObjectInitializer& ObjectInitializer) :
@@ -24,6 +25,13 @@ AGSCharacterBase::AGSCharacterBase(const class FObjectInitializer& ObjectInitial
 	// Cache tags
 	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
 	EffectRemoveOnDeathTag = FGameplayTag::RequestGameplayTag(FName("Effect.RemoveOnDeath"));
+
+	// Hardcoding to avoid having to manually set for every Blueprint child class
+	DamageNumberClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("/Game/GASShooter/UI/WC_DamageText.WC_DamageText_C"));
+	if (!DamageNumberClass)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s() Failed to find DamageNumberClass. If it was moved, please update the reference location in C++."), TEXT(__FUNCTION__));
+	}
 }
 
 UAbilitySystemComponent* AGSCharacterBase::GetAbilitySystemComponent() const
@@ -108,6 +116,16 @@ void AGSCharacterBase::Die()
 void AGSCharacterBase::FinishDying()
 {
 	Destroy();
+}
+
+void AGSCharacterBase::AddDamageNumber(float Damage)
+{
+	DamageNumberQueue.Add(Damage);
+
+	if (!GetWorldTimerManager().IsTimerActive(DamageNumberTimer))
+	{
+		GetWorldTimerManager().SetTimer(DamageNumberTimer, this, &AGSCharacterBase::ShowDamageNumber, 0.1, true, 0.0f);
+	}
 }
 
 int32 AGSCharacterBase::GetCharacterLevel() const
@@ -283,6 +301,25 @@ void AGSCharacterBase::AddStartupEffects()
 	}
 
 	AbilitySystemComponent->bStartupEffectsApplied = true;
+}
+
+void AGSCharacterBase::ShowDamageNumber()
+{
+	if (DamageNumberQueue.Num() > 0 && IsValid(this))
+	{
+		float DamageAmount = DamageNumberQueue[0];
+		DamageNumberQueue.RemoveAt(0);
+
+		UGSDamageTextWidgetComponent* DamageText = NewObject<UGSDamageTextWidgetComponent>(this, DamageNumberClass);
+		DamageText->RegisterComponent();
+		DamageText->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+		DamageText->SetDamageText(DamageAmount);
+
+		if (DamageNumberQueue.Num() < 1)
+		{
+			GetWorldTimerManager().ClearTimer(DamageNumberTimer);
+		}
+	}
 }
 
 void AGSCharacterBase::SetHealth(float Health)

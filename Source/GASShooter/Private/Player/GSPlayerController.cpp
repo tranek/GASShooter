@@ -7,7 +7,6 @@
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Player/GSPlayerState.h"
-#include "UI/GSDamageTextWidgetComponent.h"
 #include "UI/GSHUDWidget.h"
 #include "Weapons/GSWeapon.h"
 
@@ -84,15 +83,6 @@ void AGSPlayerController::CreateHUD()
 			}
 		}
 	}
-
-	//TODO
-	/*
-	DamageNumberClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("/Game/GASDocumentation/UI/WC_DamageText.WC_DamageText_C"));
-	if (!DamageNumberClass)
-	{
-		UE_LOG(LogTemp, Error, TEXT("%s() Failed to find DamageNumberClass. If it was moved, please update the reference location in C++."), TEXT(__FUNCTION__));
-	}
-	*/
 }
 
 UGSHUDWidget* AGSPlayerController::GetGSHUD()
@@ -159,16 +149,10 @@ void AGSPlayerController::SetHUDReticle(TSubclassOf<UGSHUDReticle> ReticleClass)
 
 void AGSPlayerController::ShowDamageNumber_Implementation(float DamageAmount, AGSCharacterBase* TargetCharacter)
 {
-	if (!DamageNumberClass)
+	if (IsValid(TargetCharacter))
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s DamageNumberClass is nullptr"), TEXT(__FUNCTION__));
-		return;
+		TargetCharacter->AddDamageNumber(DamageAmount);
 	}
-
-	UGSDamageTextWidgetComponent* DamageText = NewObject<UGSDamageTextWidgetComponent>(TargetCharacter, DamageNumberClass);
-	DamageText->RegisterComponent();
-	DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-	DamageText->SetDamageText(DamageAmount);
 }
 
 bool AGSPlayerController::ShowDamageNumber_Validate(float DamageAmount, AGSCharacterBase* TargetCharacter)

@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "GameplayTagContainer.h"
 #include "GASShooter/GASShooter.h"
+#include "TimerManager.h"
 #include "GSCharacterBase.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, AGSCharacterBase*, Character);
@@ -44,6 +45,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSCharacter")
 	virtual void FinishDying();
+
+	virtual void AddDamageNumber(float Damage);
 
 
 	/**
@@ -88,6 +91,9 @@ public:
 protected:
 	FGameplayTag DeadTag;
 	FGameplayTag EffectRemoveOnDeathTag;
+
+	TArray<float> DamageNumberQueue;
+	FTimerHandle DamageNumberTimer;
 	
 	// Reference to the ASC. It will live on the PlayerState or here if the character doesn't have a PlayerState.
 	UPROPERTY()
@@ -119,6 +125,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|Abilities")
 	TArray<TSubclassOf<class UGameplayEffect>> StartupEffects;
 
+	UPROPERTY(EditAnywhere, Category = "GASShooter|UI")
+	TSubclassOf<class UGSDamageTextWidgetComponent> DamageNumberClass;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -131,6 +140,8 @@ protected:
 	virtual void InitializeAttributes();
 
 	virtual void AddStartupEffects();
+
+	virtual void ShowDamageNumber();
 
 
 	/**
