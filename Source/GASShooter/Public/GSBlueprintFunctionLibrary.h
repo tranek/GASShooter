@@ -5,8 +5,9 @@
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
-#include "Characters/Abilities/GSGameplayAbility.h"
 #include "Characters/Abilities/GSAbilityTypes.h"
+#include "Characters/Abilities/GSGameplayAbility.h"
+#include "Characters/Abilities/GSGameplayEffectTypes.h"
 #include "GSBlueprintFunctionLibrary.generated.h"
 
 
@@ -64,4 +65,17 @@ public:
 	// Applies container spec that was made from an ability
 	UFUNCTION(BlueprintCallable, Category = "Ability|Container")
 	static TArray<FActiveGameplayEffectHandle> ApplyExternalEffectContainerSpec(const FGSGameplayEffectContainerSpec& ContainerSpec);
+
+
+	/**
+	* FGSGameplayEffectContext
+	*/
+
+	// Returns TargetData
+	UFUNCTION(BlueprintCallable, Category = "Ability|EffectContext", Meta = (DisplayName = "GetTargetData"))
+	static FGameplayAbilityTargetDataHandle EffectContextGetTargetData(FGameplayEffectContextHandle EffectContext);
+
+	// Adds TargetData
+	UFUNCTION(BlueprintCallable, Category = "Ability|EffectContext", Meta = (DisplayName = "AddTargetData"))
+	static void EffectContextAddTargetData(FGameplayEffectContextHandle EffectContextHandle, const FGameplayAbilityTargetDataHandle& TargetData);
 };

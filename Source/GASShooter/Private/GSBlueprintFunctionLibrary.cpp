@@ -99,3 +99,23 @@ TArray<FActiveGameplayEffectHandle> UGSBlueprintFunctionLibrary::ApplyExternalEf
 	}
 	return AllEffects;
 }
+
+FGameplayAbilityTargetDataHandle UGSBlueprintFunctionLibrary::EffectContextGetTargetData(FGameplayEffectContextHandle EffectContextHandle)
+{
+	FGSGameplayEffectContext* EffectContext = (FGSGameplayEffectContext*)EffectContextHandle.Get();
+	if (EffectContext)
+	{
+		return EffectContext->GetTargetData();
+	}
+
+	return FGameplayAbilityTargetDataHandle();
+}
+
+void UGSBlueprintFunctionLibrary::EffectContextAddTargetData(FGameplayEffectContextHandle EffectContextHandle, const FGameplayAbilityTargetDataHandle& TargetData)
+{
+	FGSGameplayEffectContext* EffectContext = (FGSGameplayEffectContext*)EffectContextHandle.Get();
+	if (EffectContext)
+	{
+		EffectContext->AddTargetData(TargetData);
+	}
+}
