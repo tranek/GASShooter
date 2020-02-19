@@ -293,7 +293,7 @@ void AGSWeapon::OnDropped_Implementation(FVector NewLocation)
 	ResetWeapon();
 
 	SetActorLocation(NewLocation);
-	CollisionComp->SetHiddenInGame(false, false);
+	//CollisionComp->SetHiddenInGame(false, false);
 	CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	if (WeaponMesh1P)

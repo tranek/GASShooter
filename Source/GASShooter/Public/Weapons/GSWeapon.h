@@ -32,6 +32,11 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bSpawnWithCollision;
 
+	// This tag is primarily used by the first person Animation Blueprint to determine which animations to play
+	// (Rifle vs Rocket Launcher)
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSWeapon")
+	FGameplayTag WeaponTag;
+
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
 	class AGSGATA_LineTrace* LineTraceTargetActor;
 

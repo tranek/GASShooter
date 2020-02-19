@@ -53,6 +53,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|GSHeroCharacter")
 	bool bStartInFirstPersonPerspective;
 
+	FGameplayTag CurrentWeaponTag;
+
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	// Called to bind functionality to input
@@ -200,6 +202,7 @@ protected:
 	class UGSAmmoAttributeSet* AmmoAttributeSet;
 
 	// Cache tags
+	FGameplayTag NoWeaponTag;
 	FGameplayTag WeaponChangingDelayReplicationTag;
 	FGameplayTag WeaponAmmoTypeNoneTag;
 	FGameplayTag WeaponAbilityTag;
