@@ -134,6 +134,12 @@ public:
 	int32 GetNumWeapons() const;
 
 protected:
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSHeroCharacter")
+	FVector StartingThirdPersonMeshLocation;
+
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSHeroCharacter")
+	FVector StartingFirstPersonMeshLocation;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|Camera")
 	float BaseTurnRate;
 
@@ -145,9 +151,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
 	FVector StartingThirdPersonCameraBoomLocation;
-
-	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
-	FVector StartingThirdPersonMeshLocation;
 
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
 	bool bIsFirstPersonPerspective;

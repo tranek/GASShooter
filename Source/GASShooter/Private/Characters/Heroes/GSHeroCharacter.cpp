@@ -520,6 +520,8 @@ void AGSHeroCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	StartingFirstPersonMeshLocation = FirstPersonMesh->GetRelativeLocation();
+
 	// Only needed for Heroes placed in world and when the player is the Server.
 	// On respawn, they are set up in PossessedBy.
 	// When the player a client, the floating status bars are all set up in OnRep_PlayerState.
