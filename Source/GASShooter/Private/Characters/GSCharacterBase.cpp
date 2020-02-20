@@ -118,9 +118,9 @@ void AGSCharacterBase::FinishDying()
 	Destroy();
 }
 
-void AGSCharacterBase::AddDamageNumber(float Damage)
+void AGSCharacterBase::AddDamageNumber(float Damage, FGameplayTagContainer DamageNumberTags)
 {
-	DamageNumberQueue.Add(Damage);
+	DamageNumberQueue.Add(FGSDamageNumber(Damage, DamageNumberTags));
 
 	if (!GetWorldTimerManager().IsTimerActive(DamageNumberTimer))
 	{
@@ -307,18 +307,17 @@ void AGSCharacterBase::ShowDamageNumber()
 {
 	if (DamageNumberQueue.Num() > 0 && IsValid(this))
 	{
-		float DamageAmount = DamageNumberQueue[0];
-		DamageNumberQueue.RemoveAt(0);
-
 		UGSDamageTextWidgetComponent* DamageText = NewObject<UGSDamageTextWidgetComponent>(this, DamageNumberClass);
 		DamageText->RegisterComponent();
 		DamageText->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
-		DamageText->SetDamageText(DamageAmount);
+		DamageText->SetDamageText(DamageNumberQueue[0].DamageAmount, DamageNumberQueue[0].Tags);
 
 		if (DamageNumberQueue.Num() < 1)
 		{
 			GetWorldTimerManager().ClearTimer(DamageNumberTimer);
 		}
+
+		DamageNumberQueue.RemoveAt(0);
 	}
 }
 

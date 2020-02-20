@@ -16,5 +16,5 @@ class GASSHOOTER_API UGSDamageTextWidgetComponent : public UWidgetComponent
 	
 public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetDamageText(float Damage);
+	void SetDamageText(float Damage, const FGameplayTagContainer& Tags);
 };

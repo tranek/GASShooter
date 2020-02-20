@@ -147,15 +147,15 @@ void AGSPlayerController::SetHUDReticle(TSubclassOf<UGSHUDReticle> ReticleClass)
 	}
 }
 
-void AGSPlayerController::ShowDamageNumber_Implementation(float DamageAmount, AGSCharacterBase* TargetCharacter)
+void AGSPlayerController::ShowDamageNumber_Implementation(float DamageAmount, AGSCharacterBase* TargetCharacter, FGameplayTagContainer DamageNumberTags)
 {
 	if (IsValid(TargetCharacter))
 	{
-		TargetCharacter->AddDamageNumber(DamageAmount);
+		TargetCharacter->AddDamageNumber(DamageAmount, DamageNumberTags);
 	}
 }
 
-bool AGSPlayerController::ShowDamageNumber_Validate(float DamageAmount, AGSCharacterBase* TargetCharacter)
+bool AGSPlayerController::ShowDamageNumber_Validate(float DamageAmount, AGSCharacterBase* TargetCharacter, FGameplayTagContainer DamageNumberTags)
 {
 	return true;
 }

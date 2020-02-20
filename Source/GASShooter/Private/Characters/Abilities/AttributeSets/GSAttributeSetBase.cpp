@@ -16,6 +16,7 @@ UGSAttributeSetBase::UGSAttributeSetBase()
 	HitDirectionBackTag = FGameplayTag::RequestGameplayTag(FName("Effect.HitReact.Back"));
 	HitDirectionRightTag = FGameplayTag::RequestGameplayTag(FName("Effect.HitReact.Right"));
 	HitDirectionLeftTag = FGameplayTag::RequestGameplayTag(FName("Effect.HitReact.Left"));
+	HeadShotTag = FGameplayTag::RequestGameplayTag(FName("Effect.Damage.HeadShot"));
 }
 
 void UGSAttributeSetBase::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -146,7 +147,14 @@ void UGSAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCall
 					AGSPlayerController* PC = Cast<AGSPlayerController>(SourceController);
 					if (PC)
 					{
-						PC->ShowDamageNumber(LocalDamageDone, TargetCharacter);
+						FGameplayTagContainer DamageNumberTags;
+
+						if (Data.EffectSpec.DynamicAssetTags.HasTag(HeadShotTag))
+						{
+							DamageNumberTags.AddTagFast(HeadShotTag);
+						}
+
+						PC->ShowDamageNumber(LocalDamageDone, TargetCharacter, DamageNumberTags);
 					}
 				}
 

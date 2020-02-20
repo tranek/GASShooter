@@ -36,6 +36,8 @@ static const GSDamageStatics& DamageStatics()
 
 UGSDamageExecutionCalc::UGSDamageExecutionCalc()
 {
+	HeadShotMultiplier = 1.5f;
+
 	RelevantAttributesToCapture.Add(DamageStatics().ArmorDef);
 
 	// We don't include Damage here because we're not capturing it. It is generated inside the ExecCalc.
@@ -50,6 +52,8 @@ void UGSDamageExecutionCalc::Execute_Implementation(const FGameplayEffectCustomE
 	AActor* TargetActor = TargetAbilitySystemComponent ? TargetAbilitySystemComponent->AvatarActor : nullptr;
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+	FGameplayTagContainer AssetTags;
+	Spec.GetAllAssetTags(AssetTags);
 
 	// Gather the tags from the source and target as that can affect which buffs should be used
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
@@ -66,6 +70,15 @@ void UGSDamageExecutionCalc::Execute_Implementation(const FGameplayEffectCustomE
 	float Damage = FMath::Max<float>(Spec.GetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), false, -1.0f), 0.0f);
 
 	float UnmitigatedDamage = Damage; // Can multiply any damage boosters here
+
+	// Check for headshot. There's only one character mesh here, but you could have a function on your Character class to return the head bone name
+	const FHitResult* Hit = Spec.GetContext().GetHitResult();
+	if (AssetTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Effect.Damage.CanHeadShot"))) && Hit && Hit->BoneName == "b_head")
+	{
+		UnmitigatedDamage *= HeadShotMultiplier;
+		FGameplayEffectSpec* MutableSpec = ExecutionParams.GetOwningSpecForPreExecuteMod();
+		MutableSpec->DynamicAssetTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Effect.Damage.HeadShot")));
+	}
 
 	float MitigatedDamage = (UnmitigatedDamage) * (100 / (100 + Armor));
 

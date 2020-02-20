@@ -12,6 +12,24 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FCharacterDiedDelegate, AGSCharacterBase*, Character);
 
+USTRUCT(BlueprintType)
+struct GASSHOOTER_API FGSDamageNumber
+{
+	GENERATED_USTRUCT_BODY()
+
+	float DamageAmount;
+
+	FGameplayTagContainer Tags;
+
+	FGSDamageNumber() {}
+
+	FGSDamageNumber(float InDamageAmount, FGameplayTagContainer InTags) : DamageAmount(InDamageAmount)
+	{
+		// Copy tag container
+		Tags.AppendTags(InTags);
+	}
+};
+
 /**
 * The base Character class for the game. Everything with an AbilitySystemComponent in this game will inherit from this class.
 * This class should not be instantiated and instead subclassed.
@@ -46,7 +64,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSCharacter")
 	virtual void FinishDying();
 
-	virtual void AddDamageNumber(float Damage);
+	virtual void AddDamageNumber(float Damage, FGameplayTagContainer DamageNumberTags);
 
 
 	/**
@@ -92,7 +110,7 @@ protected:
 	FGameplayTag DeadTag;
 	FGameplayTag EffectRemoveOnDeathTag;
 
-	TArray<float> DamageNumberQueue;
+	TArray<FGSDamageNumber> DamageNumberQueue;
 	FTimerHandle DamageNumberTimer;
 	
 	// Reference to the ASC. It will live on the PlayerState or here if the character doesn't have a PlayerState.

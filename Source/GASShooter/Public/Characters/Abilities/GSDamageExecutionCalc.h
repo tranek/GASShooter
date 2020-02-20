@@ -18,4 +18,7 @@ public:
 	UGSDamageExecutionCalc();
 
 	virtual void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, OUT FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
+
+protected:
+	float HeadShotMultiplier;
 };
