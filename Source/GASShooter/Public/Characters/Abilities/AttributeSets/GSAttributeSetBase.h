@@ -132,10 +132,6 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 protected:
-	FGameplayTag HitDirectionFrontTag;
-	FGameplayTag HitDirectionBackTag;
-	FGameplayTag HitDirectionRightTag;
-	FGameplayTag HitDirectionLeftTag;
 	FGameplayTag HeadShotTag;
 
 	// Helper function to proportionally adjust the value of an attribute when it's associated max attribute changes.
