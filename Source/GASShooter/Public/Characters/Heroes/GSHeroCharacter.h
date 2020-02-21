@@ -296,11 +296,18 @@ protected:
 
 	void OnAbilityActivationFailed(const UGameplayAbility* FailedAbility, const FGameplayTagContainer& FailTags);
 	
+	// The CurrentWeapon is only automatically replicated to simulated clients.
+	// The autonomous client can use this to request the proper CurrentWeapon from the server when it knows it may be
+	// out of sync with it from predictive client-side changes.
 	UFUNCTION(Server, Reliable)
 	void ServerSyncCurrentWeapon();
 	void ServerSyncCurrentWeapon_Implementation();
 	bool ServerSyncCurrentWeapon_Validate();
 	
+	// The CurrentWeapon is only automatically replicated to simulated clients.
+	// Use this function to manually sync the autonomous client's CurrentWeapon when we're ready to.
+	// This allows us to predict weapon changes (changing weapons fast multiple times in a row so that the server doesn't
+	// replicate and clobber our CurrentWeapon).
 	UFUNCTION(Client, Reliable)
 	void ClientSyncCurrentWeapon(AGSWeapon* InWeapon);
 	void ClientSyncCurrentWeapon_Implementation(AGSWeapon* InWeapon);
