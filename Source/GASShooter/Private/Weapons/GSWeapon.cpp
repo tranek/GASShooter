@@ -30,8 +30,6 @@ AGSWeapon::AGSWeapon()
 	bInfiniteAmmo = false;
 	PrimaryAmmoType = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.None"));
 	SecondaryAmmoType = FGameplayTag::RequestGameplayTag(FName("Weapon.Ammo.None"));
-	bEnableLineTraceTargetActor = false;
-	bEnableSphereTraceTargetActor = false;
 
 	CollisionComp = CreateDefaultSubobject<UCapsuleComponent>(FName("CollisionComponent"));
 	CollisionComp->InitCapsuleSize(40.0f, 50.0f);
@@ -395,23 +393,35 @@ FText AGSWeapon::GetDefaultStatusText() const
 	return DefaultStatusText;
 }
 
+AGSGATA_LineTrace* AGSWeapon::GetLineTraceTargetActor()
+{
+	if (LineTraceTargetActor)
+	{
+		return LineTraceTargetActor;
+	}
+
+	LineTraceTargetActor = GetWorld()->SpawnActor<AGSGATA_LineTrace>();
+	LineTraceTargetActor->SetOwner(this);
+	return LineTraceTargetActor;
+}
+
+AGSGATA_SphereTrace* AGSWeapon::GetSphereTraceTargetActor()
+{
+	if (SphereTraceTargetActor)
+	{
+		return SphereTraceTargetActor;
+	}
+
+	SphereTraceTargetActor = GetWorld()->SpawnActor<AGSGATA_SphereTrace>();
+	SphereTraceTargetActor->SetOwner(this);
+	return SphereTraceTargetActor;
+}
+
 void AGSWeapon::BeginPlay()
 {
 	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
 
 	ResetWeapon();
-
-	if (bEnableLineTraceTargetActor)
-	{
-		LineTraceTargetActor = GetWorld()->SpawnActor<AGSGATA_LineTrace>();
-		LineTraceTargetActor->SetOwner(this);
-	}
-
-	if (bEnableSphereTraceTargetActor)
-	{
-		SphereTraceTargetActor = GetWorld()->SpawnActor<AGSGATA_SphereTrace>();
-		SphereTraceTargetActor->SetOwner(this);
-	}
 
 	if (!OwningCharacter && bSpawnWithCollision)
 	{

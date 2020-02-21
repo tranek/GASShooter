@@ -11,6 +11,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FWeaponAmmoChangedDelegate, int32, OldValue, int32, NewValue);
 
+class AGSGATA_LineTrace;
+class AGSGATA_SphereTrace;
 class AGSHeroCharacter;
 class UAnimMontage;
 class UGSAbilitySystemComponent;
@@ -36,12 +38,6 @@ public:
 	// (Rifle vs Rocket Launcher)
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSWeapon")
 	FGameplayTag WeaponTag;
-
-	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
-	class AGSGATA_LineTrace* LineTraceTargetActor;
-
-	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSWeapon")
-	class AGSGATA_SphereTrace* SphereTraceTargetActor;
 	
 	// UI HUD Primary Icon when equipped. Using Sprites because of the texture atlas from ShooterGame.
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|UI")
@@ -169,6 +165,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
 	FText GetDefaultStatusText() const;
 
+	// Getter for LineTraceTargetActor. Spawns it if it doesn't exist yet.
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Targeting")
+	AGSGATA_LineTrace* GetLineTraceTargetActor();
+
+	// Getter for SphereTraceTargetActor. Spawns it if it doesn't exist yet.
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|Targeting")
+	AGSGATA_SphereTrace* GetSphereTraceTargetActor();
+
 protected:
 	UPROPERTY()
 	UGSAbilitySystemComponent* AbilitySystemComponent;
@@ -193,11 +197,11 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|UI")
 	TSubclassOf<class UGSHUDReticle> PrimaryHUDReticleClass;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon")
-	bool bEnableLineTraceTargetActor;
+	UPROPERTY()
+	AGSGATA_LineTrace* LineTraceTargetActor;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|GSWeapon")
-	bool bEnableSphereTraceTargetActor;
+	UPROPERTY()
+	AGSGATA_SphereTrace* SphereTraceTargetActor;
 
 	// Collision capsule for when weapon is in pickup mode
 	UPROPERTY(VisibleAnywhere)
