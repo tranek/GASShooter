@@ -64,6 +64,7 @@ AGSWeapon::AGSWeapon()
 	WeaponIsFiringTag = FGameplayTag::RequestGameplayTag(FName("Weapon.IsFiring"));
 
 	FireMode = FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.None"));
+	StatusText = DefaultStatusText;
 }
 
 UAbilitySystemComponent* AGSWeapon::GetAbilitySystemComponent() const
@@ -387,6 +388,11 @@ UAnimMontage* AGSWeapon::GetEquip3PMontage() const
 USoundCue* AGSWeapon::GetPickupSound() const
 {
 	return PickupSound;
+}
+
+FText AGSWeapon::GetDefaultStatusText() const
+{
+	return DefaultStatusText;
 }
 
 void AGSWeapon::BeginPlay()

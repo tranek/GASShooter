@@ -166,6 +166,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|Audio")
 	class USoundCue* GetPickupSound() const;
 
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSWeapon")
+	FText GetDefaultStatusText() const;
+
 protected:
 	UPROPERTY()
 	UGSAbilitySystemComponent* AbilitySystemComponent;

@@ -68,7 +68,7 @@ void AGSPlayerController::CreateHUD()
 		if (CurrentWeapon)
 		{
 			UIHUDWidget->SetEquippedWeaponSprite(CurrentWeapon->PrimaryIcon);
-			UIHUDWidget->SetEquippedWeaponStatusText(CurrentWeapon->StatusText);
+			UIHUDWidget->SetEquippedWeaponStatusText(CurrentWeapon->GetDefaultStatusText());
 			UIHUDWidget->SetPrimaryClipAmmo(Hero->GetPrimaryClipAmmo());
 			UIHUDWidget->SetReticle(CurrentWeapon->GetPrimaryHUDReticleClass());
 
