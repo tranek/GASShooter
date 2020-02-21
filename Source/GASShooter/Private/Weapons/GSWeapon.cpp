@@ -153,8 +153,6 @@ void AGSWeapon::Equip()
 		return;
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("%s %s %s Role: %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *GetName(), GET_ACTOR_ROLE_FSTRING(OwningCharacter));
-
 	FName AttachPoint = OwningCharacter->GetWeaponAttachPoint();
 
 	if (WeaponMesh1P)
@@ -195,12 +193,8 @@ void AGSWeapon::Equip()
 
 void AGSWeapon::UnEquip()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
-
 	if (OwningCharacter == nullptr)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("%s %s %s OwningCharacter was nullptr"), TEXT(__FUNCTION__), *GetName(),
-		//	*UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
 		return;
 	}
 
@@ -218,8 +212,6 @@ void AGSWeapon::UnEquip()
 
 void AGSWeapon::AddAbilities()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s %s %s Role: %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *GetName(), GET_ACTOR_ROLE_FSTRING(OwningCharacter));
-
 	if (!IsValid(OwningCharacter) || !OwningCharacter->GetAbilitySystemComponent())
 	{
 		return;
@@ -229,7 +221,7 @@ void AGSWeapon::AddAbilities()
 
 	if (!ASC)
 	{
-		UE_LOG(LogTemp, Log, TEXT("%s %s Role: %s ASC is null"), TEXT(__FUNCTION__), *GetName(), GET_ACTOR_ROLE_FSTRING(OwningCharacter));
+		UE_LOG(LogTemp, Error, TEXT("%s %s Role: %s ASC is null"), TEXT(__FUNCTION__), *GetName(), GET_ACTOR_ROLE_FSTRING(OwningCharacter));
 		return;
 	}
 
@@ -286,13 +278,10 @@ void AGSWeapon::ResetWeapon()
 
 void AGSWeapon::OnDropped_Implementation(FVector NewLocation)
 {
-	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *GetName());
-
 	SetOwningCharacter(nullptr);
 	ResetWeapon();
 
 	SetActorLocation(NewLocation);
-	//CollisionComp->SetHiddenInGame(false, false);
 	CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 
 	if (WeaponMesh1P)
@@ -419,15 +408,11 @@ AGSGATA_SphereTrace* AGSWeapon::GetSphereTraceTargetActor()
 
 void AGSWeapon::BeginPlay()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
-
 	ResetWeapon();
 
 	if (!OwningCharacter && bSpawnWithCollision)
 	{
 		// Spawned into the world without an owner, enable collision as we are in pickup mode
-		UE_LOG(LogTemp, Log, TEXT("%s %s %s Spawning with collision enabled"), TEXT(__FUNCTION__), *GetName(),
-			*UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
 		CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	}
 
@@ -440,9 +425,6 @@ void AGSWeapon::PickUpOnTouch(AGSHeroCharacter* InCharacter)
 	{
 		return;
 	}
-
-	UE_LOG(LogTemp, Log, TEXT("%s %s %s %s"), TEXT(__FUNCTION__), *InCharacter->GetName(), *GetName(),
-		*UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
 
 	if (InCharacter->AddWeaponToInventory(this, true) && OwningCharacter->IsInFirstPersonPerspective())
 	{

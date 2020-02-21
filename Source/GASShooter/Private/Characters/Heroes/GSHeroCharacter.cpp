@@ -172,13 +172,6 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 	SetupStartupPerspective();
 }
 
-void AGSHeroCharacter::Restart()
-{
-	Super::Restart();
-
-	//UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *GetName(), ACTOR_ROLE_FSTRING);
-}
-
 UGSFloatingStatusBarWidget* AGSHeroCharacter::GetFloatingStatusBar()
 {
 	return UIFloatingStatusBar;
@@ -233,13 +226,8 @@ AGSWeapon* AGSHeroCharacter::GetCurrentWeapon() const
 
 bool AGSHeroCharacter::AddWeaponToInventory(AGSWeapon* NewWeapon, bool bEquipWeapon)
 {
-	UE_LOG(LogTemp, Log, TEXT("%s %s %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *GetName());
-
 	if (DoesWeaponExistInInventory(NewWeapon))
 	{
-		UE_LOG(LogTemp, Log, TEXT("%s %s %s Weapon already exists in Inventory, collecting %d ammo and destroying"),
-			TEXT(__FUNCTION__), *GetName(), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), NewWeapon->GetPrimaryClipAmmo());
-
 		USoundCue* PickupSound = NewWeapon->GetPickupSound();
 
 		if (PickupSound && IsLocallyControlled())
@@ -330,9 +318,6 @@ bool AGSHeroCharacter::RemoveWeaponFromInventory(AGSWeapon* WeaponToRemove)
 
 void AGSHeroCharacter::RemoveAllWeaponsFromInventory()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s %s %s %s Num Weapons in Inventory: %d"), TEXT(__FUNCTION__),
-		*UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), ACTOR_ROLE_FSTRING, *GetName(), Inventory.Weapons.Num());
-
 	if (GetLocalRole() < ROLE_Authority)
 	{
 		return;
@@ -350,12 +335,6 @@ void AGSHeroCharacter::RemoveAllWeaponsFromInventory()
 
 		// Set the weapon up as a pickup
 
-		// Add parameter to drop weapons and pass to RemoveWeaponFromInventory()?
-
-		//TODO Set location based on num of weapons in a circle
-		// x = radius * cos(angle)
-		// y = radius * sin(angle)
-		// angle = i / 360 if degrees
 		float OffsetX = radius * FMath::Cos((i / NumWeapons) * 2.0f * PI);
 		float OffsetY = radius * FMath::Sin((i / NumWeapons) * 2.0f * PI);
 		Weapon->OnDropped(GetActorLocation() + FVector(OffsetX, OffsetY, 0.0f));
@@ -371,8 +350,6 @@ void AGSHeroCharacter::EquipWeapon(AGSWeapon* NewWeapon)
 	}
 	else
 	{
-		UE_LOG(LogTemp, Log, TEXT("%s Equipping %s"), TEXT(__FUNCTION__), *NewWeapon->GetName());
-
 		SetCurrentWeapon(NewWeapon, CurrentWeapon);
 		bChangedWeaponLocally = true;
 	}
@@ -760,8 +737,6 @@ void AGSHeroCharacter::BindASCInput()
 
 void AGSHeroCharacter::SpawnDefaultInventory()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s %s"), TEXT(__FUNCTION__), *GetName());
-
 	if (GetLocalRole() < ROLE_Authority)
 	{
 		return;
@@ -801,7 +776,7 @@ void AGSHeroCharacter::SetupStartupPerspective()
 
 bool AGSHeroCharacter::DoesWeaponExistInInventory(AGSWeapon* InWeapon)
 {
-	UE_LOG(LogTemp, Log, TEXT("%s InWeapon class %s"), TEXT(__FUNCTION__), *InWeapon->GetClass()->GetName());
+	//UE_LOG(LogTemp, Log, TEXT("%s InWeapon class %s"), TEXT(__FUNCTION__), *InWeapon->GetClass()->GetName());
 
 	for (AGSWeapon* Weapon : Inventory.Weapons)
 	{
@@ -967,8 +942,6 @@ void AGSHeroCharacter::CurrentWeaponSecondaryReserveAmmoChanged(const FOnAttribu
 
 void AGSHeroCharacter::WeaponChangingDelayReplicationTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
-	UE_LOG(LogTemp, Log, TEXT("%s %s %s TagCount: %d"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *CallbackTag.ToString(), NewCount);
-
 	if (CallbackTag == WeaponChangingDelayReplicationTag)
 	{
 		if (NewCount < 1)
@@ -1015,8 +988,6 @@ void AGSHeroCharacter::OnAbilityActivationFailed(const UGameplayAbility* FailedA
 
 void AGSHeroCharacter::ServerSyncCurrentWeapon_Implementation()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s %s"), TEXT(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
-
 	ClientSyncCurrentWeapon(CurrentWeapon);
 }
 
