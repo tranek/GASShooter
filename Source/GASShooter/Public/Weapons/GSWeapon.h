@@ -184,9 +184,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_MaxPrimaryClipAmmo, Category = "GASShooter|GSWeapon|Ammo")
 	int32 MaxPrimaryClipAmmo;
 
-	// How much ammo in the clip the gun starts with
+	// How much ammo in the clip the gun starts with. Used for things like rifle grenades.
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_SecondaryClipAmmo, Category = "GASShooter|GSWeapon|Ammo")
-	int32 SecondaryClipAmmo; // Things like rifle grenades
+	int32 SecondaryClipAmmo;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, ReplicatedUsing = OnRep_MaxSecondaryClipAmmo, Category = "GASShooter|GSWeapon|Ammo")
 	int32 MaxSecondaryClipAmmo;

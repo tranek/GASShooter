@@ -8,6 +8,9 @@
 
 class USkeletalMeshComponent;
 
+/**
+* Data about montages that were played locally (all montages in case of server. predictive montages in case of client). Never replicated directly.
+*/
 USTRUCT()
 struct GASSHOOTER_API FGameplayAbilityLocalAnimMontageForMesh
 {
@@ -35,6 +38,9 @@ public:
 	}
 };
 
+/**
+* Data about montages that is replicated to simulated clients.
+*/
 USTRUCT()
 struct GASSHOOTER_API FGameplayAbilityRepAnimMontageForMesh
 {
