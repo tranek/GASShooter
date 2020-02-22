@@ -45,7 +45,7 @@ This project does not show predicting projectiles. I refer you to the Unreal Tou
 | --------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
 | Rifle           | Fire hitscan bullets based on the current fire mode. | Aim down sights, reduces firing spread.                                                                    | Changes fire modes between full auto, semi auto, and burst. |
 | Rocket Launcher | Fire a rocket.                                       | Aim down sights. Starts lock-on targeting for homing rockets. Press LMB to fire homing rockets at targets. | None                                                        |
-| Shotgun         | Fire hitscan pellets.                                | Aim down sights, reduces firing spread for pellets.                                                        | Changes fire modes between semi auto and full auto.         |
+| Shotgun         | Fire hitscan pellets based on the current fire mode. | Aim down sights, reduces firing spread for pellets.                                                        | Changes fire modes between semi auto and full auto.         |
 
 ## Acknowledgements
 
