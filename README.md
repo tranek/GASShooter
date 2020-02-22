@@ -24,6 +24,8 @@ Assets included come from Epic Games' ShooterGame learning project or made by my
 | --------------- | ----------------------- |
 | `kill`          | Kills the local player. |
 
+The Hero character does have mana but no abilities currently use it. This project's inception started when the new BioShock was announced and the idea was to include BioShock-like upgradeable abilities. That made the scope too large, but it is something that may be revisited in the future.
+
 ## Concepts covered
 
 * Ability Batching
