@@ -49,4 +49,4 @@ This project does not show predicting projectiles. I refer you to the Unreal Tou
 
 ## Acknowledgements
 
-[KaosSpectrum](https://github.com/KaosSpectrum) provided significant contributions to figuring out how the ability batching system works and general feedback. Check out his [blog](https://www.thegames.dev/).
+[KaosSpectrum](https://github.com/KaosSpectrum) provided significant contributions to figuring out how the ability batching system works and general feedback. Check out his game development [blog](https://www.thegames.dev/).
