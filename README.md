@@ -2,7 +2,7 @@
 
 ## Introduction
 
-GASShooter is an advanced FPS/TPS Sample Project for Unreal Engine 4's GameplayAbilitySystem (GAS) plugin. This is a sister project to the [GASDocumentation](https://github.com/tranek/GASDocumentation) and information about the techniques demonstrated here will be discussed in detail in the README there.
+GASShooter is an advanced FPS/TPS Sample Project for Unreal Engine 4's GameplayAbilitySystem (GAS) plugin. This is a sister project to the [GASDocumentation](https://github.com/tranek/GASDocumentation) and information about the techniques demonstrated here will be discussed in detail in the README there (**documentation writing still in progress**).
 
 This is not production-ready code but a starting point for evaluating different techniques in GAS relating to using weapons. TargetActors with persistent hit results and ReticleActors particularly do a lot of code on `Tick()`.
 
