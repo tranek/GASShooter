@@ -1,3 +1,52 @@
 # GASShooter
 
-WIP
+## Introduction
+
+GASShooter is an advanced FPS/TPS Sample Project for Unreal Engine 4's GameplayAbilitySystem (GAS) plugin. This is a sister project to the [GASDocumentation](https://github.com/tranek/GASDocumentation) and discussion of the techniques demonstrated here will be discussed in detail there.
+
+This is not production-ready code but a starting point for evaluating different techniques in GAS relating to using weapons. TargetActors with persistent hit results and ReticleActors particularly do a lot of code on `Tick()`.
+
+Assets included come from Epic Games' ShooterGame learning project or made by myself.
+
+| Keybind             | Action                                                      |
+| ------------------- | ----------------------------------------------------------- |
+| T                   | Toggles between first and third person.                     |
+| Left Mouse Button   | Activates the weapon's primary ability. Confirms targeting. |
+| Middle Mouse Button | Activates the weapon's alternate ability.                   |
+| Right Mouse Button  | Activates the weapon's secondary ability.                   |
+| Mouse Wheel Up      | Swaps to next weapon in inventory.                          |
+| Mouse Wheel Down    | Swaps to previous weapon in inventory.                      |
+| R                   | Reloads the weapon.                                         |
+| Left Ctrl           | Cancels targeting.                                          |
+| Left Shift          | Sprint.                                                     |
+
+| Console Command | Action                  |
+| --------------- | ----------------------- |
+| `kill`          | Kills the local player. |
+
+## Concepts covered
+
+* Ability Batching
+* Equippable weapons that grant abilities
+* Predicting weapon switching
+* Weapon ammo
+* Simple weapon inventory
+* Headshot bonus damage
+* Reusable, custom TargetActors
+* ReticleActors
+* Play replicated montages on multiple Skeletal Mesh Components **belonging to the AvatarActor** in an ability
+* Subclassing `FGameplayEffectContext` to send additional information to GameplayCues
+* Character shield that drains before health is removed by damage
+* Item pickups
+
+This project does not show predicting projectiles. I refer you to the Unreal Tournament source code for how to do that using a fake projectile on the owning client.
+
+| Weapon          | Primary Ability (Left Mouse Button)                  | Secondary Ability (Right Mouse Button)                                                                     | Alternate Ability (Middle Mouse Button)                     |
+| --------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| Rifle           | Fire hitscan bullets based on the current fire mode. | Aim down sights, reduces firing spread.                                                                    | Changes fire modes between full auto, semi auto, and burst. |
+| Rocket Launcher | Fire a rocket.                                       | Aim down sights. Starts lock-on targeting for homing rockets. Press LMB to fire homing rockets at targets. | None                                                        |
+| Shotgun         | Fire hitscan pellets.                                | Aim down sights, reduces firing spread for pellets.                                                        | Changes fire modes between semi auto and full auto.         |
+
+## Acknowledgements
+
+[KaosSpectrum](https://github.com/KaosSpectrum) provided significant contributions to figuring out how the ability batching system works and general feedback. Check out his [blog](https://www.thegames.dev/).
