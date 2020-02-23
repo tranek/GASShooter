@@ -54,7 +54,7 @@ public:
 
 	// Tells an ability to activate immediately when its granted. Used for passive abilities and abilites forced on others.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability")
-	bool bActivateAbilityOnGranted = false;
+	bool bActivateAbilityOnGranted;
 
 	// If true, only activate this ability if the weapon that granted it is the currently equipped weapon.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability")
@@ -129,9 +129,9 @@ public:
 	virtual void ResetHUDReticle();
 
 	
-	// --------------------------------------
+	// ----------------------------------------------------------------------------------------------------------------
 	//	Animation Support for multiple USkeletalMeshComponents on the AvatarActor
-	// --------------------------------------
+	// ----------------------------------------------------------------------------------------------------------------
 
 	/** Returns the currently playing montage for this ability, if any */
 	UFUNCTION(BlueprintCallable, Category = Animation)

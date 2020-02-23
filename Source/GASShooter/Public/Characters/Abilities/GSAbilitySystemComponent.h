@@ -119,7 +119,11 @@ public:
 	// Attempts to activate the given ability handle and batch all RPCs into one. This will only batch all RPCs that happen
 	// in one frame. Best case scenario we batch ActivateAbility, SendTargetData, and EndAbility into one RPC instead of three.
 	// Worst case we batch ActivateAbility and SendTargetData into one RPC instead of two and call EndAbility later in a separate
-	// RPC. If we can't batch SendTargetData with ActivateAbility then batching doesn't help and we should just activate normnally.
+	// RPC. If we can't batch SendTargetData or EndAbility with ActivateAbility because they don't happen in the same frame due to
+	// latent ability tasks for example, then batching doesn't help and we should just activate normally.
+	// Single shots (semi auto fire) combine ActivateAbility, SendTargetData, and EndAbility into one RPC instead of three.
+	// Full auto shots combine ActivateAbility and SendTargetData into one RPC instead of two for the first bullet. Each subsequent
+	// bullet is one RPC for SendTargetData. We then send one final RPC for the EndAbility when we're done firing.
 	UFUNCTION(BlueprintCallable, Category = "Abilities")
 	virtual bool BatchRPCTryActivateAbility(FGameplayAbilitySpecHandle InAbilityHandle, bool EndAbilityImmediately);
 
@@ -134,7 +138,8 @@ public:
 
 
 	// ----------------------------------------------------------------------------------------------------------------
-	//	AnimMontage Support for multiple USkeletalMeshComponents on the AvatarActor. Only one ability can be animating at a time though?
+	//	AnimMontage Support for multiple USkeletalMeshComponents on the AvatarActor.
+	//  Only one ability can be animating at a time though?
 	// ----------------------------------------------------------------------------------------------------------------	
 
 	// Plays a montage and handles replication and prediction based on passed in ability/activation info
@@ -190,7 +195,8 @@ public:
 
 protected:
 	// ----------------------------------------------------------------------------------------------------------------
-	//	AnimMontage Support for multiple USkeletalMeshComponents on the AvatarActor. Only one ability can be animating at a time though?
+	//	AnimMontage Support for multiple USkeletalMeshComponents on the AvatarActor.
+	//  Only one ability can be animating at a time though?
 	// ----------------------------------------------------------------------------------------------------------------	
 
 	// Set if montage rep happens while we don't have the animinstance associated with us yet

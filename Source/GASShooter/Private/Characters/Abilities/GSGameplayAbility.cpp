@@ -16,6 +16,7 @@ UGSGameplayAbility::UGSGameplayAbility()
 	// Default to Instance Per Actor
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
+	bActivateAbilityOnGranted = false;
 	bSourceObjectMustEqualCurrentWeaponToActivate = false;
 }
 
