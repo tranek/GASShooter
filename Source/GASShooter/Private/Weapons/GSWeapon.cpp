@@ -95,18 +95,8 @@ void AGSWeapon::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracke
 {
 	Super::PreReplication(ChangedPropertyTracker);
 
-	DOREPLIFETIME_ACTIVE_OVERRIDE(AGSWeapon, PrimaryClipAmmo, (IsValid(AbilitySystemComponent) && !AbilitySystemComponent->HasMatchingGameplayTag(WeaponIsFiringTag)) || bPrimaryAmmoNeedsSync);
-	DOREPLIFETIME_ACTIVE_OVERRIDE(AGSWeapon, SecondaryClipAmmo, (IsValid(AbilitySystemComponent) && !AbilitySystemComponent->HasMatchingGameplayTag(WeaponIsFiringTag)) || bPrimaryAmmoNeedsSync);
-	
-	if (bPrimaryAmmoNeedsSync)
-	{
-		bPrimaryAmmoNeedsSync = false;
-	}
-
-	if (bSecondaryAmmoNeedsSync)
-	{
-		bSecondaryAmmoNeedsSync = false;
-	}
+	DOREPLIFETIME_ACTIVE_OVERRIDE(AGSWeapon, PrimaryClipAmmo, (IsValid(AbilitySystemComponent) && !AbilitySystemComponent->HasMatchingGameplayTag(WeaponIsFiringTag)));
+	DOREPLIFETIME_ACTIVE_OVERRIDE(AGSWeapon, SecondaryClipAmmo, (IsValid(AbilitySystemComponent) && !AbilitySystemComponent->HasMatchingGameplayTag(WeaponIsFiringTag)));
 }
 
 void AGSWeapon::SetOwningCharacter(AGSHeroCharacter* InOwningCharacter)

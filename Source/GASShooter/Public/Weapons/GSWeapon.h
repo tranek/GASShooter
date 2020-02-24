@@ -62,12 +62,6 @@ public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSWeapon")
 	FGameplayTag SecondaryAmmoType;
 
-	UPROPERTY(BlueprintReadWrite, Category = "GASShooter|GSWeapon")
-	bool bPrimaryAmmoNeedsSync = false;
-
-	UPROPERTY(BlueprintReadWrite, Category = "GASShooter|GSWeapon")
-	bool bSecondaryAmmoNeedsSync = false;
-
 	// Things like fire mode for rifle
 	UPROPERTY(BlueprintReadWrite, VisibleInstanceOnly, Category = "GASShooter|GSWeapon")
 	FText StatusText;
