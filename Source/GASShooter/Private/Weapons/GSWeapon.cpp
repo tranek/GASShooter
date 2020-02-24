@@ -84,11 +84,11 @@ void AGSWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetim
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AGSWeapon, OwningCharacter);
-	DOREPLIFETIME(AGSWeapon, PrimaryClipAmmo);
-	DOREPLIFETIME(AGSWeapon, MaxPrimaryClipAmmo);
-	DOREPLIFETIME(AGSWeapon, SecondaryClipAmmo);
-	DOREPLIFETIME(AGSWeapon, MaxSecondaryClipAmmo);
+	DOREPLIFETIME_CONDITION(AGSWeapon, OwningCharacter, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AGSWeapon, PrimaryClipAmmo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AGSWeapon, MaxPrimaryClipAmmo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AGSWeapon, SecondaryClipAmmo, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AGSWeapon, MaxSecondaryClipAmmo, COND_OwnerOnly);
 }
 
 void AGSWeapon::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker)
