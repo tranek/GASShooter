@@ -234,7 +234,7 @@ protected:
 	// Returns true if we are ready to handle replicated montage information
 	virtual bool IsReadyForReplicatedMontageForMesh();
 
-	// RPC function called from CurrentMontageSetNextSectopnName, replicates to other clients
+	// RPC function called from CurrentMontageSetNextSectionName, replicates to other clients
 	UFUNCTION(reliable, server, WithValidation)
 	void ServerCurrentMontageSetNextSectionNameForMesh(USkeletalMeshComponent* InMesh, UAnimMontage* ClientAnimMontage, float ClientPosition, FName SectionName, FName NextSectionName);
 	void ServerCurrentMontageSetNextSectionNameForMesh_Implementation(USkeletalMeshComponent* InMesh, UAnimMontage* ClientAnimMontage, float ClientPosition, FName SectionName, FName NextSectionName);
