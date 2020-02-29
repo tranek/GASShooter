@@ -56,6 +56,20 @@ UGSGameplayAbility* UGSBlueprintFunctionLibrary::GetPrimaryAbilityInstanceFromCl
 	return nullptr;
 }
 
+bool UGSBlueprintFunctionLibrary::IsPrimaryAbilityInstanceActive(UAbilitySystemComponent* AbilitySystemComponent, FGameplayAbilitySpecHandle Handle)
+{
+	if (AbilitySystemComponent)
+	{
+		FGameplayAbilitySpec* AbilitySpec = AbilitySystemComponent->FindAbilitySpecFromHandle(Handle);
+		if (AbilitySpec)
+		{
+			return Cast<UGSGameplayAbility>(AbilitySpec->GetPrimaryInstance())->IsActive();
+		}
+	}
+
+	return false;
+}
+
 bool UGSBlueprintFunctionLibrary::IsAbilitySpecHandleValid(FGameplayAbilitySpecHandle Handle)
 {
 	return Handle.IsValid();

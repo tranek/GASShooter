@@ -24,6 +24,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	static FString GetPlayerEditorWindowRole(UWorld* World);
 
+
 	/**
 	* GameplayAbility
 	*/
@@ -32,6 +33,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Ability")
 	static UGSGameplayAbility* GetPrimaryAbilityInstanceFromClass(UAbilitySystemComponent* AbilitySystemComponent, TSubclassOf<UGameplayAbility> InAbilityClass);
+
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	static bool IsPrimaryAbilityInstanceActive(UAbilitySystemComponent* AbilitySystemComponent, FGameplayAbilitySpecHandle Handle);
 
 
 	/**
