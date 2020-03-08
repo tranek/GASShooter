@@ -751,8 +751,6 @@ void AGSHeroCharacter::SpawnDefaultInventory()
 			continue;
 		}
 
-		FActorSpawnParameters SpawnInfo;
-		SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		AGSWeapon* NewWeapon = GetWorld()->SpawnActorDeferred<AGSWeapon>(DefaultInventoryWeaponClasses[i],
 			FTransform::Identity, this, this, ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
 		NewWeapon->bSpawnWithCollision = false;
