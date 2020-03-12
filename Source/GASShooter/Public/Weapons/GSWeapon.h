@@ -29,6 +29,8 @@ public:
 	// Sets default values for this actor's properties
 	AGSWeapon();
 
+	~AGSWeapon();
+
 	// Whether or not to spawn this weapon with collision enabled (pickup mode).
 	// Set to false when spawning directly into a player's inventory or true when spawning into the world in pickup mode.
 	UPROPERTY(BlueprintReadWrite)
