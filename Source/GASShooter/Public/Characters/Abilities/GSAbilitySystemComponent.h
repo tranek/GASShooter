@@ -235,19 +235,19 @@ protected:
 	virtual bool IsReadyForReplicatedMontageForMesh();
 
 	// RPC function called from CurrentMontageSetNextSectionName, replicates to other clients
-	UFUNCTION(reliable, server, WithValidation)
+	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerCurrentMontageSetNextSectionNameForMesh(USkeletalMeshComponent* InMesh, UAnimMontage* ClientAnimMontage, float ClientPosition, FName SectionName, FName NextSectionName);
 	void ServerCurrentMontageSetNextSectionNameForMesh_Implementation(USkeletalMeshComponent* InMesh, UAnimMontage* ClientAnimMontage, float ClientPosition, FName SectionName, FName NextSectionName);
 	bool ServerCurrentMontageSetNextSectionNameForMesh_Validate(USkeletalMeshComponent* InMesh, UAnimMontage* ClientAnimMontage, float ClientPosition, FName SectionName, FName NextSectionName);
 
 	// RPC function called from CurrentMontageJumpToSection, replicates to other clients
-	UFUNCTION(reliable, server, WithValidation)
+	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerCurrentMontageJumpToSectionNameForMesh(USkeletalMeshComponent* InMesh, UAnimMontage* ClientAnimMontage, FName SectionName);
 	void ServerCurrentMontageJumpToSectionNameForMesh_Implementation(USkeletalMeshComponent* InMesh, UAnimMontage* ClientAnimMontage, FName SectionName);
 	bool ServerCurrentMontageJumpToSectionNameForMesh_Validate(USkeletalMeshComponent* InMesh, UAnimMontage* ClientAnimMontage, FName SectionName);
 
 	// RPC function called from CurrentMontageSetPlayRate, replicates to other clients
-	UFUNCTION(reliable, server, WithValidation)
+	UFUNCTION(Reliable, Server, WithValidation)
 	void ServerCurrentMontageSetPlayRateForMesh(USkeletalMeshComponent* InMesh, UAnimMontage* ClientAnimMontage, float InPlayRate);
 	void ServerCurrentMontageSetPlayRateForMesh_Implementation(USkeletalMeshComponent* InMesh, UAnimMontage* ClientAnimMontage, float InPlayRate);
 	bool ServerCurrentMontageSetPlayRateForMesh_Validate(USkeletalMeshComponent* InMesh, UAnimMontage* ClientAnimMontage, float InPlayRate);

@@ -777,7 +777,7 @@ void UGSAbilitySystemComponent::ServerCurrentMontageSetNextSectionNameForMesh_Im
 
 			int32 ClientSectionID = CurrentAnimMontage->GetSectionIndexFromPosition(ClientPosition);
 			FName ClientCurrentSectionName = CurrentAnimMontage->GetSectionName(ClientSectionID);
-			if ((CurrentSectionName != ClientCurrentSectionName) || (CurrentSectionName != SectionName) || (CurrentSectionName != NextSectionName))
+			if ((CurrentSectionName != ClientCurrentSectionName) || (CurrentSectionName != SectionName))
 			{
 				// We are in an invalid section, jump to client's position.
 				AnimInstance->Montage_SetPosition(CurrentAnimMontage, ClientPosition);
