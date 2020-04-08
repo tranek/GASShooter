@@ -18,7 +18,7 @@ AGASShooterGameModeBase::AGASShooterGameModeBase()
 	HeroClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("/Game/GASShooter/Characters/Hero/BP_HeroCharacter.BP_HeroCharacter_C"));
 	if (!HeroClass)
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s() Failed to find HeroClass. If it was moved, please update the reference location in C++."), TEXT(__FUNCTION__));
+		UE_LOG(LogTemp, Error, TEXT("%s() Failed to find HeroClass. If it was moved, please update the reference location in C++."), *FString(__FUNCTION__));
 	}
 }
 
@@ -62,7 +62,7 @@ void AGASShooterGameModeBase::BeginPlay()
 
 	if (!EnemySpawnPoint)
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s EnemySpawnPoint is null."), TEXT(__FUNCTION__));
+		UE_LOG(LogTemp, Error, TEXT("%s EnemySpawnPoint is null."), *FString(__FUNCTION__));
 	}
 }
 

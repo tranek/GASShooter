@@ -17,7 +17,7 @@ float UGSCharacterMovementComponent::GetMaxSpeed() const
 	AGSCharacterBase* Owner = Cast<AGSCharacterBase>(GetOwner());
 	if (!Owner)
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s() No Owner"), TEXT(__FUNCTION__));
+		UE_LOG(LogTemp, Error, TEXT("%s() No Owner"), *FString(__FUNCTION__));
 		return Super::GetMaxSpeed();
 	}
 

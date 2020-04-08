@@ -126,7 +126,7 @@ void UGSAT_PlayMontageForMeshAndWaitForEvent::Activate()
 
 	if (Mesh == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s invalid Mesh"), TEXT(__FUNCTION__));
+		UE_LOG(LogTemp, Error, TEXT("%s invalid Mesh"), *FString(__FUNCTION__));
 		return;
 	}
 

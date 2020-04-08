@@ -82,7 +82,7 @@ void AGSPickup::GivePickupTo(AGSCharacterBase* Pawn)
 
 	if (!ASC)
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s Pawn's ASC is null."), TEXT(__FUNCTION__));
+		UE_LOG(LogTemp, Error, TEXT("%s Pawn's ASC is null."), *FString(__FUNCTION__));
 		return;
 	}
 

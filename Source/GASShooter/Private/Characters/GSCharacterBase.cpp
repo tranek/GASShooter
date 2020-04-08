@@ -30,7 +30,7 @@ AGSCharacterBase::AGSCharacterBase(const class FObjectInitializer& ObjectInitial
 	DamageNumberClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("/Game/GASShooter/UI/WC_DamageText.WC_DamageText_C"));
 	if (!DamageNumberClass)
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s() Failed to find DamageNumberClass. If it was moved, please update the reference location in C++."), TEXT(__FUNCTION__));
+		UE_LOG(LogTemp, Error, TEXT("%s() Failed to find DamageNumberClass. If it was moved, please update the reference location in C++."), *FString(__FUNCTION__));
 	}
 }
 
@@ -266,7 +266,7 @@ void AGSCharacterBase::InitializeAttributes()
 
 	if (!DefaultAttributes)
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s() Missing DefaultAttributes for %s. Please fill in the character's Blueprint."), TEXT(__FUNCTION__), *GetName());
+		UE_LOG(LogTemp, Error, TEXT("%s() Missing DefaultAttributes for %s. Please fill in the character's Blueprint."), *FString(__FUNCTION__), *GetName());
 		return;
 	}
 

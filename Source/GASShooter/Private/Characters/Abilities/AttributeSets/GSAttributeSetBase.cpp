@@ -112,7 +112,7 @@ void UGSAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCall
 
 			if (!TargetCharacter->IsAlive())
 			{
-				//UE_LOG(LogTemp, Warning, TEXT("%s() %s is NOT alive when receiving damage"), TEXT(__FUNCTION__), *TargetCharacter->GetName());
+				//UE_LOG(LogTemp, Warning, TEXT("%s() %s is NOT alive when receiving damage"), *FString(__FUNCTION__), *TargetCharacter->GetName());
 			}
 
 			// Apply the damage to shield first if it exists
@@ -134,7 +134,7 @@ void UGSAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCall
 			if (TargetCharacter && WasAlive)
 			{
 				// This is the log statement for damage received. Turned off for live games.
-				//UE_LOG(LogTemp, Log, TEXT("%s() %s Damage Received: %f"), TEXT(__FUNCTION__), *GetOwningActor()->GetName(), LocalDamageDone);
+				//UE_LOG(LogTemp, Log, TEXT("%s() %s Damage Received: %f"), *FString(__FUNCTION__), *GetOwningActor()->GetName(), LocalDamageDone);
 
 				// Show damage number for the Source player unless it was self damage
 				if (SourceActor != TargetActor)

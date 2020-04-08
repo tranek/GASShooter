@@ -76,7 +76,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	UIFloatingStatusBarClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("/Game/GASShooter/UI/UI_FloatingStatusBar_Hero.UI_FloatingStatusBar_Hero_C"));
 	if (!UIFloatingStatusBarClass)
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s() Failed to find UIFloatingStatusBarClass. If it was moved, please update the reference location in C++."), TEXT(__FUNCTION__));
+		UE_LOG(LogTemp, Error, TEXT("%s() Failed to find UIFloatingStatusBarClass. If it was moved, please update the reference location in C++."), *FString(__FUNCTION__));
 	}
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorld;
@@ -774,7 +774,7 @@ void AGSHeroCharacter::SetupStartupPerspective()
 
 bool AGSHeroCharacter::DoesWeaponExistInInventory(AGSWeapon* InWeapon)
 {
-	//UE_LOG(LogTemp, Log, TEXT("%s InWeapon class %s"), TEXT(__FUNCTION__), *InWeapon->GetClass()->GetName());
+	//UE_LOG(LogTemp, Log, TEXT("%s InWeapon class %s"), *FString(__FUNCTION__), *InWeapon->GetClass()->GetName());
 
 	for (AGSWeapon* Weapon : Inventory.Weapons)
 	{
@@ -976,7 +976,7 @@ void AGSHeroCharacter::OnAbilityActivationFailed(const UGameplayAbility* FailedA
 		if (bChangedWeaponLocally)
 		{
 			// Ask the Server to resync the CurrentWeapon that we predictively changed
-			UE_LOG(LogTemp, Warning, TEXT("%s Weapon Changing ability activation failed. Syncing CurrentWeapon. %s. %s"), TEXT(__FUNCTION__),
+			UE_LOG(LogTemp, Warning, TEXT("%s Weapon Changing ability activation failed. Syncing CurrentWeapon. %s. %s"), *FString(__FUNCTION__),
 				*UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *FailTags.ToString());
 
 			ServerSyncCurrentWeapon();
