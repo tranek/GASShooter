@@ -3,6 +3,7 @@
 
 #include "Items/Pickups/GSPickup.h"
 #include "AbilitySystemComponent.h"
+#include "Characters/Abilities/GSGameplayAbility.h"
 #include "Characters/GSCharacterBase.h"
 #include "Components/CapsuleComponent.h"
 #include "GASShooter/GASShooter.h"
