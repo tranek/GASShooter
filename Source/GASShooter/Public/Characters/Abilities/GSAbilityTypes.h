@@ -40,7 +40,7 @@ public:
 	TArray<TSubclassOf<UGameplayEffect>> TargetGameplayEffectClasses;
 };
 
-/** A "processed" version of PAGameplayEffectContainer that can be passed around and eventually applied */
+/** A "processed" version of GSGameplayEffectContainer that can be passed around and eventually applied */
 USTRUCT(BlueprintType)
 struct FGSGameplayEffectContainerSpec
 {
