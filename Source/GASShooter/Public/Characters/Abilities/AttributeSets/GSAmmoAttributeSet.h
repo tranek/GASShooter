@@ -71,20 +71,20 @@ protected:
 	**/
 	
 	UFUNCTION()
-	virtual void OnRep_RifleReserveAmmo();
+	virtual void OnRep_RifleReserveAmmo(const FGameplayAttributeData& OldRifleReserveAmmo);
 
 	UFUNCTION()
-	virtual void OnRep_MaxRifleReserveAmmo();
+	virtual void OnRep_MaxRifleReserveAmmo(const FGameplayAttributeData& OldMaxRifleReserveAmmo);
 
 	UFUNCTION()
-	virtual void OnRep_RocketReserveAmmo();
+	virtual void OnRep_RocketReserveAmmo(const FGameplayAttributeData& OldRocketReserveAmmo);
 
 	UFUNCTION()
-	virtual void OnRep_MaxRocketReserveAmmo();
+	virtual void OnRep_MaxRocketReserveAmmo(const FGameplayAttributeData& OldMaxRocketReserveAmmo);
 
 	UFUNCTION()
-	virtual void OnRep_ShotgunReserveAmmo();
+	virtual void OnRep_ShotgunReserveAmmo(const FGameplayAttributeData& OldShotgunReserveAmmo);
 
 	UFUNCTION()
-	virtual void OnRep_MaxShotgunReserveAmmo();
+	virtual void OnRep_MaxShotgunReserveAmmo(const FGameplayAttributeData& OldMaxShotgunReserveAmmo);
 };

@@ -8,6 +8,8 @@ This is not production-ready code but a starting point for evaluating different 
 
 Assets included come from Epic Games' ShooterGame learning project or made by myself.
 
+GASShooter is current with **Unreal Engine 4.25**. There are branches of this Sample Project for older versions of Unreal Engine, but they are no longer supported and are liable to have bugs or out of date information.
+
 | Keybind             | Action                                                      |
 | ------------------- | ----------------------------------------------------------- |
 | T                   | Toggles between first and third person.                     |

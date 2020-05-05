@@ -101,32 +101,32 @@ void UGSAmmoAttributeSet::AdjustAttributeForMaxChange(FGameplayAttributeData& Af
 	}
 }
 
-void UGSAmmoAttributeSet::OnRep_RifleReserveAmmo()
+void UGSAmmoAttributeSet::OnRep_RifleReserveAmmo(const FGameplayAttributeData& OldRifleReserveAmmo)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, RifleReserveAmmo);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, RifleReserveAmmo, OldRifleReserveAmmo);
 }
 
-void UGSAmmoAttributeSet::OnRep_MaxRifleReserveAmmo()
+void UGSAmmoAttributeSet::OnRep_MaxRifleReserveAmmo(const FGameplayAttributeData& OldMaxRifleReserveAmmo)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, MaxRifleReserveAmmo);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, MaxRifleReserveAmmo, OldMaxRifleReserveAmmo);
 }
 
-void UGSAmmoAttributeSet::OnRep_RocketReserveAmmo()
+void UGSAmmoAttributeSet::OnRep_RocketReserveAmmo(const FGameplayAttributeData& OldRocketReserveAmmo)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, RocketReserveAmmo);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, RocketReserveAmmo, OldRocketReserveAmmo);
 }
 
-void UGSAmmoAttributeSet::OnRep_MaxRocketReserveAmmo()
+void UGSAmmoAttributeSet::OnRep_MaxRocketReserveAmmo(const FGameplayAttributeData& OldMaxRocketReserveAmmo)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, MaxRocketReserveAmmo);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, MaxRocketReserveAmmo, OldMaxRocketReserveAmmo);
 }
 
-void UGSAmmoAttributeSet::OnRep_ShotgunReserveAmmo()
+void UGSAmmoAttributeSet::OnRep_ShotgunReserveAmmo(const FGameplayAttributeData& OldShotgunReserveAmmo)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, ShotgunReserveAmmo);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, ShotgunReserveAmmo, OldShotgunReserveAmmo);
 }
 
-void UGSAmmoAttributeSet::OnRep_MaxShotgunReserveAmmo()
+void UGSAmmoAttributeSet::OnRep_MaxShotgunReserveAmmo(const FGameplayAttributeData& OldMaxShotgunReserveAmmo)
 {
-	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, MaxShotgunReserveAmmo);
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UGSAmmoAttributeSet, MaxShotgunReserveAmmo, OldMaxShotgunReserveAmmo);
 }
