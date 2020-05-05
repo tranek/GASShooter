@@ -2,7 +2,7 @@
 
 ## Introduction
 
-GASShooter is an advanced FPS/TPS Sample Project for Unreal Engine 4's GameplayAbilitySystem (GAS) plugin. This is a sister project to the [GASDocumentation](https://github.com/tranek/GASDocumentation) and information about the techniques demonstrated here will be discussed in detail in the README there (**documentation writing still in progress**).
+GASShooter is an advanced FPS/TPS Sample Project for Unreal Engine 4's GameplayAbilitySystem (GAS) plugin. This is a sister project to the [GASDocumentation](https://github.com/tranek/GASDocumentation) and information about the techniques demonstrated here will be discussed in detail in the README there.
 
 This is not production-ready code but a starting point for evaluating different techniques in GAS relating to using weapons. TargetActors with persistent hit results and ReticleActors particularly do a lot of code on `Tick()`.
 
@@ -30,16 +30,16 @@ The Hero character does have mana but no abilities currently use it. This projec
 
 ## Concepts covered
 
-* Ability Batching
+* [Ability Batching](https://github.com/tranek/GASDocumentation#concepts-ga-batching)
 * Equippable weapons that grant abilities
 * Predicting weapon switching
-* Weapon ammo
+* [Weapon ammo](https://github.com/tranek/GASDocumentation#concepts-as-design-itemattributes)
 * Simple weapon inventory
 * Headshot bonus damage
-* Reusable, custom TargetActors
-* ReticleActors
+* [Reusable, custom TargetActors](https://github.com/tranek/GASDocumentation#concepts-targeting-actors)
+* [GameplayAbilityWorldReticles](https://github.com/tranek/GASDocumentation#concepts-targeting-reticles)
 * Play replicated montages on multiple Skeletal Mesh Components **belonging to the AvatarActor** in an ability
-* Subclassing `FGameplayEffectContext` to send additional information to GameplayCues
+* [Subclassing `FGameplayEffectContext`](https://github.com/tranek/GASDocumentation#concepts-ge-context) to send additional information to GameplayCues
 * Character shield that drains before health is removed by damage
 * Item pickups
 
