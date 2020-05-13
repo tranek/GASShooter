@@ -28,6 +28,8 @@ GASShooter is current with **Unreal Engine 4.25**. There are branches of this Sa
 
 The Hero character does have mana but no abilities currently use it. This project's inception started when the new BioShock was announced and the idea was to include BioShock-like upgradeable abilities. That made the scope too large, but it is something that may be revisited in the future.
 
+Secondary ammo is not used. It would be used for things like rifle grenades.
+
 ## Concepts covered
 
 * [Ability Batching](https://github.com/tranek/GASDocumentation#concepts-ga-batching)
