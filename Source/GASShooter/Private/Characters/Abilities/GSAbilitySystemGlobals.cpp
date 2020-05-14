@@ -13,3 +13,11 @@ FGameplayEffectContext* UGSAbilitySystemGlobals::AllocGameplayEffectContext() co
 {
 	return new FGSGameplayEffectContext();
 }
+
+void UGSAbilitySystemGlobals::InitGlobalTags()
+{
+	Super::InitGlobalTags();
+
+	DeadTag = FGameplayTag::RequestGameplayTag("State.Dead");
+	KnockedDownTag = FGameplayTag::RequestGameplayTag("State.KnockedDown");
+}

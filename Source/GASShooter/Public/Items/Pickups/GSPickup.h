@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GameplayTagContainer.h"
 #include "GSPickup.generated.h"
 
 class AGSCharacterBase;
@@ -40,6 +41,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GSPickup")
 	float RespawnTime;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GSPickup")
+	FGameplayTagContainer RestrictedPickupTags;
 
 	// Sound played when player picks it up
 	UPROPERTY(EditDefaultsOnly, Category = "GSPickup")

@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayAbilitySpec.h"
+#include "GameplayTagContainer.h"
 #include "GASShooter/GASShooter.h"
 #include "GSWeapon.generated.h"
 
@@ -40,6 +41,9 @@ public:
 	// (Rifle vs Rocket Launcher)
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSWeapon")
 	FGameplayTag WeaponTag;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSWeapon")
+	FGameplayTagContainer RestrictedPickupTags;
 	
 	// UI HUD Primary Icon when equipped. Using Sprites because of the texture atlas from ShooterGame.
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "GASShooter|UI")

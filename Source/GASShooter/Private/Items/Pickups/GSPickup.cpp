@@ -3,6 +3,7 @@
 
 #include "Items/Pickups/GSPickup.h"
 #include "AbilitySystemComponent.h"
+#include "Characters/Abilities/GSAbilitySystemGlobals.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "Characters/GSCharacterBase.h"
 #include "Components/CapsuleComponent.h"
@@ -28,6 +29,9 @@ AGSPickup::AGSPickup()
 	CollisionComp->SetCollisionResponseToAllChannels(ECR_Ignore);
 	CollisionComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	RootComponent = CollisionComp;
+
+	RestrictedPickupTags.AddTag(UGSAbilitySystemGlobals::GSGet().DeadTag);
+	RestrictedPickupTags.AddTag(UGSAbilitySystemGlobals::GSGet().KnockedDownTag);
 }
 
 void AGSPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -48,7 +52,7 @@ void AGSPickup::NotifyActorBeginOverlap(AActor* Other)
 
 bool AGSPickup::CanBePickedUp(AGSCharacterBase* TestCharacter) const
 {
-	return bIsActive && TestCharacter && TestCharacter->IsAlive() && !IsPendingKill() && K2_CanBePickedUp(TestCharacter);
+	return bIsActive && TestCharacter && TestCharacter->IsAlive() && !IsPendingKill() && !TestCharacter->GetAbilitySystemComponent()->HasAnyMatchingGameplayTags(RestrictedPickupTags) && K2_CanBePickedUp(TestCharacter);
 }
 
 bool AGSPickup::K2_CanBePickedUp_Implementation(AGSCharacterBase* TestCharacter) const

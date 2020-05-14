@@ -6,6 +6,7 @@
 #include "AI/GSHeroAIController.h"
 #include "Camera/CameraComponent.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
+#include "Characters/Abilities/GSAbilitySystemGlobals.h"
 #include "Characters/Abilities/AttributeSets/GSAmmoAttributeSet.h"
 #include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
 #include "Components/WidgetComponent.h"
@@ -81,6 +82,9 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorld;
 	AIControllerClass = AGSHeroAIController::StaticClass();
+
+	// Cache tags
+	KnockedDownTag = UGSAbilitySystemGlobals::GSGet().KnockedDownTag;
 }
 
 void AGSHeroCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -157,8 +161,8 @@ void AGSHeroCharacter::PossessedBy(AController* NewController)
 			SetShield(GetMaxShield());
 		}
 
-		// Forcibly set the DeadTag count to 0. This is only necessary for *Respawn*.
-		AbilitySystemComponent->SetTagMapCount(DeadTag, 0);
+		// Remove Dead tag
+		AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(DeadTag));
 
 		InitializeFloatingStatusBar();
 
@@ -177,29 +181,85 @@ UGSFloatingStatusBarWidget* AGSHeroCharacter::GetFloatingStatusBar()
 	return UIFloatingStatusBar;
 }
 
-void AGSHeroCharacter::Die()
+void AGSHeroCharacter::KnockDown()
 {
-	// Go into third person for death animation
+	if (!HasAuthority())
+	{
+		return;
+	}
+
+	if (IsValid(AbilitySystemComponent))
+	{
+		AbilitySystemComponent->CancelAllAbilities();
+
+		FGameplayTagContainer EffectTagsToRemove;
+		EffectTagsToRemove.AddTag(EffectRemoveOnDeathTag);
+		int32 NumEffectsRemoved = AbilitySystemComponent->RemoveActiveEffectsWithTags(EffectTagsToRemove);
+	}
+
+	SetHealth(GetMaxHealth());
+	SetShield(0.0f);
+
+	if (HasAuthority() && IsValid(AbilitySystemComponent))
+	{
+		// Try activate Server Initiated ability that applies the State.KnockDown.Authority tag via a GE so that we have a
+		// server initiated prediction key associated with it.
+		AbilitySystemComponent->ApplyGameplayEffectToSelf(Cast<UGameplayEffect>(KnockDownEffect->GetDefaultObject()), 1.0f, AbilitySystemComponent->MakeEffectContext());
+	}
+}
+
+void AGSHeroCharacter::PlayKnockDownEffects()
+{
 	SetPerspective(false);
+
+	// Play it here instead of in the ability to skip extra replication data
+	if (DeathMontage)
+	{
+		PlayAnimMontage(DeathMontage);
+	}
+
+	if (DeathSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation());
+	}
+}
+
+void AGSHeroCharacter::FinishDying()
+{
+	// AGSHeroCharacter doesn't follow AGSCharacterBase's pattern of Die->Anim->FinishDying because AGSHeroCharacter can be knocked down
+	// to either be revived, bleed out, or finished off by an enemy.
+
+	if (!HasAuthority())
+	{
+		return;
+	}
 
 	RemoveAllWeaponsFromInventory();
 
 	AbilitySystemComponent->RegisterGameplayTagEvent(WeaponChangingDelayReplicationTag).Remove(WeaponChangingDelayReplicationTagChangedDelegateHandle);
 
-	Super::Die();
-}
+	AGASShooterGameModeBase* GM = Cast<AGASShooterGameModeBase>(GetWorld()->GetAuthGameMode());
 
-void AGSHeroCharacter::FinishDying()
-{
-	if (GetLocalRole() == ROLE_Authority)
+	if (GM)
 	{
-		AGASShooterGameModeBase* GM = Cast<AGASShooterGameModeBase>(GetWorld()->GetAuthGameMode());
-
-		if (GM)
-		{
-			GM->HeroDied(GetController());
-		}
+		GM->HeroDied(GetController());
 	}
+
+	RemoveCharacterAbilities();
+
+	if (IsValid(AbilitySystemComponent))
+	{
+		AbilitySystemComponent->CancelAllAbilities();
+
+		FGameplayTagContainer EffectTagsToRemove;
+		EffectTagsToRemove.AddTag(EffectRemoveOnDeathTag);
+		int32 NumEffectsRemoved = AbilitySystemComponent->RemoveActiveEffectsWithTags(EffectTagsToRemove);
+
+		AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(KnockedDownTag));
+		AbilitySystemComponent->ApplyGameplayEffectToSelf(Cast<UGameplayEffect>(DeathEffect->GetDefaultObject()), 1.0f, AbilitySystemComponent->MakeEffectContext());
+	}
+
+	OnCharacterDied.Broadcast(this);
 
 	Super::FinishDying();
 }
@@ -569,12 +629,24 @@ void AGSHeroCharacter::MoveRight(float Value)
 
 void AGSHeroCharacter::TogglePerspective()
 {
+	// If knocked down, always be in 3rd person
+	if (IsValid(AbilitySystemComponent) && AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag))
+	{
+		return;
+	}
+
 	bIsFirstPersonPerspective = !bIsFirstPersonPerspective;
 	SetPerspective(bIsFirstPersonPerspective);
 }
 
 void AGSHeroCharacter::SetPerspective(bool InIsFirstPersonPerspective)
 {
+	// If knocked down, always be in 3rd person
+	if (IsValid(AbilitySystemComponent) && AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag) && InIsFirstPersonPerspective)
+	{
+		return;
+	}
+
 	// Only change perspective for the locally controlled player. Simulated proxies should stay in third person.
 	// To swap cameras, deactivate current camera (defaults to ThirdPersonCamera), activate desired camera, and call PlayerController->SetViewTarget() on self
 	AGSPlayerController* PC = GetController<AGSPlayerController>();
@@ -702,15 +774,13 @@ void AGSHeroCharacter::OnRep_PlayerState()
 
 		if (AbilitySystemComponent->GetTagCount(DeadTag) > 0)
 		{
-			// Set Health/Mana/Stamina/Shield to their max. This is only necessary for *Respawn*.
+			// Set Health/Mana/Stamina/Shield to their max. This is only for *Respawn*. It will be set (replicated) by the
+			// Server, but we call it here just to be a little more responsive.
 			SetHealth(GetMaxHealth());
 			SetMana(GetMaxMana());
 			SetStamina(GetMaxStamina());
 			SetShield(GetMaxShield());
 		}
-
-		// Forcibly set the DeadTag count to 0. This is only necessary for *Respawn*.
-		AbilitySystemComponent->SetTagMapCount(DeadTag, 0);
 
 		// Simulated on proxies don't have their PlayerStates yet when BeginPlay is called so we call it again here
 		InitializeFloatingStatusBar();

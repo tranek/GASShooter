@@ -4,6 +4,7 @@
 #include "Characters/GSCharacterBase.h"
 #include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
+#include "Characters/Abilities/GSAbilitySystemGlobals.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "Characters/GSCharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -23,8 +24,8 @@ AGSCharacterBase::AGSCharacterBase(const class FObjectInitializer& ObjectInitial
 	bAlwaysRelevant = true;
 
 	// Cache tags
-	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
-	EffectRemoveOnDeathTag = FGameplayTag::RequestGameplayTag(FName("Effect.RemoveOnDeath"));
+	DeadTag = UGSAbilitySystemGlobals::GSGet().DeadTag;
+	EffectRemoveOnDeathTag = FGameplayTag::RequestGameplayTag("Effect.RemoveOnDeath");
 
 	// Hardcoding to avoid having to manually set for every Blueprint child class
 	DamageNumberClass = StaticLoadClass(UObject::StaticClass(), nullptr, TEXT("/Game/GASShooter/UI/WC_DamageText.WC_DamageText_C"));

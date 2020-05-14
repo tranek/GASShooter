@@ -3,6 +3,7 @@
 
 #include "Characters/GSCharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
+#include "Characters/Abilities/GSAbilitySystemGlobals.h"
 #include "Characters/GSCharacterBase.h"
 #include "GameplayTagContainer.h"
 
@@ -10,6 +11,9 @@ UGSCharacterMovementComponent::UGSCharacterMovementComponent()
 {
 	SprintSpeedMultiplier = 1.4f;
 	ADSSpeedMultiplier = 0.8f;
+	KnockedDownSpeedMultiplier = 0.4f;
+
+	KnockedDownTag = UGSAbilitySystemGlobals::GSGet().KnockedDownTag;
 }
 
 float UGSCharacterMovementComponent::GetMaxSpeed() const
@@ -24,6 +28,11 @@ float UGSCharacterMovementComponent::GetMaxSpeed() const
 	if (!Owner->IsAlive())
 	{
 		return 0.0f;
+	}
+
+	if (Owner->GetAbilitySystemComponent() && Owner->GetAbilitySystemComponent()->HasMatchingGameplayTag(KnockedDownTag))
+	{
+		return Owner->GetMoveSpeed() * KnockedDownSpeedMultiplier;
 	}
 
 	if (RequestToStartSprinting)

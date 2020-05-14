@@ -4,6 +4,7 @@
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "AbilitySystemComponent.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
+#include "Characters/Abilities/GSAbilitySystemGlobals.h"
 #include "Characters/Abilities/GSTargetType.h"
 #include "Characters/GSCharacterBase.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
@@ -18,6 +19,10 @@ UGSGameplayAbility::UGSGameplayAbility()
 
 	bActivateAbilityOnGranted = false;
 	bSourceObjectMustEqualCurrentWeaponToActivate = false;
+
+	// UGSAbilitySystemGlobals hasn't initialized tags yet
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag("State.Dead"));
+	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag("State.KnockedDown"));
 }
 
 void UGSGameplayAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)

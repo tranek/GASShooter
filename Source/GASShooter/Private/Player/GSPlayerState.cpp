@@ -5,6 +5,7 @@
 #include "Characters/Abilities/AttributeSets/GSAmmoAttributeSet.h"
 #include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
+#include "Characters/Abilities/GSAbilitySystemGlobals.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Player/GSPlayerController.h"
 #include "UI/GSFloatingStatusBarWidget.h"
@@ -33,8 +34,8 @@ AGSPlayerState::AGSPlayerState()
 	// 100 is probably way too high for a shipping game, you can adjust to fit your needs.
 	NetUpdateFrequency = 100.0f;
 
-	// Cache tags
-	DeadTag = FGameplayTag::RequestGameplayTag(FName("State.Dead"));
+	DeadTag = UGSAbilitySystemGlobals::GSGet().DeadTag;
+	KnockedDownTag = UGSAbilitySystemGlobals::GSGet().KnockedDownTag;
 }
 
 UAbilitySystemComponent* AGSPlayerState::GetAbilitySystemComponent() const
@@ -188,18 +189,40 @@ void AGSPlayerState::BeginPlay()
 		HealthChangedDelegateHandle = AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSetBase->GetHealthAttribute()).AddUObject(this, &AGSPlayerState::HealthChanged);
 
 		// Tag change callbacks
+		AbilitySystemComponent->RegisterGameplayTagEvent(KnockedDownTag, EGameplayTagEventType::NewOrRemoved).AddUObject(this, &AGSPlayerState::KnockDownTagChanged);
 	}
 }
 
 void AGSPlayerState::HealthChanged(const FOnAttributeChangeData& Data)
 {
-	// If the player died, handle death
+	// Check for and handle knockdown and death
 	AGSHeroCharacter* Hero = Cast<AGSHeroCharacter>(GetPawn());
 	if (IsValid(Hero) && !IsAlive() && !AbilitySystemComponent->HasMatchingGameplayTag(DeadTag))
 	{
 		if (Hero)
 		{
-			Hero->Die();
+			if (!AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag))
+			{
+				Hero->KnockDown();
+			}
+			else
+			{
+				Hero->FinishDying();
+			}
 		}
+	}
+}
+
+void AGSPlayerState::KnockDownTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
+{
+	AGSHeroCharacter* Hero = Cast<AGSHeroCharacter>(GetPawn());
+	if (!IsValid(Hero))
+	{
+		return;
+	}
+
+	if (NewCount > 0)
+	{
+		Hero->PlayKnockDownEffects();
 	}
 }

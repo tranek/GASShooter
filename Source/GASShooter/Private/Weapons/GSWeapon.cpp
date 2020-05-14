@@ -3,6 +3,7 @@
 
 #include "Weapons/GSWeapon.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
+#include "Characters/Abilities/GSAbilitySystemGlobals.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "Characters/Abilities/GSGATA_LineTrace.h"
 #include "Characters/Abilities/GSGATA_SphereTrace.h"
@@ -56,13 +57,16 @@ AGSWeapon::AGSWeapon()
 	WeaponMesh3P->SetVisibility(true, true);
 	WeaponMesh3P->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
 
-	WeaponPrimaryInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Primary.Instant"));
-	WeaponSecondaryInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Secondary.Instant"));
-	WeaponAlternateInstantAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.Alternate.Instant"));
-	WeaponIsFiringTag = FGameplayTag::RequestGameplayTag(FName("Weapon.IsFiring"));
+	WeaponPrimaryInstantAbilityTag = FGameplayTag::RequestGameplayTag("Ability.Weapon.Primary.Instant");
+	WeaponSecondaryInstantAbilityTag = FGameplayTag::RequestGameplayTag("Ability.Weapon.Secondary.Instant");
+	WeaponAlternateInstantAbilityTag = FGameplayTag::RequestGameplayTag("Ability.Weapon.Alternate.Instant");
+	WeaponIsFiringTag = FGameplayTag::RequestGameplayTag("Weapon.IsFiring");
 
-	FireMode = FGameplayTag::RequestGameplayTag(FName("Weapon.FireMode.None"));
+	FireMode = FGameplayTag::RequestGameplayTag("Weapon.FireMode.None");
 	StatusText = DefaultStatusText;
+
+	RestrictedPickupTags.AddTag(UGSAbilitySystemGlobals::GSGet().DeadTag);
+	RestrictedPickupTags.AddTag(UGSAbilitySystemGlobals::GSGet().KnockedDownTag);
 }
 
 AGSWeapon::~AGSWeapon()
@@ -424,7 +428,7 @@ void AGSWeapon::BeginPlay()
 
 void AGSWeapon::PickUpOnTouch(AGSHeroCharacter* InCharacter)
 {
-	if (!InCharacter || !InCharacter->IsAlive())
+	if (!InCharacter || !InCharacter->IsAlive() || !InCharacter->GetAbilitySystemComponent() || InCharacter->GetAbilitySystemComponent()->HasAnyMatchingGameplayTags(RestrictedPickupTags))
 	{
 		return;
 	}

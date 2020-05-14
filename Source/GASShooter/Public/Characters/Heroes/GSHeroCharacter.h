@@ -8,6 +8,7 @@
 #include "GSHeroCharacter.generated.h"
 
 class AGSWeapon;
+class UGameplayEffect;
 
 UENUM(BlueprintType)
 enum class EGSHeroWeaponState : uint8
@@ -65,7 +66,11 @@ public:
 
 	class UGSFloatingStatusBarWidget* GetFloatingStatusBar();
 
-	virtual void Die() override;
+	// Server handles knockdown - cancel abilities, remove effects, activate knockdown ability
+	virtual void KnockDown();
+
+	// Plays knockdown effects for clients
+	virtual void PlayKnockDownEffects();
 
 	virtual void FinishDying() override;
 
@@ -202,11 +207,18 @@ protected:
 	UPROPERTY()
 	class UGSAmmoAttributeSet* AmmoAttributeSet;
 
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSHeroCharacter")
+	TSubclassOf<UGameplayEffect> KnockDownEffect;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSHeroCharacter")
+	TSubclassOf<UGameplayEffect> DeathEffect;
+
 	// Cache tags
 	FGameplayTag NoWeaponTag;
 	FGameplayTag WeaponChangingDelayReplicationTag;
 	FGameplayTag WeaponAmmoTypeNoneTag;
 	FGameplayTag WeaponAbilityTag;
+	FGameplayTag KnockedDownTag;
 
 	// Attribute changed delegate handles
 	FDelegateHandle PrimaryReserveAmmoChangedDelegateHandle;

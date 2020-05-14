@@ -17,6 +17,19 @@ class GASSHOOTER_API UGSAbilitySystemGlobals : public UAbilitySystemGlobals
 public:
 	UGSAbilitySystemGlobals();
 
+	UPROPERTY()
+	FGameplayTag DeadTag;
+
+	UPROPERTY()
+	FGameplayTag KnockedDownTag;
+
+	static UGSAbilitySystemGlobals& GSGet()
+	{
+		return dynamic_cast<UGSAbilitySystemGlobals&>(Get());
+	}
+
 	/** Should allocate a project specific GameplayEffectContext struct. Caller is responsible for deallocation */
 	virtual FGameplayEffectContext* AllocGameplayEffectContext() const override;
+
+	virtual void InitGlobalTags() override;
 };

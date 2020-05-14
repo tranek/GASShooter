@@ -100,6 +100,7 @@ public:
 
 protected:
 	FGameplayTag DeadTag;
+	FGameplayTag KnockedDownTag;
 
 	UPROPERTY()
 	class UGSAbilitySystemComponent* AbilitySystemComponent;
@@ -118,4 +119,7 @@ protected:
 
 	// Attribute changed callbacks
 	virtual void HealthChanged(const FOnAttributeChangeData& Data);
+
+	// Tag changed callbacks
+	virtual void KnockDownTagChanged(const FGameplayTag CallbackTag, int32 NewCount);
 };

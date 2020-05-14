@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameplayTagContainer.h"
 #include "GSCharacterMovementComponent.generated.h"
 
 /**
@@ -56,14 +57,19 @@ class GASSHOOTER_API UGSCharacterMovementComponent : public UCharacterMovementCo
 public:
 	UGSCharacterMovementComponent();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Speed")
 	float SprintSpeedMultiplier;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Aim Down Sights")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Speed")
 	float ADSSpeedMultiplier;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Speed")
+	float KnockedDownSpeedMultiplier;
 
 	uint8 RequestToStartSprinting : 1;
 	uint8 RequestToStartADS : 1;
+
+	FGameplayTag KnockedDownTag;
 
 	virtual float GetMaxSpeed() const override;
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
