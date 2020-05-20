@@ -189,7 +189,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSHeroCharacter")
 	FVector StartingFirstPersonMeshLocation;
 
-	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Abilities")
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|Abilities")
 	float ReviveDuration;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|Camera")
