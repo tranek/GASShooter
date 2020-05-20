@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Characters/GSCharacterBase.h"
+#include "Characters/Abilities/GSInteractable.h"
 #include "GameplayEffectTypes.h"
 #include "GSHeroCharacter.generated.h"
 
@@ -44,7 +45,7 @@ struct GASSHOOTER_API FGSHeroInventory
  * A player or AI controlled hero character.
  */
 UCLASS()
-class GASSHOOTER_API AGSHeroCharacter : public AGSCharacterBase
+class GASSHOOTER_API AGSHeroCharacter : public AGSCharacterBase, public IGSInteractable
 {
 	GENERATED_BODY()
 	
@@ -69,8 +70,11 @@ public:
 	// Server handles knockdown - cancel abilities, remove effects, activate knockdown ability
 	virtual void KnockDown();
 
-	// Plays knockdown effects for clients
+	// Plays knockdown effects for all clients from KnockedDown tag listener on PlayerState
 	virtual void PlayKnockDownEffects();
+
+	// Plays revive effects for all clients from KnockedDown tag listener on PlayerState
+	virtual void PlayReviveEffects();
 
 	virtual void FinishDying() override;
 
@@ -136,12 +140,57 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|Inventory")
 	int32 GetNumWeapons() const;
 
+
+	/**
+	* Interactable interface
+	*/
+
+	/**
+	* We can Interact with other heroes when:
+	* Knocked Down - to revive them
+	*/
+	virtual bool IsAvailableForInteraction_Implementation() const override;
+
+	/**
+	* How long to interact with this player:
+	* Knocked Down - to revive them
+	*/
+	virtual float GetInteractDuration_Implementation() const override;
+
+	/**
+	* Interaction:
+	* Knocked Down - activate revive GA (plays animation)
+	*/
+	virtual void PreInteract_Implementation(AActor* InteractingActor) override;
+
+	/**
+	* Interaction:
+	* Knocked Down - apply revive GE
+	*/
+	virtual void PostInteract_Implementation(AActor* InteractingActor) override;
+
+	/**
+	* Sync with Server (delay) before calling PreInteract():
+	* Knocked Down - True. This will sync the local player's Interact Duration Timer with the knocked down player's
+	* revive animation. If we had a picking a player up animation, we could play it on the local player in PreInteract().
+	*/
+	virtual bool ClientShouldSyncPreInteract_Implementation() const override;
+
+	/**
+	* Cancel interaction:
+	* Knocked Down - cancel revive ability
+	*/
+	virtual void CancelInteraction_Implementation() override;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSHeroCharacter")
 	FVector StartingThirdPersonMeshLocation;
 
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSHeroCharacter")
 	FVector StartingFirstPersonMeshLocation;
+
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Abilities")
+	float ReviveDuration;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "GASShooter|Camera")
 	float BaseTurnRate;
@@ -157,6 +206,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|Camera")
 	bool bIsFirstPersonPerspective;
+
+	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSHeroCharacter")
+	bool bWasInFirstPersonPerspectiveWhenKnockedDown;
 
 	bool bASCInputBound;
 
@@ -209,6 +261,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSHeroCharacter")
 	TSubclassOf<UGameplayEffect> KnockDownEffect;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSHeroCharacter")
+	TSubclassOf<UGameplayEffect> ReviveEffect;
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSHeroCharacter")
 	TSubclassOf<UGameplayEffect> DeathEffect;

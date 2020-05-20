@@ -19,10 +19,20 @@ class GASSHOOTER_API UGSHUDWidget : public UUserWidget
 	
 public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void ShowAbilityConfirmCancelText(bool ShowText);
+	void ShowAbilityConfirmPrompt(bool bShowText);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetRespawnCountdown(float RespawnTimeRemaining);
+	void SetRespawnCountdown(float bRespawnTimeRemaining);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void ShowInteractPrompt(bool bShowPrompt);
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void StartInteractTimer(float InteractDuration);
+
+	// Interaction interrupted, cancel and hide HUD interact timer
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void StopInteractTimer();
 
 
 	/**

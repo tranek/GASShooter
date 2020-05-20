@@ -128,6 +128,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ability")
 	virtual void ResetHUDReticle();
 
+	// Sends TargetData from the client to the Server and creates a new Prediction Window
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	virtual void SendTargetDataToServer(const FGameplayAbilityTargetDataHandle& TargetData);
+
 	
 	// ----------------------------------------------------------------------------------------------------------------
 	//	Animation Support for multiple USkeletalMeshComponents on the AvatarActor

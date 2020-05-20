@@ -218,6 +218,21 @@ void UGSGameplayAbility::ResetHUDReticle()
 	}
 }
 
+void UGSGameplayAbility::SendTargetDataToServer(const FGameplayAbilityTargetDataHandle& TargetData)
+{
+	if (IsPredictingClient())
+	{
+		UAbilitySystemComponent* ASC = CurrentActorInfo->AbilitySystemComponent.Get();
+		check(ASC);
+
+		FScopedPredictionWindow	ScopedPrediction(ASC, IsPredictingClient());
+
+		FGameplayTag ApplicationTag; // Fixme: where would this be useful?
+		CurrentActorInfo->AbilitySystemComponent->CallServerSetReplicatedTargetData(CurrentSpecHandle,
+			CurrentActivationInfo.GetActivationPredictionKey(), TargetData, ApplicationTag, ASC->ScopedPredictionKey);
+	}
+}
+
 UAnimMontage* UGSGameplayAbility::GetCurrentMontageForMesh(USkeletalMeshComponent* InMesh)
 {
 	FAbilityMeshMontage AbilityMeshMontage;

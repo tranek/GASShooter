@@ -58,6 +58,58 @@ bool AGSPlayerState::IsAlive() const
 	return GetHealth() > 0.0f;
 }
 
+void AGSPlayerState::ShowAbilityConfirmPrompt(bool bShowPrompt)
+{
+	AGSPlayerController* PC = Cast<AGSPlayerController>(GetOwner());
+	if (PC)
+	{
+		UGSHUDWidget* HUD = PC->GetGSHUD();
+		if (HUD)
+		{
+			HUD->ShowAbilityConfirmPrompt(bShowPrompt);
+		}
+	}
+}
+
+void AGSPlayerState::ShowInteractPrompt(bool bShowPrompt)
+{
+	AGSPlayerController* PC = Cast<AGSPlayerController>(GetOwner());
+	if (PC)
+	{
+		UGSHUDWidget* HUD = PC->GetGSHUD();
+		if (HUD)
+		{
+			HUD->ShowInteractPrompt(bShowPrompt);
+		}
+	}
+}
+
+void AGSPlayerState::StartInteractTimer(float InteractDuration)
+{
+	AGSPlayerController* PC = Cast<AGSPlayerController>(GetOwner());
+	if (PC)
+	{
+		UGSHUDWidget* HUD = PC->GetGSHUD();
+		if (HUD)
+		{
+			HUD->StartInteractTimer(InteractDuration);
+		}
+	}
+}
+
+void AGSPlayerState::StopInteractTimer()
+{
+	AGSPlayerController* PC = Cast<AGSPlayerController>(GetOwner());
+	if (PC)
+	{
+		UGSHUDWidget* HUD = PC->GetGSHUD();
+		if (HUD)
+		{
+			HUD->StopInteractTimer();
+		}
+	}
+}
+
 float AGSPlayerState::GetHealth() const
 {
 	return AttributeSetBase->GetHealth();
@@ -224,5 +276,9 @@ void AGSPlayerState::KnockDownTagChanged(const FGameplayTag CallbackTag, int32 N
 	if (NewCount > 0)
 	{
 		Hero->PlayKnockDownEffects();
+	}
+	else if (NewCount < 1 && !AbilitySystemComponent->HasMatchingGameplayTag(DeadTag))
+	{
+		Hero->PlayReviveEffects();
 	}
 }

@@ -29,6 +29,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	BaseLookUpRate = 45.0f;
 	bStartInFirstPersonPerspective = true;
 	bIsFirstPersonPerspective = false;
+	bWasInFirstPersonPerspectiveWhenKnockedDown = false;
 	bASCInputBound = false;
 	bChangedWeaponLocally = false;
 	Default1PFOV = 90.0f;
@@ -39,6 +40,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	WeaponAbilityTag = FGameplayTag::RequestGameplayTag(FName("Ability.Weapon"));
 	CurrentWeaponTag = NoWeaponTag;
 	Inventory = FGSHeroInventory();
+	ReviveDuration = 4.0f;
 	
 	ThirdPersonCameraBoom = CreateDefaultSubobject<USpringArmComponent>(FName("CameraBoom"));
 	ThirdPersonCameraBoom->SetupAttachment(RootComponent);
@@ -195,21 +197,19 @@ void AGSHeroCharacter::KnockDown()
 		FGameplayTagContainer EffectTagsToRemove;
 		EffectTagsToRemove.AddTag(EffectRemoveOnDeathTag);
 		int32 NumEffectsRemoved = AbilitySystemComponent->RemoveActiveEffectsWithTags(EffectTagsToRemove);
+
+		AbilitySystemComponent->ApplyGameplayEffectToSelf(Cast<UGameplayEffect>(KnockDownEffect->GetDefaultObject()), 1.0f, AbilitySystemComponent->MakeEffectContext());
 	}
 
 	SetHealth(GetMaxHealth());
 	SetShield(0.0f);
-
-	if (HasAuthority() && IsValid(AbilitySystemComponent))
-	{
-		// Try activate Server Initiated ability that applies the State.KnockDown.Authority tag via a GE so that we have a
-		// server initiated prediction key associated with it.
-		AbilitySystemComponent->ApplyGameplayEffectToSelf(Cast<UGameplayEffect>(KnockDownEffect->GetDefaultObject()), 1.0f, AbilitySystemComponent->MakeEffectContext());
-	}
 }
 
 void AGSHeroCharacter::PlayKnockDownEffects()
 {
+	// Store perspective to restore on Revive
+	bWasInFirstPersonPerspectiveWhenKnockedDown = IsInFirstPersonPerspective();
+
 	SetPerspective(false);
 
 	// Play it here instead of in the ability to skip extra replication data
@@ -222,6 +222,14 @@ void AGSHeroCharacter::PlayKnockDownEffects()
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation());
 	}
+}
+
+void AGSHeroCharacter::PlayReviveEffects()
+{
+	// Restore perspective the player had when knocked down
+	SetPerspective(bWasInFirstPersonPerspectiveWhenKnockedDown);
+
+	// Play revive particles or sounds here (we don't have any)
 }
 
 void AGSHeroCharacter::FinishDying()
@@ -255,7 +263,6 @@ void AGSHeroCharacter::FinishDying()
 		EffectTagsToRemove.AddTag(EffectRemoveOnDeathTag);
 		int32 NumEffectsRemoved = AbilitySystemComponent->RemoveActiveEffectsWithTags(EffectTagsToRemove);
 
-		AbilitySystemComponent->RemoveActiveEffectsWithGrantedTags(FGameplayTagContainer(KnockedDownTag));
 		AbilitySystemComponent->ApplyGameplayEffectToSelf(Cast<UGameplayEffect>(DeathEffect->GetDefaultObject()), 1.0f, AbilitySystemComponent->MakeEffectContext());
 	}
 
@@ -543,6 +550,67 @@ int32 AGSHeroCharacter::GetSecondaryReserveAmmo() const
 int32 AGSHeroCharacter::GetNumWeapons() const
 {
 	return Inventory.Weapons.Num();
+}
+
+bool AGSHeroCharacter::IsAvailableForInteraction_Implementation() const
+{
+	if (IsValid(AbilitySystemComponent) && AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag))
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+float AGSHeroCharacter::GetInteractDuration_Implementation() const
+{
+	if (IsValid(AbilitySystemComponent) && AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag))
+	{
+		return ReviveDuration;
+	}
+
+	return 0.0f;
+}
+
+void AGSHeroCharacter::PreInteract_Implementation(AActor* InteractingActor)
+{
+	UE_LOG(LogTemp, Log, TEXT("%s %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
+
+	if (IsValid(AbilitySystemComponent) && AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag) && HasAuthority())
+	{
+		AbilitySystemComponent->TryActivateAbilitiesByTag(FGameplayTagContainer(FGameplayTag::RequestGameplayTag("Ability.Revive")));
+	}
+}
+
+void AGSHeroCharacter::PostInteract_Implementation(AActor* InteractingActor)
+{
+	UE_LOG(LogTemp, Log, TEXT("%s %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
+
+	if (IsValid(AbilitySystemComponent) && AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag) && HasAuthority())
+	{
+		AbilitySystemComponent->ApplyGameplayEffectToSelf(Cast<UGameplayEffect>(ReviveEffect->GetDefaultObject()), 1.0f, AbilitySystemComponent->MakeEffectContext());
+	}
+}
+
+bool AGSHeroCharacter::ClientShouldSyncPreInteract_Implementation() const
+{
+	if (IsValid(AbilitySystemComponent) && AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+void AGSHeroCharacter::CancelInteraction_Implementation()
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
+
+	if (IsValid(AbilitySystemComponent) && AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag) && HasAuthority())
+	{
+		FGameplayTagContainer CancelTags(FGameplayTag::RequestGameplayTag("Ability.Revive"));
+		AbilitySystemComponent->CancelAbilities(&CancelTags);
+	}
 }
 
 /**
