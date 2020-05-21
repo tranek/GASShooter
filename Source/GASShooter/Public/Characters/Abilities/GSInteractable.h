@@ -69,6 +69,9 @@ public:
 	* You can use this function to grant abilities that will be predictively activated on PostInteract() to hide the
 	* AbilitySpec replication time.
 	*
+	* If you want to do something predictively, you can get the ASC from the InteractingActor and use its
+	* ScopedPredictionKey.
+	*
 	* Player revives use PreInteract() to trigger a ability that plays an animation that lasts the same duration as
 	* the Interact Duration. If this ability finishes, it will revive the player in PostInteract().
 	*
@@ -81,6 +84,9 @@ public:
 	/**
 	* Interact with this Actor. This will call after the Interact Duration timer completes. This might do things, apply
 	* (predictively or not) GameplayEffects, trigger (predictively or not) GameplayAbilities, etc.
+	*
+	* If you want to do something predictively, you can get the ASC from the InteractingActor and use its
+	* ScopedPredictionKey.
 	*
 	* If you need to trigger a GameplayAbility predictively, the player's ASC needs to have been granted the ability
 	* ahead of time. If you don't want to grant every possible predictive ability at game start, you can hide the time
