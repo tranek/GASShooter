@@ -218,9 +218,11 @@ void AGSHeroCharacter::PlayKnockDownEffects()
 		PlayAnimMontage(DeathMontage);
 	}
 
-	if (DeathSound)
+	if (AbilitySystemComponent)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation());
+		FGameplayCueParameters GCParameters;
+		GCParameters.Location = GetActorLocation();
+		AbilitySystemComponent->ExecuteGameplayCueLocal(FGameplayTag::RequestGameplayTag("GameplayCue.Hero.KnockedDown"), GCParameters);
 	}
 }
 
@@ -230,6 +232,12 @@ void AGSHeroCharacter::PlayReviveEffects()
 	SetPerspective(bWasInFirstPersonPerspectiveWhenKnockedDown);
 
 	// Play revive particles or sounds here (we don't have any)
+	if (AbilitySystemComponent)
+	{
+		FGameplayCueParameters GCParameters;
+		GCParameters.Location = GetActorLocation();
+		AbilitySystemComponent->ExecuteGameplayCueLocal(FGameplayTag::RequestGameplayTag("GameplayCue.Hero.Revived"), GCParameters);
+	}
 }
 
 void AGSHeroCharacter::FinishDying()
@@ -559,7 +567,7 @@ bool AGSHeroCharacter::IsAvailableForInteraction_Implementation() const
 		return true;
 	}
 	
-	return false;
+	return IGSInteractable::IsAvailableForInteraction_Implementation();
 }
 
 float AGSHeroCharacter::GetInteractDuration_Implementation() const
@@ -569,7 +577,7 @@ float AGSHeroCharacter::GetInteractDuration_Implementation() const
 		return ReviveDuration;
 	}
 
-	return 0.0f;
+	return IGSInteractable::GetInteractDuration_Implementation();
 }
 
 void AGSHeroCharacter::PreInteract_Implementation(AActor* InteractingActor)
@@ -592,14 +600,16 @@ void AGSHeroCharacter::PostInteract_Implementation(AActor* InteractingActor)
 	}
 }
 
-bool AGSHeroCharacter::ClientShouldSyncPreInteract_Implementation() const
+void AGSHeroCharacter::GetPreInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type) const
 {
 	if (IsValid(AbilitySystemComponent) && AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag))
 	{
-		return true;
+		bShouldSync = true;
+		Type = EAbilityTaskNetSyncType::OnlyClientWait;
+		return;
 	}
 
-	return false;
+	IGSInteractable::GetPreInteractSyncType_Implementation(bShouldSync, Type);
 }
 
 void AGSHeroCharacter::CancelInteraction_Implementation()

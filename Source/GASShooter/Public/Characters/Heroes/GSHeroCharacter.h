@@ -170,11 +170,11 @@ public:
 	virtual void PostInteract_Implementation(AActor* InteractingActor) override;
 
 	/**
-	* Sync with Server (delay) before calling PreInteract():
-	* Knocked Down - True. This will sync the local player's Interact Duration Timer with the knocked down player's
+	* Should we wait and who should wait to sync before calling PreInteract():
+	* Knocked Down - Yes, client. This will sync the local player's Interact Duration Timer with the knocked down player's
 	* revive animation. If we had a picking a player up animation, we could play it on the local player in PreInteract().
 	*/
-	virtual bool ClientShouldSyncPreInteract_Implementation() const override;
+	void GetPreInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type) const;
 
 	/**
 	* Cancel interaction:

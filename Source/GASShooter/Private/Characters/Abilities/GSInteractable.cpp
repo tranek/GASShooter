@@ -12,3 +12,15 @@ float IGSInteractable::GetInteractDuration_Implementation() const
 {
 	return 0.0f;
 }
+
+void IGSInteractable::GetPreInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type) const
+{
+	bShouldSync = false;
+	Type = EAbilityTaskNetSyncType::OnlyServerWait;
+}
+
+void IGSInteractable::GetPostInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type) const
+{
+	bShouldSync = false;
+	Type = EAbilityTaskNetSyncType::OnlyServerWait;
+}

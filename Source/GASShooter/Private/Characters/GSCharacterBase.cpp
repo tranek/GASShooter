@@ -99,6 +99,7 @@ void AGSCharacterBase::Die()
 		AbilitySystemComponent->AddLooseGameplayTag(DeadTag);
 	}
 
+	//TODO replace with a locally executed GameplayCue
 	if (DeathSound)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation());
