@@ -133,3 +133,8 @@ void UGSBlueprintFunctionLibrary::EffectContextAddTargetData(FGameplayEffectCont
 		EffectContext->AddTargetData(TargetData);
 	}
 }
+
+void UGSBlueprintFunctionLibrary::ClearTargetData(FGameplayAbilityTargetDataHandle& TargetData)
+{
+	TargetData.Clear();
+}

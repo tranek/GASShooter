@@ -23,6 +23,12 @@ public:
 	UPROPERTY()
 	FGameplayTag KnockedDownTag;
 
+	UPROPERTY()
+	FGameplayTag InteractingTag;
+
+	UPROPERTY()
+	FGameplayTag InteractingRemovalTag;
+
 	static UGSAbilitySystemGlobals& GSGet()
 	{
 		return dynamic_cast<UGSAbilitySystemGlobals&>(Get());

@@ -60,6 +60,10 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability")
 	bool bSourceObjectMustEqualCurrentWeaponToActivate;
 
+	// If true, only activate this ability if not interacting with something via GA_Interact
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability")
+	bool bCannotActivateWhileInteracting;
+
 	// Map of gameplay tags to gameplay effect containers
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "GameplayEffects")
 	TMap<FGameplayTag, FGSGameplayEffectContainer> EffectContainerMap;
@@ -145,6 +149,10 @@ public:
 	virtual void SetCurrentMontageForMesh(USkeletalMeshComponent* InMesh, class UAnimMontage* InCurrentMontage);
 
 protected:
+	FGameplayTag InteractingTag;
+	FGameplayTag InteractingRemovalTag;
+
+
 	// ----------------------------------------------------------------------------------------------------------------
 	//	Animation Support for multiple USkeletalMeshComponents on the AvatarActor
 	// ----------------------------------------------------------------------------------------------------------------

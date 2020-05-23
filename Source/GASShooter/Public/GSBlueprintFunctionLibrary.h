@@ -46,7 +46,7 @@ public:
 
 
 	/**
-	* GameplayEffectContainerSpec
+	* FGSGameplayEffectContainerSpec
 	*/
 
 	// USTRUCTs cannot contain UFUNCTIONS so we make static functions here
@@ -82,4 +82,11 @@ public:
 	// Adds TargetData
 	UFUNCTION(BlueprintCallable, Category = "Ability|EffectContext", Meta = (DisplayName = "AddTargetData"))
 	static void EffectContextAddTargetData(FGameplayEffectContextHandle EffectContextHandle, const FGameplayAbilityTargetDataHandle& TargetData);
+
+
+	/**
+	* FGameplayAbilityTargetDataHandle
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Ability|TargetData")
+	static void ClearTargetData(UPARAM(ref) FGameplayAbilityTargetDataHandle& TargetData);
 };

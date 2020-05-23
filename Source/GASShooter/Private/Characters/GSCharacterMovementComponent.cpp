@@ -14,6 +14,8 @@ UGSCharacterMovementComponent::UGSCharacterMovementComponent()
 	KnockedDownSpeedMultiplier = 0.4f;
 
 	KnockedDownTag = UGSAbilitySystemGlobals::GSGet().KnockedDownTag;
+	InteractingTag = UGSAbilitySystemGlobals::GSGet().InteractingTag;
+	InteractingRemovalTag = UGSAbilitySystemGlobals::GSGet().InteractingRemovalTag;
 }
 
 float UGSCharacterMovementComponent::GetMaxSpeed() const
@@ -26,6 +28,13 @@ float UGSCharacterMovementComponent::GetMaxSpeed() const
 	}
 
 	if (!Owner->IsAlive())
+	{
+		return 0.0f;
+	}
+
+	// Don't move while interacting or being interacted on (revived)
+	if (Owner->GetAbilitySystemComponent() && Owner->GetAbilitySystemComponent()->GetTagCount(InteractingTag)
+		> Owner->GetAbilitySystemComponent()->GetTagCount(InteractingRemovalTag))
 	{
 		return 0.0f;
 	}

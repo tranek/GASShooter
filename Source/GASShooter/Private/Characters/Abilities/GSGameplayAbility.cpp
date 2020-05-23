@@ -9,6 +9,7 @@
 #include "Characters/GSCharacterBase.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "GameplayTagContainer.h"
+#include "GSBlueprintFunctionLibrary.h"
 #include "Player/GSPlayerController.h"
 #include "Weapons/GSWeapon.h"
 
@@ -19,10 +20,14 @@ UGSGameplayAbility::UGSGameplayAbility()
 
 	bActivateAbilityOnGranted = false;
 	bSourceObjectMustEqualCurrentWeaponToActivate = false;
+	bCannotActivateWhileInteracting = true;
 
-	// UGSAbilitySystemGlobals hasn't initialized tags yet
+	// UGSAbilitySystemGlobals hasn't initialized tags yet to set ActivationBlockedTags
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag("State.Dead"));
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag("State.KnockedDown"));
+
+	InteractingTag = UGSAbilitySystemGlobals::GSGet().InteractingTag;
+	InteractingRemovalTag = UGSAbilitySystemGlobals::GSGet().InteractingRemovalTag;
 }
 
 void UGSGameplayAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)
@@ -160,6 +165,15 @@ bool UGSGameplayAbility::IsPredictionKeyValidForMorePrediction() const
 
 bool UGSGameplayAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
+	if (bCannotActivateWhileInteracting)
+	{
+		UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get();
+		if (ASC->GetTagCount(InteractingTag) > ASC->GetTagCount(InteractingRemovalTag))
+		{
+			return false;
+		}
+	}
+
 	if (bSourceObjectMustEqualCurrentWeaponToActivate)
 	{
 		AGSHeroCharacter* Hero = Cast<AGSHeroCharacter>(ActorInfo->AvatarActor);

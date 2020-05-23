@@ -20,4 +20,6 @@ void UGSAbilitySystemGlobals::InitGlobalTags()
 
 	DeadTag = FGameplayTag::RequestGameplayTag("State.Dead");
 	KnockedDownTag = FGameplayTag::RequestGameplayTag("State.KnockedDown");
+	InteractingTag = FGameplayTag::RequestGameplayTag("State.Interacting");
+	InteractingRemovalTag = FGameplayTag::RequestGameplayTag("State.InteractingRemoval");
 }

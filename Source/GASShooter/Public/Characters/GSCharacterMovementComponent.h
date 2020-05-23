@@ -70,6 +70,8 @@ public:
 	uint8 RequestToStartADS : 1;
 
 	FGameplayTag KnockedDownTag;
+	FGameplayTag InteractingTag;
+	FGameplayTag InteractingRemovalTag;
 
 	virtual float GetMaxSpeed() const override;
 	virtual void UpdateFromCompressedFlags(uint8 Flags) override;
