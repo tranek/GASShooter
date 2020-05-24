@@ -87,6 +87,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 
 	// Cache tags
 	KnockedDownTag = UGSAbilitySystemGlobals::GSGet().KnockedDownTag;
+	InteractingTag = UGSAbilitySystemGlobals::GSGet().InteractingTag;
 }
 
 void AGSHeroCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -562,7 +563,11 @@ int32 AGSHeroCharacter::GetNumWeapons() const
 
 bool AGSHeroCharacter::IsAvailableForInteraction_Implementation() const
 {
-	if (IsValid(AbilitySystemComponent) && AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag))
+	// Hero is available to be revived if knocked down and is not already being revived.
+	// If you want multiple heroes reviving someone to speed it up, you would need to change GA_Interact
+	// (outside the scope of this sample).
+	if (IsValid(AbilitySystemComponent) && AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag)
+		&& !AbilitySystemComponent->HasMatchingGameplayTag(InteractingTag))
 	{
 		return true;
 	}
