@@ -26,6 +26,8 @@ UGSGameplayAbility::UGSGameplayAbility()
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag("State.Dead"));
 	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag("State.KnockedDown"));
 
+	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag("Ability.BlocksInteraction"));
+
 	InteractingTag = UGSAbilitySystemGlobals::GSGet().InteractingTag;
 	InteractingRemovalTag = UGSAbilitySystemGlobals::GSGet().InteractingRemovalTag;
 }
