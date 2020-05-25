@@ -3,23 +3,23 @@
 
 #include "Characters/Abilities/GSInteractable.h"
 
-bool IGSInteractable::IsAvailableForInteraction_Implementation() const
+bool IGSInteractable::IsAvailableForInteraction_Implementation(UPrimitiveComponent* InteractionComponent) const
 {
 	return false;
 }
 
-float IGSInteractable::GetInteractDuration_Implementation() const
+float IGSInteractable::GetInteractDuration_Implementation(UPrimitiveComponent* InteractionComponent) const
 {
 	return 0.0f;
 }
 
-void IGSInteractable::GetPreInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type) const
+void IGSInteractable::GetPreInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type, UPrimitiveComponent* InteractionComponent) const
 {
 	bShouldSync = false;
 	Type = EAbilityTaskNetSyncType::OnlyServerWait;
 }
 
-void IGSInteractable::GetPostInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type) const
+void IGSInteractable::GetPostInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type, UPrimitiveComponent* InteractionComponent) const
 {
 	bShouldSync = false;
 	Type = EAbilityTaskNetSyncType::OnlyServerWait;

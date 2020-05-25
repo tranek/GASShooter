@@ -68,15 +68,23 @@ void UGSAT_WaitInteractableTarget::LineTrace(FHitResult& OutHitResult, const UWo
 
 		if (!Hit.Actor.IsValid() || Hit.Actor != Ability->GetCurrentActorInfo()->AvatarActor.Get())
 		{
+			// If bLookForInteractableActor is false, we're looking for an endpoint to trace to
 			if (bLookForInteractableActor && Hit.Actor.IsValid())
 			{
-				IGSInteractable* Interactable = Cast<IGSInteractable>(Hit.Actor.Get());
-
-				if (Interactable && Interactable->Execute_IsAvailableForInteraction(Hit.Actor.Get()))
+				// bLookForInteractableActor is true, hit component must overlap COLLISION_INTERACTABLE trace channel
+				// This is so that a big Actor like a computer can have a small interactable button.
+				if (Hit.Component.IsValid() && Hit.Component.Get()->GetCollisionResponseToChannel(COLLISION_INTERACTABLE)
+					== ECollisionResponse::ECR_Overlap)
 				{
-					OutHitResult = Hit;
-					OutHitResult.bBlockingHit = true; // treat it as a blocking hit
-					return;
+					// Component/Actor must be available to interact
+					IGSInteractable* Interactable = Cast<IGSInteractable>(Hit.Actor.Get());
+
+					if (Interactable && Interactable->Execute_IsAvailableForInteraction(Hit.Actor.Get(), Hit.Component.Get()))
+					{
+						OutHitResult = Hit;
+						OutHitResult.bBlockingHit = true; // treat it as a blocking hit
+						return;
+					}
 				}
 
 				OutHitResult.TraceEnd = Hit.Location;

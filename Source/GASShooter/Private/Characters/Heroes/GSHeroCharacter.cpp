@@ -67,6 +67,7 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	GetMesh()->VisibilityBasedAnimTickOption = EVisibilityBasedAnimTickOption::AlwaysTickPose;
 	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetMesh()->SetCollisionProfileName(FName("NoCollision"));
+	GetMesh()->SetCollisionResponseToChannel(COLLISION_INTERACTABLE, ECollisionResponse::ECR_Overlap);
 	GetMesh()->bCastHiddenShadow = true;
 	GetMesh()->bReceivesDecals = false;
 
@@ -561,7 +562,7 @@ int32 AGSHeroCharacter::GetNumWeapons() const
 	return Inventory.Weapons.Num();
 }
 
-bool AGSHeroCharacter::IsAvailableForInteraction_Implementation() const
+bool AGSHeroCharacter::IsAvailableForInteraction_Implementation(UPrimitiveComponent* InteractionComponent) const
 {
 	// Hero is available to be revived if knocked down and is not already being revived.
 	// If you want multiple heroes reviving someone to speed it up, you would need to change GA_Interact
@@ -575,17 +576,17 @@ bool AGSHeroCharacter::IsAvailableForInteraction_Implementation() const
 	return IGSInteractable::IsAvailableForInteraction_Implementation();
 }
 
-float AGSHeroCharacter::GetInteractDuration_Implementation() const
+float AGSHeroCharacter::GetInteractDuration_Implementation(UPrimitiveComponent* InteractionComponent) const
 {
 	if (IsValid(AbilitySystemComponent) && AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag))
 	{
 		return ReviveDuration;
 	}
 
-	return IGSInteractable::GetInteractDuration_Implementation();
+	return IGSInteractable::GetInteractDuration_Implementation(InteractionComponent);
 }
 
-void AGSHeroCharacter::PreInteract_Implementation(AActor* InteractingActor)
+void AGSHeroCharacter::PreInteract_Implementation(AActor* InteractingActor, UPrimitiveComponent* InteractionComponent)
 {
 	UE_LOG(LogTemp, Log, TEXT("%s %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
 
@@ -595,7 +596,7 @@ void AGSHeroCharacter::PreInteract_Implementation(AActor* InteractingActor)
 	}
 }
 
-void AGSHeroCharacter::PostInteract_Implementation(AActor* InteractingActor)
+void AGSHeroCharacter::PostInteract_Implementation(AActor* InteractingActor, UPrimitiveComponent* InteractionComponent)
 {
 	UE_LOG(LogTemp, Log, TEXT("%s %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
 
@@ -605,7 +606,7 @@ void AGSHeroCharacter::PostInteract_Implementation(AActor* InteractingActor)
 	}
 }
 
-void AGSHeroCharacter::GetPreInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type) const
+void AGSHeroCharacter::GetPreInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type, UPrimitiveComponent* InteractionComponent) const
 {
 	if (IsValid(AbilitySystemComponent) && AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag))
 	{
@@ -614,10 +615,10 @@ void AGSHeroCharacter::GetPreInteractSyncType_Implementation(bool& bShouldSync, 
 		return;
 	}
 
-	IGSInteractable::GetPreInteractSyncType_Implementation(bShouldSync, Type);
+	IGSInteractable::GetPreInteractSyncType_Implementation(bShouldSync, Type, InteractionComponent);
 }
 
-void AGSHeroCharacter::CancelInteraction_Implementation()
+void AGSHeroCharacter::CancelInteraction_Implementation(UPrimitiveComponent* InteractionComponent)
 {
 	UE_LOG(LogTemp, Warning, TEXT("%s %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
 

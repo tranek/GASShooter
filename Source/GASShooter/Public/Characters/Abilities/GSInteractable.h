@@ -23,15 +23,23 @@ class GASSHOOTER_API IGSInteractable
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	// Is this object available for player interaction at right now?
+	/**
+	* Is this object available for player interaction at right now?
+	*
+	* @param InteractionComponent Optional UPrimitiveComponent in case an Actor has many separate interactable areas.
+	*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable")
-	bool IsAvailableForInteraction() const;
-	virtual bool IsAvailableForInteraction_Implementation() const;
+	bool IsAvailableForInteraction(UPrimitiveComponent* InteractionComponent = nullptr) const;
+	virtual bool IsAvailableForInteraction_Implementation(UPrimitiveComponent* InteractionComponent = nullptr) const;
 
-	// How long does the player need to hold down the interact button to interact with this?
+	/**
+	* How long does the player need to hold down the interact button to interact with this?
+	*
+	* @param InteractionComponent Optional UPrimitiveComponent in case an Actor has many separate interactable areas.
+	*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable")
-	float GetInteractDuration() const;
-	virtual float GetInteractDuration_Implementation() const;
+	float GetInteractDuration(UPrimitiveComponent* InteractionComponent = nullptr) const;
+	virtual float GetInteractDuration_Implementation(UPrimitiveComponent* InteractionComponent = nullptr) const;
 
 	/**
 	* Should we sync and who should sync before calling PreInteract()? Defaults to false and OnlyServerWait.
@@ -43,10 +51,12 @@ public:
 	* Player revive uses OnlyClientWait so that the player reviving is in sync with the server since we can't locally
 	* predict an ability run on another player. The downed player's reviving animation will be in sync with the local
 	* player's Interact Duration Timer.
+	*
+	* @param InteractionComponent Optional UPrimitiveComponent in case an Actor has many separate interactable areas.
 	*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable")
-	void GetPreInteractSyncType(bool& bShouldSync, EAbilityTaskNetSyncType& Type) const;
-	void GetPreInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type) const;
+	void GetPreInteractSyncType(bool& bShouldSync, EAbilityTaskNetSyncType& Type, UPrimitiveComponent* InteractionComponent = nullptr) const;
+	void GetPreInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type, UPrimitiveComponent* InteractionComponent = nullptr) const;
 
 	/**
 	* Should we sync and who should sync before calling PostInteract()? Defaults to false and OnlyServerWait.
@@ -57,10 +67,12 @@ public:
 	* Player revive uses OnlyServerWait so that the client isn't stuck waiting for the server after the Interaction Duration
 	* ends. Revive's PostInteract() will only run code on the server so it's fine for the client to be "finished" ahead of
 	* the server.
+	*
+	* @param InteractionComponent Optional UPrimitiveComponent in case an Actor has many separate interactable areas.
 	*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable")
-	void GetPostInteractSyncType(bool& bShouldSync, EAbilityTaskNetSyncType& Type) const;
-	void GetPostInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type) const;
+	void GetPostInteractSyncType(bool& bShouldSync, EAbilityTaskNetSyncType& Type, UPrimitiveComponent* InteractionComponent = nullptr) const;
+	void GetPostInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type, UPrimitiveComponent* InteractionComponent = nullptr) const;
 
 	/**
 	* Interact with this Actor. This will call before starting the Interact Duration timer. This might do things, apply
@@ -76,10 +88,11 @@ public:
 	* the Interact Duration. If this ability finishes, it will revive the player in PostInteract().
 	*
 	* @param InteractingActor The Actor interacting with this Actor. It will be the AvatarActor from a GameplayAbility.
+	* @param InteractionComponent Optional UPrimitiveComponent in case an Actor has many separate interactable areas.
 	*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable")
-	void PreInteract(AActor* InteractingActor);
-	virtual void PreInteract_Implementation(AActor* InteractingActor) {};
+	void PreInteract(AActor* InteractingActor, UPrimitiveComponent* InteractionComponent = nullptr);
+	virtual void PreInteract_Implementation(AActor* InteractingActor, UPrimitiveComponent* InteractionComponent = nullptr) {};
 
 	/**
 	* Interact with this Actor. This will call after the Interact Duration timer completes. This might do things, apply
@@ -93,16 +106,19 @@ public:
 	* needed to replicate the AbilitySpec inside the time needed to interact by granted it in PreInteract().
 	*
 	* @param InteractingActor The Actor interacting with this Actor. It will be the AvatarActor from a GameplayAbility.
+	* @param InteractionComponent Optional UPrimitiveComponent in case an Actor has many separate interactable areas.
 	*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable")
-	void PostInteract(AActor* InteractingActor);
-	virtual void PostInteract_Implementation(AActor* InteractingActor) {};
+	void PostInteract(AActor* InteractingActor, UPrimitiveComponent* InteractionComponent = nullptr);
+	virtual void PostInteract_Implementation(AActor* InteractingActor, UPrimitiveComponent* InteractionComponent = nullptr) {};
 
 	/**
 	* Cancel an ongoing interaction, typically anything happening in PreInteract() while waiting on the Interact Duration
 	* Timer. This will be called if the player releases input early.
+	*
+	* @param InteractionComponent Optional UPrimitiveComponent in case an Actor has many separate interactable areas.
 	*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable")
-	void CancelInteraction();
-	virtual void CancelInteraction_Implementation() {};
+	void CancelInteraction(UPrimitiveComponent* InteractionComponent = nullptr);
+	virtual void CancelInteraction_Implementation(UPrimitiveComponent* InteractionComponent = nullptr) {};
 };
