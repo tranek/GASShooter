@@ -629,6 +629,11 @@ void AGSHeroCharacter::CancelInteraction_Implementation(UPrimitiveComponent* Int
 	}
 }
 
+FSimpleMulticastDelegate* AGSHeroCharacter::GetTargetCancelInteractionDelegate(UPrimitiveComponent* InteractionComponent)
+{
+	return &InteractionCanceledDelegate;
+}
+
 /**
 * On the Server, Possession happens before BeginPlay.
 * On the Client, BeginPlay happens before Possession.
@@ -650,6 +655,13 @@ void AGSHeroCharacter::BeginPlay()
 	{
 		ServerSyncCurrentWeapon();
 	}
+}
+
+void AGSHeroCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	// Cancel being revived if killed
+	InteractionCanceledDelegate.Broadcast();
+	Super::EndPlay(EndPlayReason);
 }
 
 void AGSHeroCharacter::PostInitializeComponents()

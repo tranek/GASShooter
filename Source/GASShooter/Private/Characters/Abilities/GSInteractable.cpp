@@ -24,3 +24,8 @@ void IGSInteractable::GetPostInteractSyncType_Implementation(bool& bShouldSync, 
 	bShouldSync = false;
 	Type = EAbilityTaskNetSyncType::OnlyServerWait;
 }
+
+FSimpleMulticastDelegate* IGSInteractable::GetTargetCancelInteractionDelegate(UPrimitiveComponent* InteractionComponent)
+{
+	return nullptr;
+}

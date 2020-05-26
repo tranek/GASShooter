@@ -20,10 +20,10 @@ class GASSHOOTER_API UGSAT_WaitInteractableTarget : public UAbilityTask
 	GENERATED_UCLASS_BODY()
 	
 	UPROPERTY(BlueprintAssignable)
-	FWaitInteractableTargetDelegate	FoundNewInteractableTarget;
+	FWaitInteractableTargetDelegate FoundNewInteractableTarget;
 
 	UPROPERTY(BlueprintAssignable)
-	FWaitInteractableTargetDelegate	LostInteractableTarget;
+	FWaitInteractableTargetDelegate LostInteractableTarget;
 
 	/**
 	* Traces a line on a timer looking for InteractableTargets.

@@ -21,7 +21,7 @@ class GASSHOOTER_API IGSInteractable
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
+		// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	/**
 	* Is this object available for player interaction at right now?
@@ -121,4 +121,11 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable")
 	void CancelInteraction(UPrimitiveComponent* InteractionComponent = nullptr);
 	virtual void CancelInteraction_Implementation(UPrimitiveComponent* InteractionComponent = nullptr) {};
+
+	/**
+	* Returns a delegate for GA_Interact to bind to that fires when this Actor is canceling the interactiong (e.g. died).
+	*
+	* @param InteractionComponent Optional UPrimitiveComponent in case an Actor has many separate interactable areas.
+	*/
+	virtual FSimpleMulticastDelegate* GetTargetCancelInteractionDelegate(UPrimitiveComponent* InteractionComponent = nullptr);
 };

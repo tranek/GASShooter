@@ -182,6 +182,12 @@ public:
 	*/
 	virtual void CancelInteraction_Implementation(UPrimitiveComponent* InteractionComponent = nullptr) override;
 
+	/**
+	* Get the delegate for this Actor canceling interaction:
+	* Knocked Down - cancel being revived if killed
+	*/
+	FSimpleMulticastDelegate* GetTargetCancelInteractionDelegate(UPrimitiveComponent* InteractionComponent = nullptr) override;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSHeroCharacter")
 	FVector StartingThirdPersonMeshLocation;
@@ -268,6 +274,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "GASShooter|GSHeroCharacter")
 	TSubclassOf<UGameplayEffect> DeathEffect;
 
+	FSimpleMulticastDelegate InteractionCanceledDelegate;
+
 	// Cache tags
 	FGameplayTag NoWeaponTag;
 	FGameplayTag WeaponChangingDelayReplicationTag;
@@ -285,6 +293,8 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void PostInitializeComponents() override;
 

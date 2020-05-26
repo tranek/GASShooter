@@ -5,6 +5,7 @@
 #include "Characters/Abilities/GSInteractable.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "DrawDebugHelpers.h"
+#include "GSBlueprintFunctionLibrary.h"
 #include "TimerManager.h"
 
 UGSAT_WaitInteractableTarget::UGSAT_WaitInteractableTarget(const FObjectInitializer& ObjectInitializer)
@@ -181,6 +182,12 @@ void UGSAT_WaitInteractableTarget::PerformTrace()
 	TArray<AActor*> ActorsToIgnore;
 
 	AActor* SourceActor = Ability->GetCurrentActorInfo()->AvatarActor.Get();
+	if (!SourceActor)
+	{
+		// Hero is dead
+		//UE_LOG(LogTemp, Error, TEXT("%s %s SourceActor was null"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
+		return;
+	}
 
 	ActorsToIgnore.Add(SourceActor);
 
