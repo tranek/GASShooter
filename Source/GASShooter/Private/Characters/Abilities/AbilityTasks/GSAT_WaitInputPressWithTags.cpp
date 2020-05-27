@@ -48,15 +48,30 @@ void UGSAT_WaitInputPressWithTags::Activate()
 
 void UGSAT_WaitInputPressWithTags::OnPressCallback()
 {
+	UE_LOG(LogTemp, Log, TEXT("%s"), *FString(__FUNCTION__));
+
 	float ElapsedTime = GetWorld()->GetTimeSeconds() - StartTime;
 
 	if (!Ability || !AbilitySystemComponent)
 	{
+		EndTask();
 		return;
 	}
 
+	//TODO move this into a tag query
 	if (AbilitySystemComponent->HasAnyMatchingGameplayTags(IgnoredTags) || !AbilitySystemComponent->HasAllMatchingGameplayTags(RequiredTags))
 	{
+		Reset();
+		return;
+	}
+
+	//TODO extend tag query to support this and move this into it
+	// Hardcoded for GA_InteractPassive to ignore input while already interacting
+	if (AbilitySystemComponent->GetTagCount(FGameplayTag::RequestGameplayTag("State.Interacting"))
+		> AbilitySystemComponent->GetTagCount(FGameplayTag::RequestGameplayTag("State.InteractingRemoval")))
+	{
+		UE_LOG(LogTemp, Log, TEXT("%s State.InteractingTag > State.RemovalTag"), *FString(__FUNCTION__));
+		Reset();
 		return;
 	}
 
@@ -85,9 +100,25 @@ void UGSAT_WaitInputPressWithTags::OnPressCallback()
 
 void UGSAT_WaitInputPressWithTags::OnDestroy(bool AbilityEnded)
 {
+	UE_LOG(LogTemp, Log, TEXT("%s"), *FString(__FUNCTION__));
+
 	AbilitySystemComponent->AbilityReplicatedEventDelegate(EAbilityGenericReplicatedEvent::InputPressed, GetAbilitySpecHandle(), GetActivationPredictionKey()).Remove(DelegateHandle);
 
 	ClearWaitingOnRemotePlayerData();
 
 	Super::OnDestroy(AbilityEnded);
+}
+
+void UGSAT_WaitInputPressWithTags::Reset()
+{
+	AbilitySystemComponent->AbilityReplicatedEventDelegate(EAbilityGenericReplicatedEvent::InputPressed, GetAbilitySpecHandle(), GetActivationPredictionKey()).Remove(DelegateHandle);
+
+	DelegateHandle = AbilitySystemComponent->AbilityReplicatedEventDelegate(EAbilityGenericReplicatedEvent::InputPressed, GetAbilitySpecHandle(), GetActivationPredictionKey()).AddUObject(this, &UGSAT_WaitInputPressWithTags::OnPressCallback);
+	if (IsForRemoteClient())
+	{
+		if (!AbilitySystemComponent->CallReplicatedEventDelegateIfSet(EAbilityGenericReplicatedEvent::InputPressed, GetAbilitySpecHandle(), GetActivationPredictionKey()))
+		{
+			SetWaitingOnRemotePlayerData();
+		}
+	}
 }

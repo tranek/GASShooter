@@ -19,6 +19,7 @@ UGSGameplayAbility::UGSGameplayAbility()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	bActivateAbilityOnGranted = false;
+	bActivateOnInput = true;
 	bSourceObjectMustEqualCurrentWeaponToActivate = false;
 	bCannotActivateWhileInteracting = true;
 

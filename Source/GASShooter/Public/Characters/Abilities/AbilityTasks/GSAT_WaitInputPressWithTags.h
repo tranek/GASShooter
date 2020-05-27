@@ -46,4 +46,11 @@ protected:
 	FGameplayTagContainer IgnoredTags;
 
 	virtual void OnDestroy(bool AbilityEnded) override;
+
+	/**
+	* We can only listen for one input pressed event. I think it's because
+	* UAbilitySystemComponent::InvokeReplicatedEvent sets ReplicatedData->GenericEvents[(uint8)EventType].bTriggered = true;
+	* So if we want to keep listening for more input events, we just clear the delegate handle and bind again.
+	*/
+	virtual void Reset();
 };

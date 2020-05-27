@@ -56,11 +56,16 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability")
 	bool bActivateAbilityOnGranted;
 
+	// If true, this ability will activate when its bound input is pressed. Disable if you want to bind an ability to an
+	// input but not have it activate when pressed.
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability")
+	bool bActivateOnInput;
+
 	// If true, only activate this ability if the weapon that granted it is the currently equipped weapon.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability")
 	bool bSourceObjectMustEqualCurrentWeaponToActivate;
 
-	// If true, only activate this ability if not interacting with something via GA_Interact
+	// If true, only activate this ability if not interacting with something via GA_Interact.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability")
 	bool bCannotActivateWhileInteracting;
 
