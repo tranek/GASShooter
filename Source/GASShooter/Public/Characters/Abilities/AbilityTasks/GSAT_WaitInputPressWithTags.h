@@ -24,8 +24,8 @@ class GASSHOOTER_API UGSAT_WaitInputPressWithTags : public UAbilityTask
 	/**
 	* Wait until the user presses the input button for this ability's activation. Returns time this node spent waiting for the press. Will return 0 if input was already down.
 	* This is hardcoded for GA_InteractPassive to not fire when State.Interacting TagCount is > State.InteractingRemoval TagCount.
-	* Ideally the RequiredTags, IgnoredTags, and State.Interacting TagCount would get moved into a subclass of FGameplayTagQuery and then we'd only expose that as one parameter
-	* and rename the task to WaitInputPress_Query.
+	* //TODO Ideally the RequiredTags, IgnoredTags, and State.Interacting TagCount would get moved into a subclass of FGameplayTagQuery and then we'd only expose that as one
+	* parameter and rename the task to WaitInputPress_Query.
 	*
 	* @param RequiredTags Ability Owner must have all of these tags otherwise the input is ignored.
 	* @param IgnoredTags Ability Owner cannot have any of these tags otherwise the input is ignored.
