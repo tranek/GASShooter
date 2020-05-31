@@ -2,6 +2,9 @@
 
 
 #include "Characters/Abilities/GSInteractable.h"
+#include "AbilitySystemBlueprintLibrary.h"
+#include "AbilitySystemComponent.h"
+#include "GSBlueprintFunctionLibrary.h"
 
 bool IGSInteractable::IsAvailableForInteraction_Implementation(UPrimitiveComponent* InteractionComponent) const
 {
@@ -28,4 +31,59 @@ void IGSInteractable::GetPostInteractSyncType_Implementation(bool& bShouldSync, 
 FSimpleMulticastDelegate* IGSInteractable::GetTargetCancelInteractionDelegate(UPrimitiveComponent* InteractionComponent)
 {
 	return nullptr;
+}
+
+void IGSInteractable::RegisterInteracter_Implementation(UPrimitiveComponent* InteractionComponent, AActor* InteractingActor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(InteractingActor->GetWorld()));
+
+	if (Interacters.Contains(InteractionComponent))
+	{
+		TArray<AActor*>& InteractingActors = Interacters[InteractionComponent];
+		if (!InteractingActors.Contains(InteractingActor))
+		{
+			InteractingActors.Add(InteractingActor);
+		}
+	}
+	else
+	{
+		TArray<AActor*> InteractingActors;
+		InteractingActors.Add(InteractingActor);
+		Interacters.Add(InteractionComponent, InteractingActors);
+	}
+}
+
+void IGSInteractable::UnregisterInteracter_Implementation(UPrimitiveComponent* InteractionComponent, AActor* InteractingActor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(InteractingActor->GetWorld()));
+
+	if (Interacters.Contains(InteractionComponent))
+	{
+		TArray<AActor*>& InteractingActors = Interacters[InteractionComponent];
+		InteractingActors.Remove(InteractingActor);
+	}
+}
+
+void IGSInteractable::InteractableCancelInteraction_Implementation(UPrimitiveComponent* InteractionComponent)
+{
+	UE_LOG(LogTemp, Warning, TEXT("%s %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(InteractionComponent->GetWorld()));
+
+	if (Interacters.Contains(InteractionComponent))
+	{
+		FGameplayTagContainer InteractAbilityTagContainer;
+		InteractAbilityTagContainer.AddTag(FGameplayTag::RequestGameplayTag("Ability.Interaction"));
+
+		TArray<AActor*>& InteractingActors = Interacters[InteractionComponent];
+		for (AActor* InteractingActor : InteractingActors)
+		{
+			UAbilitySystemComponent* ASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(InteractingActor);
+
+			if (ASC)
+			{
+				ASC->CancelAbilities(&InteractAbilityTagContainer);
+			}
+		}
+
+		InteractingActors.Empty();
+	}
 }

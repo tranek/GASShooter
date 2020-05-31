@@ -573,7 +573,7 @@ bool AGSHeroCharacter::IsAvailableForInteraction_Implementation(UPrimitiveCompon
 		return true;
 	}
 	
-	return IGSInteractable::IsAvailableForInteraction_Implementation();
+	return IGSInteractable::IsAvailableForInteraction_Implementation(InteractionComponent);
 }
 
 float AGSHeroCharacter::GetInteractDuration_Implementation(UPrimitiveComponent* InteractionComponent) const
@@ -660,7 +660,8 @@ void AGSHeroCharacter::BeginPlay()
 void AGSHeroCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	// Cancel being revived if killed
-	InteractionCanceledDelegate.Broadcast();
+	//InteractionCanceledDelegate.Broadcast();
+	Execute_InteractableCancelInteraction(this, GetThirdPersonMesh());
 	Super::EndPlay(EndPlayReason);
 }
 

@@ -78,9 +78,9 @@ void UGSAT_WaitInteractableTarget::LineTrace(FHitResult& OutHitResult, const UWo
 					== ECollisionResponse::ECR_Overlap)
 				{
 					// Component/Actor must be available to interact
-					IGSInteractable* Interactable = Cast<IGSInteractable>(Hit.Actor.Get());
+					bool bIsInteractable = Hit.Actor.Get()->Implements<UGSInteractable>();
 
-					if (Interactable && Interactable->Execute_IsAvailableForInteraction(Hit.Actor.Get(), Hit.Component.Get()))
+					if (bIsInteractable && IGSInteractable::Execute_IsAvailableForInteraction(Hit.Actor.Get(), Hit.Component.Get()))
 					{
 						OutHitResult = Hit;
 						OutHitResult.bBlockingHit = true; // treat it as a blocking hit

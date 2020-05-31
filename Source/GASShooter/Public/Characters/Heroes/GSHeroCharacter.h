@@ -149,44 +149,44 @@ public:
 	* We can Interact with other heroes when:
 	* Knocked Down - to revive them
 	*/
-	virtual bool IsAvailableForInteraction_Implementation(UPrimitiveComponent* InteractionComponent = nullptr) const override;
+	virtual bool IsAvailableForInteraction_Implementation(UPrimitiveComponent* InteractionComponent) const override;
 
 	/**
 	* How long to interact with this player:
 	* Knocked Down - to revive them
 	*/
-	virtual float GetInteractDuration_Implementation(UPrimitiveComponent* InteractionComponent = nullptr) const override;
+	virtual float GetInteractDuration_Implementation(UPrimitiveComponent* InteractionComponent) const override;
 
 	/**
 	* Interaction:
 	* Knocked Down - activate revive GA (plays animation)
 	*/
-	virtual void PreInteract_Implementation(AActor* InteractingActor, UPrimitiveComponent* InteractionComponent = nullptr) override;
+	virtual void PreInteract_Implementation(AActor* InteractingActor, UPrimitiveComponent* InteractionComponent) override;
 
 	/**
 	* Interaction:
 	* Knocked Down - apply revive GE
 	*/
-	virtual void PostInteract_Implementation(AActor* InteractingActor, UPrimitiveComponent* InteractionComponent = nullptr) override;
+	virtual void PostInteract_Implementation(AActor* InteractingActor, UPrimitiveComponent* InteractionComponent) override;
 
 	/**
 	* Should we wait and who should wait to sync before calling PreInteract():
 	* Knocked Down - Yes, client. This will sync the local player's Interact Duration Timer with the knocked down player's
 	* revive animation. If we had a picking a player up animation, we could play it on the local player in PreInteract().
 	*/
-	void GetPreInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type, UPrimitiveComponent* InteractionComponent = nullptr) const;
+	void GetPreInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type, UPrimitiveComponent* InteractionComponent) const;
 
 	/**
 	* Cancel interaction:
 	* Knocked Down - cancel revive ability
 	*/
-	virtual void CancelInteraction_Implementation(UPrimitiveComponent* InteractionComponent = nullptr) override;
+	virtual void CancelInteraction_Implementation(UPrimitiveComponent* InteractionComponent) override;
 
 	/**
 	* Get the delegate for this Actor canceling interaction:
 	* Knocked Down - cancel being revived if killed
 	*/
-	FSimpleMulticastDelegate* GetTargetCancelInteractionDelegate(UPrimitiveComponent* InteractionComponent = nullptr) override;
+	FSimpleMulticastDelegate* GetTargetCancelInteractionDelegate(UPrimitiveComponent* InteractionComponent) override;
 
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "GASShooter|GSHeroCharacter")
