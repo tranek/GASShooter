@@ -576,14 +576,14 @@ bool AGSHeroCharacter::IsAvailableForInteraction_Implementation(UPrimitiveCompon
 	return IGSInteractable::IsAvailableForInteraction_Implementation(InteractionComponent);
 }
 
-float AGSHeroCharacter::GetInteractDuration_Implementation(UPrimitiveComponent* InteractionComponent) const
+float AGSHeroCharacter::GetInteractionDuration_Implementation(UPrimitiveComponent* InteractionComponent) const
 {
 	if (IsValid(AbilitySystemComponent) && AbilitySystemComponent->HasMatchingGameplayTag(KnockedDownTag))
 	{
 		return ReviveDuration;
 	}
 
-	return IGSInteractable::GetInteractDuration_Implementation(InteractionComponent);
+	return IGSInteractable::GetInteractionDuration_Implementation(InteractionComponent);
 }
 
 void AGSHeroCharacter::PreInteract_Implementation(AActor* InteractingActor, UPrimitiveComponent* InteractionComponent)

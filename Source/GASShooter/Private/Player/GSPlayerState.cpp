@@ -71,7 +71,7 @@ void AGSPlayerState::ShowAbilityConfirmPrompt(bool bShowPrompt)
 	}
 }
 
-void AGSPlayerState::ShowInteractPrompt(bool bShowPrompt)
+void AGSPlayerState::ShowInteractionPrompt(float InteractionDuration)
 {
 	AGSPlayerController* PC = Cast<AGSPlayerController>(GetOwner());
 	if (PC)
@@ -79,12 +79,12 @@ void AGSPlayerState::ShowInteractPrompt(bool bShowPrompt)
 		UGSHUDWidget* HUD = PC->GetGSHUD();
 		if (HUD)
 		{
-			HUD->ShowInteractPrompt(bShowPrompt);
+			HUD->ShowInteractionPrompt(InteractionDuration);
 		}
 	}
 }
 
-void AGSPlayerState::StartInteractTimer(float InteractDuration)
+void AGSPlayerState::HideInteractionPrompt()
 {
 	AGSPlayerController* PC = Cast<AGSPlayerController>(GetOwner());
 	if (PC)
@@ -92,12 +92,12 @@ void AGSPlayerState::StartInteractTimer(float InteractDuration)
 		UGSHUDWidget* HUD = PC->GetGSHUD();
 		if (HUD)
 		{
-			HUD->StartInteractTimer(InteractDuration);
+			HUD->HideInteractionPrompt();
 		}
 	}
 }
 
-void AGSPlayerState::StopInteractTimer()
+void AGSPlayerState::StartInteractionTimer(float InteractionDuration)
 {
 	AGSPlayerController* PC = Cast<AGSPlayerController>(GetOwner());
 	if (PC)
@@ -105,7 +105,20 @@ void AGSPlayerState::StopInteractTimer()
 		UGSHUDWidget* HUD = PC->GetGSHUD();
 		if (HUD)
 		{
-			HUD->StopInteractTimer();
+			HUD->StartInteractionTimer(InteractionDuration);
+		}
+	}
+}
+
+void AGSPlayerState::StopInteractionTimer()
+{
+	AGSPlayerController* PC = Cast<AGSPlayerController>(GetOwner());
+	if (PC)
+	{
+		UGSHUDWidget* HUD = PC->GetGSHUD();
+		if (HUD)
+		{
+			HUD->StopInteractionTimer();
 		}
 	}
 }

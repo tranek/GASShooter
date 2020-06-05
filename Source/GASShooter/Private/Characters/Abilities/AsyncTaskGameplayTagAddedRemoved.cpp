@@ -2,6 +2,7 @@
 
 
 #include "Characters/Abilities/AsyncTaskGameplayTagAddedRemoved.h"
+#include "GSBlueprintFunctionLibrary.h"
 
 UAsyncTaskGameplayTagAddedRemoved* UAsyncTaskGameplayTagAddedRemoved::ListenForGameplayTagAddedOrRemoved(UAbilitySystemComponent * AbilitySystemComponent, FGameplayTagContainer InTags)
 {

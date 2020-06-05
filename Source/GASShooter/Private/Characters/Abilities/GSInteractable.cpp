@@ -4,6 +4,7 @@
 #include "Characters/Abilities/GSInteractable.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "GSBlueprintFunctionLibrary.h"
 
 bool IGSInteractable::IsAvailableForInteraction_Implementation(UPrimitiveComponent* InteractionComponent) const
@@ -11,7 +12,7 @@ bool IGSInteractable::IsAvailableForInteraction_Implementation(UPrimitiveCompone
 	return false;
 }
 
-float IGSInteractable::GetInteractDuration_Implementation(UPrimitiveComponent* InteractionComponent) const
+float IGSInteractable::GetInteractionDuration_Implementation(UPrimitiveComponent* InteractionComponent) const
 {
 	return 0.0f;
 }

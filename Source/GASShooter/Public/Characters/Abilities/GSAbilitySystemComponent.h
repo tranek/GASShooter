@@ -139,6 +139,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GameplayCue", Meta = (AutoCreateRefTerm = "GameplayCueParameters", GameplayTagFilter = "GameplayCue"))
 	void RemoveGameplayCueLocal(const FGameplayTag GameplayCueTag, const FGameplayCueParameters& GameplayCueParameters);
 
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	virtual FString GetCurrentPredictionKeyStatus();
+
+	/**
+	* If this ASC has a valid prediction key, attempt to predictively apply this GE. Used in Pre/PostInteract() on the Interacter's ASC.
+	* If the key is not valid, it will apply the GE without prediction.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "GameplayEffects", Meta = (DisplayName = "ApplyGameplayEffectToSelfWithPrediction"))
+	FActiveGameplayEffectHandle BP_ApplyGameplayEffectToSelfWithPrediction(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level, FGameplayEffectContextHandle EffectContext);
+
+	/**
+	* If this ASC has a valid prediction key, attempt to predictively apply this GE to the target. Used in Pre/PostInteract() on the Interacter's ASC.
+	* If the key is not valid, it will apply the GE to the target without prediction.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "GameplayEffects", Meta = (DisplayName = "ApplyGameplayEffectToTargetWithPrediction"))
+	FActiveGameplayEffectHandle BP_ApplyGameplayEffectToTargetWithPrediction(TSubclassOf<UGameplayEffect> GameplayEffectClass, UAbilitySystemComponent* Target, float Level, FGameplayEffectContextHandle Context);
+
 
 	// ----------------------------------------------------------------------------------------------------------------
 	//	AnimMontage Support for multiple USkeletalMeshComponents on the AvatarActor.

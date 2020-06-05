@@ -6,7 +6,7 @@ GASShooter is an advanced FPS/TPS Sample Project for Unreal Engine 4's GameplayA
 
 This is not production-ready code but a starting point for evaluating different techniques in GAS relating to using weapons. TargetActors with persistent hit results and ReticleActors particularly do a lot of code on `Tick()`.
 
-Assets included come from Epic Games' ShooterGame learning project or made by myself.
+Assets included come from Epic Games' ShooterGame learning project, Epic Games' Infinity Blade assets, or made by myself.
 
 GASShooter is current with **Unreal Engine 4.25**. There are branches of this Sample Project for older versions of Unreal Engine, but they are no longer supported and are liable to have bugs or out of date information.
 

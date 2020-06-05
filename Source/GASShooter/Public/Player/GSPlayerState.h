@@ -35,14 +35,17 @@ public:
 	void ShowAbilityConfirmPrompt(bool bShowPrompt);
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSPlayerState|UI")
-	void ShowInteractPrompt(bool bShowPrompt);
+	void ShowInteractionPrompt(float InteractionDuration);
 
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSPlayerState|UI")
-	void StartInteractTimer(float InteractDuration);
+	void HideInteractionPrompt();
+
+	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSPlayerState|UI")
+	void StartInteractionTimer(float InteractionDuration);
 
 	// Interaction interrupted, cancel and hide HUD interact timer
 	UFUNCTION(BlueprintCallable, Category = "GASShooter|GSPlayerState|UI")
-	void StopInteractTimer();
+	void StopInteractionTimer();
 
 	/**
 	* Getters for attributes from GDAttributeSetBase. Returns Current Value unless otherwise specified.

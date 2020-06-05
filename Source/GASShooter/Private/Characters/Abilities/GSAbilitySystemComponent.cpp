@@ -6,6 +6,7 @@
 #include "Animation/AnimInstance.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "GameplayCueManager.h"
+#include "GSBlueprintFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Weapons/GSWeapon.h"
 
@@ -207,6 +208,70 @@ void UGSAbilitySystemComponent::AddGameplayCueLocal(const FGameplayTag GameplayC
 void UGSAbilitySystemComponent::RemoveGameplayCueLocal(const FGameplayTag GameplayCueTag, const FGameplayCueParameters& GameplayCueParameters)
 {
 	UAbilitySystemGlobals::Get().GetGameplayCueManager()->HandleGameplayCue(GetOwner(), GameplayCueTag, EGameplayCueEvent::Type::Removed, GameplayCueParameters);
+}
+
+FString UGSAbilitySystemComponent::GetCurrentPredictionKeyStatus()
+{
+	return ScopedPredictionKey.ToString() + " is valid for more prediction: " + (ScopedPredictionKey.IsValidForMorePrediction() ? TEXT("true") : TEXT("false"));
+
+}
+
+FActiveGameplayEffectHandle UGSAbilitySystemComponent::BP_ApplyGameplayEffectToSelfWithPrediction(TSubclassOf<UGameplayEffect> GameplayEffectClass, float Level, FGameplayEffectContextHandle EffectContext)
+{
+	if (GameplayEffectClass)
+	{
+		if (!EffectContext.IsValid())
+		{
+			EffectContext = MakeEffectContext();
+		}
+
+		UGameplayEffect* GameplayEffect = GameplayEffectClass->GetDefaultObject<UGameplayEffect>();
+
+		UE_LOG(LogTemp, Log, TEXT("%s %s Prediction Key Status: %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *GetCurrentPredictionKeyStatus());
+
+		if (CanPredict())
+		{
+			UE_LOG(LogTemp, Log, TEXT("%s %s Applying GE predictively."), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
+
+			return ApplyGameplayEffectToSelf(GameplayEffect, Level, EffectContext, ScopedPredictionKey);
+		}
+
+		return ApplyGameplayEffectToSelf(GameplayEffect, Level, EffectContext);
+	}
+	
+	UE_LOG(LogTemp, Log, TEXT("%s %s Applying GE NOT predictively."), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
+
+	return FActiveGameplayEffectHandle();
+}
+
+FActiveGameplayEffectHandle UGSAbilitySystemComponent::BP_ApplyGameplayEffectToTargetWithPrediction(TSubclassOf<UGameplayEffect> GameplayEffectClass, UAbilitySystemComponent* Target, float Level, FGameplayEffectContextHandle Context)
+{
+	if (Target == nullptr)
+	{
+		ABILITY_LOG(Log, TEXT("UAbilitySystemComponent::BP_ApplyGameplayEffectToTarget called with null Target. %s. Context: %s"), *GetFullName(), *Context.ToString());
+		return FActiveGameplayEffectHandle();
+	}
+
+	if (GameplayEffectClass == nullptr)
+	{
+		ABILITY_LOG(Error, TEXT("UAbilitySystemComponent::BP_ApplyGameplayEffectToTarget called with null GameplayEffectClass. %s. Context: %s"), *GetFullName(), *Context.ToString());
+		return FActiveGameplayEffectHandle();
+	}
+
+	UGameplayEffect* GameplayEffect = GameplayEffectClass->GetDefaultObject<UGameplayEffect>();
+
+	UE_LOG(LogTemp, Log, TEXT("%s %s Prediction Key Status: %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *GetCurrentPredictionKeyStatus());
+
+	if (CanPredict())
+	{
+		UE_LOG(LogTemp, Log, TEXT("%s %s Applying GE predictively."), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
+
+		return ApplyGameplayEffectToTarget(GameplayEffect, Target, Level, Context, ScopedPredictionKey);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("%s %s Applying GE NOT predictively."), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
+
+	return ApplyGameplayEffectToTarget(GameplayEffect, Target, Level, Context);
 }
 
 float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatingAbility, USkeletalMeshComponent* InMesh, FGameplayAbilityActivationInfo ActivationInfo, UAnimMontage* NewAnimMontage, float InPlayRate, FName StartSectionName, bool bReplicateMontage)

@@ -22,22 +22,26 @@ public:
 	void ShowAbilityConfirmPrompt(bool bShowText);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void SetRespawnCountdown(float bRespawnTimeRemaining);
+	void SetRespawnCountdown(float RespawnTimeRemaining);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void ShowInteractPrompt(bool bShowPrompt);
+	void ShowInteractionPrompt(float InteractionDuration);
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void StartInteractTimer(float InteractDuration);
+	void HideInteractionPrompt();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void StartInteractionTimer(float InteractionDuration);
 
 	// Interaction interrupted, cancel and hide HUD interact timer
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void StopInteractTimer();
+	void StopInteractionTimer();
 
 
 	/**
 	* Weapon info
 	*/
+
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetEquippedWeaponSprite(UPaperSprite* Sprite);
 
@@ -64,6 +68,7 @@ public:
 	/**
 	* Attribute setters
 	*/
+
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void SetMaxHealth(float MaxHealth);
 

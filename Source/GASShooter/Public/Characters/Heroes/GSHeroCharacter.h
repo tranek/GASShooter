@@ -155,7 +155,7 @@ public:
 	* How long to interact with this player:
 	* Knocked Down - to revive them
 	*/
-	virtual float GetInteractDuration_Implementation(UPrimitiveComponent* InteractionComponent) const override;
+	virtual float GetInteractionDuration_Implementation(UPrimitiveComponent* InteractionComponent) const override;
 
 	/**
 	* Interaction:

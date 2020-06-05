@@ -38,8 +38,8 @@ public:
 	* @param InteractionComponent UPrimitiveComponent in case an Actor has many separate interactable areas.
 	*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interactable")
-	float GetInteractDuration(UPrimitiveComponent* InteractionComponent) const;
-	virtual float GetInteractDuration_Implementation(UPrimitiveComponent* InteractionComponent) const;
+	float GetInteractionDuration(UPrimitiveComponent* InteractionComponent) const;
+	virtual float GetInteractionDuration_Implementation(UPrimitiveComponent* InteractionComponent) const;
 
 	/**
 	* Should we sync and who should sync before calling PreInteract()? Defaults to false and OnlyServerWait.
