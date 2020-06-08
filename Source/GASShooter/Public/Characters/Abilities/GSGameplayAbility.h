@@ -141,6 +141,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Ability")
 	virtual void SendTargetDataToServer(const FGameplayAbilityTargetDataHandle& TargetData);
 
+	// Is the player's input currently pressed? Only works if the ability is bound to input.
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	virtual bool IsInputPressed() const;
+
 	
 	// ----------------------------------------------------------------------------------------------------------------
 	//	Animation Support for multiple USkeletalMeshComponents on the AvatarActor

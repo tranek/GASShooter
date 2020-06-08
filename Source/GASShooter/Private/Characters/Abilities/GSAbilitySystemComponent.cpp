@@ -227,20 +227,14 @@ FActiveGameplayEffectHandle UGSAbilitySystemComponent::BP_ApplyGameplayEffectToS
 
 		UGameplayEffect* GameplayEffect = GameplayEffectClass->GetDefaultObject<UGameplayEffect>();
 
-		UE_LOG(LogTemp, Log, TEXT("%s %s Prediction Key Status: %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *GetCurrentPredictionKeyStatus());
-
 		if (CanPredict())
 		{
-			UE_LOG(LogTemp, Log, TEXT("%s %s Applying GE predictively."), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
-
 			return ApplyGameplayEffectToSelf(GameplayEffect, Level, EffectContext, ScopedPredictionKey);
 		}
 
 		return ApplyGameplayEffectToSelf(GameplayEffect, Level, EffectContext);
 	}
 	
-	UE_LOG(LogTemp, Log, TEXT("%s %s Applying GE NOT predictively."), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
-
 	return FActiveGameplayEffectHandle();
 }
 
@@ -248,28 +242,22 @@ FActiveGameplayEffectHandle UGSAbilitySystemComponent::BP_ApplyGameplayEffectToT
 {
 	if (Target == nullptr)
 	{
-		ABILITY_LOG(Log, TEXT("UAbilitySystemComponent::BP_ApplyGameplayEffectToTarget called with null Target. %s. Context: %s"), *GetFullName(), *Context.ToString());
+		ABILITY_LOG(Log, TEXT("UAbilitySystemComponent::BP_ApplyGameplayEffectToTargetWithPrediction called with null Target. %s. Context: %s"), *GetFullName(), *Context.ToString());
 		return FActiveGameplayEffectHandle();
 	}
 
 	if (GameplayEffectClass == nullptr)
 	{
-		ABILITY_LOG(Error, TEXT("UAbilitySystemComponent::BP_ApplyGameplayEffectToTarget called with null GameplayEffectClass. %s. Context: %s"), *GetFullName(), *Context.ToString());
+		ABILITY_LOG(Error, TEXT("UAbilitySystemComponent::BP_ApplyGameplayEffectToTargetWithPrediction called with null GameplayEffectClass. %s. Context: %s"), *GetFullName(), *Context.ToString());
 		return FActiveGameplayEffectHandle();
 	}
 
 	UGameplayEffect* GameplayEffect = GameplayEffectClass->GetDefaultObject<UGameplayEffect>();
 
-	UE_LOG(LogTemp, Log, TEXT("%s %s Prediction Key Status: %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()), *GetCurrentPredictionKeyStatus());
-
 	if (CanPredict())
 	{
-		UE_LOG(LogTemp, Log, TEXT("%s %s Applying GE predictively."), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
-
 		return ApplyGameplayEffectToTarget(GameplayEffect, Target, Level, Context, ScopedPredictionKey);
 	}
-
-	UE_LOG(LogTemp, Log, TEXT("%s %s Applying GE NOT predictively."), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(GetWorld()));
 
 	return ApplyGameplayEffectToTarget(GameplayEffect, Target, Level, Context);
 }

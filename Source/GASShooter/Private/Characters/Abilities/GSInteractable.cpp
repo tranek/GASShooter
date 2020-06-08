@@ -5,7 +5,6 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
-#include "GSBlueprintFunctionLibrary.h"
 
 bool IGSInteractable::IsAvailableForInteraction_Implementation(UPrimitiveComponent* InteractionComponent) const
 {
@@ -36,8 +35,6 @@ FSimpleMulticastDelegate* IGSInteractable::GetTargetCancelInteractionDelegate(UP
 
 void IGSInteractable::RegisterInteracter_Implementation(UPrimitiveComponent* InteractionComponent, AActor* InteractingActor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(InteractingActor->GetWorld()));
-
 	if (Interacters.Contains(InteractionComponent))
 	{
 		TArray<AActor*>& InteractingActors = Interacters[InteractionComponent];
@@ -56,8 +53,6 @@ void IGSInteractable::RegisterInteracter_Implementation(UPrimitiveComponent* Int
 
 void IGSInteractable::UnregisterInteracter_Implementation(UPrimitiveComponent* InteractionComponent, AActor* InteractingActor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(InteractingActor->GetWorld()));
-
 	if (Interacters.Contains(InteractionComponent))
 	{
 		TArray<AActor*>& InteractingActors = Interacters[InteractionComponent];
@@ -67,8 +62,6 @@ void IGSInteractable::UnregisterInteracter_Implementation(UPrimitiveComponent* I
 
 void IGSInteractable::InteractableCancelInteraction_Implementation(UPrimitiveComponent* InteractionComponent)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s %s"), *FString(__FUNCTION__), *UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(InteractionComponent->GetWorld()));
-
 	if (Interacters.Contains(InteractionComponent))
 	{
 		FGameplayTagContainer InteractAbilityTagContainer;

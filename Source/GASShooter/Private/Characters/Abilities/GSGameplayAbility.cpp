@@ -250,6 +250,12 @@ void UGSGameplayAbility::SendTargetDataToServer(const FGameplayAbilityTargetData
 	}
 }
 
+bool UGSGameplayAbility::IsInputPressed() const
+{
+	FGameplayAbilitySpec* Spec = GetCurrentAbilitySpec();
+	return Spec && Spec->InputPressed;
+}
+
 UAnimMontage* UGSGameplayAbility::GetCurrentMontageForMesh(USkeletalMeshComponent* InMesh)
 {
 	FAbilityMeshMontage AbilityMeshMontage;

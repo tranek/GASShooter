@@ -48,8 +48,6 @@ void UGSAT_WaitInputPressWithTags::Activate()
 
 void UGSAT_WaitInputPressWithTags::OnPressCallback()
 {
-	UE_LOG(LogTemp, Log, TEXT("%s"), *FString(__FUNCTION__));
-
 	float ElapsedTime = GetWorld()->GetTimeSeconds() - StartTime;
 
 	if (!Ability || !AbilitySystemComponent)
@@ -70,7 +68,6 @@ void UGSAT_WaitInputPressWithTags::OnPressCallback()
 	if (AbilitySystemComponent->GetTagCount(FGameplayTag::RequestGameplayTag("State.Interacting"))
 		> AbilitySystemComponent->GetTagCount(FGameplayTag::RequestGameplayTag("State.InteractingRemoval")))
 	{
-		UE_LOG(LogTemp, Log, TEXT("%s State.InteractingTag > State.RemovalTag"), *FString(__FUNCTION__));
 		Reset();
 		return;
 	}
@@ -100,8 +97,6 @@ void UGSAT_WaitInputPressWithTags::OnPressCallback()
 
 void UGSAT_WaitInputPressWithTags::OnDestroy(bool AbilityEnded)
 {
-	UE_LOG(LogTemp, Log, TEXT("%s"), *FString(__FUNCTION__));
-
 	AbilitySystemComponent->AbilityReplicatedEventDelegate(EAbilityGenericReplicatedEvent::InputPressed, GetAbilitySpecHandle(), GetActivationPredictionKey()).Remove(DelegateHandle);
 
 	ClearWaitingOnRemotePlayerData();
