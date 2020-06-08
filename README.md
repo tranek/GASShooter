@@ -21,6 +21,7 @@ GASShooter is current with **Unreal Engine 4.25**. There are branches of this Sa
 | R                   | Reloads the weapon.                                         |
 | Left Ctrl           | Cancels targeting.                                          |
 | Left Shift          | Sprint.                                                     |
+| E                   | Interact with interactable objects.                         |
 
 | Console Command | Action                  |
 | --------------- | ----------------------- |
@@ -44,6 +45,7 @@ Secondary ammo is not used. It would be used for things like rifle grenades.
 * [Subclassing `FGameplayEffectContext`](https://github.com/tranek/GASDocumentation#concepts-ge-context) to send additional information to GameplayCues
 * Character shield that drains before health is removed by damage
 * Item pickups
+* Single button interaction system. Press or Hold 'E' to interact with interactable objects including player reviving, a weapon chest, and a sliding door.
 
 This project does not show predicting projectiles. I refer you to the Unreal Tournament source code for how to do that using a fake projectile on the owning client.
 
