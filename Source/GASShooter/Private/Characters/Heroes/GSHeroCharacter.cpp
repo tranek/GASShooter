@@ -656,6 +656,18 @@ void AGSHeroCharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	// Cancel being revived if killed
 	//InteractionCanceledDelegate.Broadcast();
 	Execute_InteractableCancelInteraction(this, GetThirdPersonMesh());
+
+	// Clear CurrentWeaponTag on the ASC. This happens naturally in UnEquipCurrentWeapon() but
+	// that is only called on the server from hero death (the OnRep_CurrentWeapon() would have
+	// handled it on the client but that is never called due to the hero being marked pending
+	// destroy). This makes sure the client has it cleared.
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->RemoveLooseGameplayTag(CurrentWeaponTag);
+		CurrentWeaponTag = NoWeaponTag;
+		AbilitySystemComponent->AddLooseGameplayTag(CurrentWeaponTag);
+	}
+
 	Super::EndPlay(EndPlayReason);
 }
 
