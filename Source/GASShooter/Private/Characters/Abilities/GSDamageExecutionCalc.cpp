@@ -9,9 +9,6 @@
 struct GSDamageStatics
 {
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Armor);
-
-	// Meta attribute that we're passing into the ExecCalc via SetByCaller on the GESpec so we don't capture it.
-	// We still need to declare and define it so that we can output to it.
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Damage);
 
 	GSDamageStatics()
@@ -20,11 +17,11 @@ struct GSDamageStatics
 
 		// We're not capturing anything from the Source in this example, but there could be like AttackPower attributes that you might want.
 
-		// Capture the Target's Armor. Don't snapshot (the false).
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UGSAttributeSetBase, Armor, Target, false);
+		// Capture optional Damage set on the damage GE as a CalculationModifier under the ExecutionCalculation
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UGSAttributeSetBase, Damage, Source, true);
 
-		// The Target's received Damage. This is the value of health that will be subtracted on the Target. We're not capturing this.
-		DEFINE_ATTRIBUTE_CAPTUREDEF(UGSAttributeSetBase, Damage, Target, false);
+		// Capture the Target's Armor. Don't snapshot.
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UGSAttributeSetBase, Armor, Target, false);
 	}
 };
 
@@ -38,9 +35,8 @@ UGSDamageExecutionCalc::UGSDamageExecutionCalc()
 {
 	HeadShotMultiplier = 1.5f;
 
+	RelevantAttributesToCapture.Add(DamageStatics().DamageDef);
 	RelevantAttributesToCapture.Add(DamageStatics().ArmorDef);
-
-	// We don't include Damage here because we're not capturing it. It is generated inside the ExecCalc.
 }
 
 void UGSDamageExecutionCalc::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, OUT FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
@@ -67,8 +63,11 @@ void UGSDamageExecutionCalc::Execute_Implementation(const FGameplayEffectCustomE
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ArmorDef, EvaluationParameters, Armor);
 	Armor = FMath::Max<float>(Armor, 0.0f);
 
-	// SetByCaller Damage
-	float Damage = FMath::Max<float>(Spec.GetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), false, -1.0f), 0.0f);
+	float Damage = 0.0f;
+	// Capture optional damage value set on the damage GE as a CalculationModifier under the ExecutionCalculation
+	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().DamageDef, EvaluationParameters, Damage);
+	// Add SetByCaller damage if it exists
+	Damage += FMath::Max<float>(Spec.GetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Data.Damage")), false, -1.0f), 0.0f);
 
 	float UnmitigatedDamage = Damage; // Can multiply any damage boosters here
 
