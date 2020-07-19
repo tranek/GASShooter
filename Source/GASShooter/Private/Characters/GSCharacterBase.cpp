@@ -24,7 +24,7 @@ AGSCharacterBase::AGSCharacterBase(const class FObjectInitializer& ObjectInitial
 	bAlwaysRelevant = true;
 
 	// Cache tags
-	DeadTag = UGSAbilitySystemGlobals::GSGet().DeadTag;
+	DeadTag = FGameplayTag::RequestGameplayTag("State.Dead");
 	EffectRemoveOnDeathTag = FGameplayTag::RequestGameplayTag("Effect.RemoveOnDeath");
 
 	// Hardcoding to avoid having to manually set for every Blueprint child class

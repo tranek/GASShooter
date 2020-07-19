@@ -65,8 +65,8 @@ AGSWeapon::AGSWeapon()
 	FireMode = FGameplayTag::RequestGameplayTag("Weapon.FireMode.None");
 	StatusText = DefaultStatusText;
 
-	RestrictedPickupTags.AddTag(UGSAbilitySystemGlobals::GSGet().DeadTag);
-	RestrictedPickupTags.AddTag(UGSAbilitySystemGlobals::GSGet().KnockedDownTag);
+	RestrictedPickupTags.AddTag(FGameplayTag::RequestGameplayTag("State.Dead"));
+	RestrictedPickupTags.AddTag(FGameplayTag::RequestGameplayTag("State.KnockedDown"));
 }
 
 AGSWeapon::~AGSWeapon()

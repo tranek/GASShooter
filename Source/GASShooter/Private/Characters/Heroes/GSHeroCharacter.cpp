@@ -87,8 +87,8 @@ AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitial
 	AIControllerClass = AGSHeroAIController::StaticClass();
 
 	// Cache tags
-	KnockedDownTag = UGSAbilitySystemGlobals::GSGet().KnockedDownTag;
-	InteractingTag = UGSAbilitySystemGlobals::GSGet().InteractingTag;
+	KnockedDownTag = FGameplayTag::RequestGameplayTag("State.KnockedDown");
+	InteractingTag = FGameplayTag::RequestGameplayTag("State.Interacting");
 }
 
 void AGSHeroCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

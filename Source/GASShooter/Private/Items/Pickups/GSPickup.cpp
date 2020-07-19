@@ -30,8 +30,8 @@ AGSPickup::AGSPickup()
 	CollisionComp->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	RootComponent = CollisionComp;
 
-	RestrictedPickupTags.AddTag(UGSAbilitySystemGlobals::GSGet().DeadTag);
-	RestrictedPickupTags.AddTag(UGSAbilitySystemGlobals::GSGet().KnockedDownTag);
+	RestrictedPickupTags.AddTag(FGameplayTag::RequestGameplayTag("State.Dead"));
+	RestrictedPickupTags.AddTag(FGameplayTag::RequestGameplayTag("State.KnockedDown"));
 }
 
 void AGSPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

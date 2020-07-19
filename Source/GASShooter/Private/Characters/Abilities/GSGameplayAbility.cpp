@@ -29,8 +29,8 @@ UGSGameplayAbility::UGSGameplayAbility()
 
 	ActivationOwnedTags.AddTag(FGameplayTag::RequestGameplayTag("Ability.BlocksInteraction"));
 
-	InteractingTag = UGSAbilitySystemGlobals::GSGet().InteractingTag;
-	InteractingRemovalTag = UGSAbilitySystemGlobals::GSGet().InteractingRemovalTag;
+	InteractingTag = FGameplayTag::RequestGameplayTag("State.Interacting");
+	InteractingRemovalTag = FGameplayTag::RequestGameplayTag("State.InteractingRemoval");
 }
 
 void UGSGameplayAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec)

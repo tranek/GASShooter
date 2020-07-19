@@ -13,9 +13,9 @@ UGSCharacterMovementComponent::UGSCharacterMovementComponent()
 	ADSSpeedMultiplier = 0.8f;
 	KnockedDownSpeedMultiplier = 0.4f;
 
-	KnockedDownTag = UGSAbilitySystemGlobals::GSGet().KnockedDownTag;
-	InteractingTag = UGSAbilitySystemGlobals::GSGet().InteractingTag;
-	InteractingRemovalTag = UGSAbilitySystemGlobals::GSGet().InteractingRemovalTag;
+	KnockedDownTag = FGameplayTag::RequestGameplayTag("State.KnockedDown");
+	InteractingTag = FGameplayTag::RequestGameplayTag("State.Interacting");
+	InteractingRemovalTag = FGameplayTag::RequestGameplayTag("State.InteractingRemoval");
 }
 
 float UGSCharacterMovementComponent::GetMaxSpeed() const

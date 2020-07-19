@@ -34,8 +34,8 @@ AGSPlayerState::AGSPlayerState()
 	// 100 is probably way too high for a shipping game, you can adjust to fit your needs.
 	NetUpdateFrequency = 100.0f;
 
-	DeadTag = UGSAbilitySystemGlobals::GSGet().DeadTag;
-	KnockedDownTag = UGSAbilitySystemGlobals::GSGet().KnockedDownTag;
+	DeadTag = FGameplayTag::RequestGameplayTag("State.Dead");
+	KnockedDownTag = FGameplayTag::RequestGameplayTag("State.KnockedDown");
 }
 
 UAbilitySystemComponent* AGSPlayerState::GetAbilitySystemComponent() const
