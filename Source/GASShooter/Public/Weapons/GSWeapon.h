@@ -30,8 +30,6 @@ public:
 	// Sets default values for this actor's properties
 	AGSWeapon();
 
-	~AGSWeapon();
-
 	// Whether or not to spawn this weapon with collision enabled (pickup mode).
 	// Set to false when spawning directly into a player's inventory or true when spawning into the world in pickup mode.
 	UPROPERTY(BlueprintReadWrite)
@@ -259,6 +257,7 @@ protected:
 	FGameplayTag WeaponIsFiringTag;
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	// Called when the player picks up this weapon
 	virtual void PickUpOnTouch(AGSHeroCharacter* InCharacter);

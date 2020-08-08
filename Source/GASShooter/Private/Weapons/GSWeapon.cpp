@@ -69,19 +69,6 @@ AGSWeapon::AGSWeapon()
 	RestrictedPickupTags.AddTag(FGameplayTag::RequestGameplayTag("State.KnockedDown"));
 }
 
-AGSWeapon::~AGSWeapon()
-{
-	if (IsValid(LineTraceTargetActor) && GetWorld() && !GetWorld()->bIsTearingDown)
-	{
-		LineTraceTargetActor->Destroy();
-	}
-
-	if (IsValid(SphereTraceTargetActor) && GetWorld() && !GetWorld()->bIsTearingDown)
-	{
-		SphereTraceTargetActor->Destroy();
-	}
-}
-
 UAbilitySystemComponent* AGSWeapon::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
@@ -424,6 +411,21 @@ void AGSWeapon::BeginPlay()
 	}
 
 	Super::BeginPlay();
+}
+
+void AGSWeapon::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	if (LineTraceTargetActor)
+	{
+		LineTraceTargetActor->Destroy();
+	}
+
+	if (SphereTraceTargetActor)
+	{
+		SphereTraceTargetActor->Destroy();
+	}
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void AGSWeapon::PickUpOnTouch(AGSHeroCharacter* InCharacter)
