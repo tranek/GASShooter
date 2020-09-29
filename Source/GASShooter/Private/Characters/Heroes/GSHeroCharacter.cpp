@@ -424,11 +424,11 @@ void AGSHeroCharacter::EquipWeapon(AGSWeapon* NewWeapon)
 	{
 		ServerEquipWeapon(NewWeapon);
 		SetCurrentWeapon(NewWeapon, CurrentWeapon);
+		bChangedWeaponLocally = true;
 	}
 	else
 	{
 		SetCurrentWeapon(NewWeapon, CurrentWeapon);
-		bChangedWeaponLocally = true;
 	}
 }
 
