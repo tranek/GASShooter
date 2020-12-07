@@ -10,7 +10,11 @@
 #include "Net/UnrealNetwork.h"
 #include "Weapons/GSWeapon.h"
 
-static TAutoConsoleVariable<float> CVarReplayMontageErrorThreshold(TEXT("replay.MontageErrorThreshold"), 0.5f, TEXT("Tolerance level for when montage playback position correction occurs in replays"));
+static TAutoConsoleVariable<float> CVarReplayMontageErrorThreshold(
+	TEXT("GS.replay.MontageErrorThreshold"),
+	0.5f,
+	TEXT("Tolerance level for when montage playback position correction occurs in replays")
+);
 
 UGSAbilitySystemComponent::UGSAbilitySystemComponent()
 {
