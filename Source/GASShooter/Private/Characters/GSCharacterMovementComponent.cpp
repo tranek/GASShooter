@@ -133,12 +133,12 @@ uint8 UGSCharacterMovementComponent::FGSSavedMove::GetCompressedFlags() const
 bool UGSCharacterMovementComponent::FGSSavedMove::CanCombineWith(const FSavedMovePtr& NewMove, ACharacter* Character, float MaxDelta) const
 {
 	//Set which moves can be combined together. This will depend on the bit flags that are used.
-	if (SavedRequestToStartSprinting != ((FGSSavedMove*)&NewMove)->SavedRequestToStartSprinting)
+	if (SavedRequestToStartSprinting != ((FGSSavedMove*)NewMove.Get())->SavedRequestToStartSprinting)
 	{
 		return false;
 	}
 
-	if (SavedRequestToStartADS != ((FGSSavedMove*)&NewMove)->SavedRequestToStartADS)
+	if (SavedRequestToStartADS != ((FGSSavedMove*)NewMove.Get())->SavedRequestToStartADS)
 	{
 		return false;
 	}
