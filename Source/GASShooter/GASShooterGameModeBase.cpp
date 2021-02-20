@@ -68,6 +68,11 @@ void AGASShooterGameModeBase::BeginPlay()
 
 void AGASShooterGameModeBase::RespawnHero(AController* Controller)
 {
+	if (!IsValid(Controller))
+	{
+		return;
+	}
+
 	if (Controller->IsPlayerController())
 	{
 		// Respawn player hero
