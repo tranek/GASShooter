@@ -75,3 +75,6 @@ DerivedDataCache/*
 
 # Spotlight index files
 .DS_Store
+
+# Rider user specific files
+.idea/
