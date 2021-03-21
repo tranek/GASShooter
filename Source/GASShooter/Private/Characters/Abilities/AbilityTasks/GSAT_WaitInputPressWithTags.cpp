@@ -1,7 +1,7 @@
 // Copyright 2020 Dan Kestranek.
 
 
-#include "Characters\Abilities\AbilityTasks\GSAT_WaitInputPressWithTags.h"
+#include "Characters/Abilities/AbilityTasks/GSAT_WaitInputPressWithTags.h"
 #include "AbilitySystemComponent.h"
 
 UGSAT_WaitInputPressWithTags::UGSAT_WaitInputPressWithTags(const FObjectInitializer& ObjectInitializer)
