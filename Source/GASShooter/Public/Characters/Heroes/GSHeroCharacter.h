@@ -174,7 +174,7 @@ public:
 	* Knocked Down - Yes, client. This will sync the local player's Interact Duration Timer with the knocked down player's
 	* revive animation. If we had a picking a player up animation, we could play it on the local player in PreInteract().
 	*/
-	void GetPreInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type, UPrimitiveComponent* InteractionComponent) const;
+	virtual void GetPreInteractSyncType_Implementation(bool& bShouldSync, EAbilityTaskNetSyncType& Type, UPrimitiveComponent* InteractionComponent) const override;
 
 	/**
 	* Cancel interaction:
