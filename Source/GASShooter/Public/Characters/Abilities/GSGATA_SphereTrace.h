@@ -31,9 +31,9 @@ public:
 		* what state it will be in. You will need to make sure that only one ability is using this TargetActor at a time.
 		*
 		* @param InStartLocation Location to trace from.
-		* @param InAimingTag Optional. Predicted GameplayTag for aiming. Only used if we mofify spread while aiming. If used,
+		* @param InAimingTag Optional. Predicted GameplayTag for aiming. Only used if we modify spread while aiming. If used,
 		* must set InAimingRemovalTag also.
-		* @param InAimingRemovalTag Optional. Predicted GameplayTag for aiming removal. Only used if we mofify spread while
+		* @param InAimingRemovalTag Optional. Predicted GameplayTag for aiming removal. Only used if we modify spread while
 		* aiming. If used, must set InAimingTag also.
 		* @param InTraceProfile Collision profile to use for tracing.
 		* @param InFilter Hit Actors must pass this filter to be returned in the TargetData.
