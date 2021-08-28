@@ -8,7 +8,7 @@ This is not production-ready code but a starting point for evaluating different 
 
 Assets included come from Epic Games' ShooterGame learning project, Epic Games' Infinity Blade assets, or made by myself.
 
-GASShooter is current with **Unreal Engine 4.26**. There are branches of this Sample Project for older versions of Unreal Engine, but they are no longer supported and are liable to have bugs or out of date information.
+GASShooter is current with **Unreal Engine 4.27**. There are branches of this Sample Project for older versions of Unreal Engine, but they are no longer supported and are liable to have bugs or out of date information.
 
 | Keybind             | Action                                                      |
 | ------------------- | ----------------------------------------------------------- |
