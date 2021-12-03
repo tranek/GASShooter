@@ -65,7 +65,7 @@ void AGSGATA_Trace::SetShouldProduceTargetDataOnServer(bool bInShouldProduceTarg
 
 void AGSGATA_Trace::SetDestroyOnConfirmation(bool bInDestroyOnConfirmation)
 {
-	bDestroyOnConfirmation = bDestroyOnConfirmation;
+	bDestroyOnConfirmation = bInDestroyOnConfirmation;
 }
 
 void AGSGATA_Trace::StartTargeting(UGameplayAbility* Ability)
