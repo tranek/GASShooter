@@ -65,7 +65,7 @@ void AGSGATA_Trace::SetShouldProduceTargetDataOnServer(bool bInShouldProduceTarg
 
 void AGSGATA_Trace::SetDestroyOnConfirmation(bool bInDestroyOnConfirmation)
 {
-	bDestroyOnConfirmation = bInDestroyOnConfirmation;
+	bDestroyOnConfirmation = bDestroyOnConfirmation;
 }
 
 void AGSGATA_Trace::StartTargeting(UGameplayAbility* Ability)
@@ -191,8 +191,9 @@ void AGSGATA_Trace::LineTraceWithFilter(TArray<FHitResult>& OutHitResults, const
 	for (int32 HitIdx = 0; HitIdx < HitResults.Num(); ++HitIdx)
 	{
 		FHitResult& Hit = HitResults[HitIdx];
+		const AActor* HitActor = Hit.GetActor();
 
-		if (!Hit.Actor.IsValid() || FilterHandle.FilterPassesForActor(Hit.Actor))
+		if (!HitActor || FilterHandle.FilterPassesForActor(HitActor))
 		{
 			Hit.TraceStart = TraceStart;
 			Hit.TraceEnd = End;
@@ -352,8 +353,9 @@ TArray<FHitResult> AGSGATA_Trace::PerformTrace(AActor* InSourceActor)
 		for (int32 i = PersistentHitResults.Num() - 1; i >= 0; i--)
 		{
 			FHitResult& HitResult = PersistentHitResults[i];
+			const AActor* HitActor = HitResult.GetActor();
 
-			if (HitResult.bBlockingHit || !HitResult.Actor.IsValid() || FVector::DistSquared(TraceStart, HitResult.Actor.Get()->GetActorLocation()) > (MaxRange * MaxRange))
+			if (HitResult.bBlockingHit || !HitActor || FVector::DistSquared(TraceStart, HitActor->GetActorLocation()) > (MaxRange * MaxRange))
 			{
 				PersistentHitResults.RemoveAt(i);
 			}
@@ -385,13 +387,14 @@ TArray<FHitResult> AGSGATA_Trace::PerformTrace(AActor* InSourceActor)
 			}
 
 			FHitResult& HitResult = TraceHitResults[j];
+			const AActor* HitActor = HitResult.GetActor();
 
 			// Reminder: if bUsePersistentHitResults, Number of Traces = 1
 			if (bUsePersistentHitResults)
 			{
 				// This is looping backwards so that further objects from player are added first to the queue.
 				// This results in closer actors taking precedence as the further actors will get bumped out of the TArray.
-				if (HitResult.Actor.IsValid() && (!HitResult.bBlockingHit || PersistentHitResults.Num() < 1))
+				if (HitActor && (!HitResult.bBlockingHit || PersistentHitResults.Num() < 1))
 				{
 					bool bActorAlreadyInPersistentHits = false;
 
@@ -400,7 +403,7 @@ TArray<FHitResult> AGSGATA_Trace::PerformTrace(AActor* InSourceActor)
 					{
 						FHitResult& PersistentHitResult = PersistentHitResults[k];
 
-						if (PersistentHitResult.Actor.Get() == HitResult.Actor.Get())
+						if (PersistentHitResult.GetActor() == HitActor)
 						{
 							bActorAlreadyInPersistentHits = true;
 							break;
@@ -429,13 +432,13 @@ TArray<FHitResult> AGSGATA_Trace::PerformTrace(AActor* InSourceActor)
 				{
 					if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[ReticleIndex].Get())
 					{
-						const bool bHitActor = HitResult.Actor != nullptr;
+						const bool bHitActor = HitActor != nullptr;
 
 						if (bHitActor && !HitResult.bBlockingHit)
 						{
 							LocalReticleActor->SetActorHiddenInGame(false);
 
-							const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitResult.Actor->GetActorLocation() : HitResult.Location;
+							const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitActor->GetActorLocation() : HitResult.Location;
 
 							LocalReticleActor->SetActorLocation(ReticleLocation);
 							LocalReticleActor->SetIsTargetAnActor(bHitActor);
@@ -492,19 +495,20 @@ TArray<FHitResult> AGSGATA_Trace::PerformTrace(AActor* InSourceActor)
 		for (int32 PersistentHitResultIndex = 0; PersistentHitResultIndex < PersistentHitResults.Num(); PersistentHitResultIndex++)
 		{
 			FHitResult& HitResult = PersistentHitResults[PersistentHitResultIndex];
+			const AActor* HitActor = HitResult.GetActor();
 
 			// Update TraceStart because old persistent HitResults will have their original TraceStart and the player could have moved since then
 			HitResult.TraceStart = StartLocation.GetTargetingTransform().GetLocation();
 
 			if (AGameplayAbilityWorldReticle* LocalReticleActor = ReticleActors[PersistentHitResultIndex].Get())
 			{
-				const bool bHitActor = HitResult.Actor != nullptr;
+				const bool bHitActor = HitActor != nullptr;
 
 				if (bHitActor && !HitResult.bBlockingHit)
 				{
 					LocalReticleActor->SetActorHiddenInGame(false);
 
-					const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitResult.Actor->GetActorLocation() : HitResult.Location;
+					const FVector ReticleLocation = (bHitActor && LocalReticleActor->bSnapToTargetedActor) ? HitActor->GetActorLocation() : HitResult.Location;
 
 					LocalReticleActor->SetActorLocation(ReticleLocation);
 					LocalReticleActor->SetIsTargetAnActor(bHitActor);
