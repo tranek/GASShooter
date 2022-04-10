@@ -21,7 +21,7 @@ UGSAT_WaitTargetDataUsingActor* UGSAT_WaitTargetDataUsingActor::WaitTargetDataWi
 
 void UGSAT_WaitTargetDataUsingActor::Activate()
 {
-	if (IsPendingKill())
+	if (!IsValid(this))
 	{
 		return;
 	}
@@ -205,7 +205,7 @@ void UGSAT_WaitTargetDataUsingActor::FinalizeTargetActor() const
 
 void UGSAT_WaitTargetDataUsingActor::RegisterTargetDataCallbacks()
 {
-	if (!ensure(IsPendingKill() == false))
+	if (!ensure(!IsValid(this)))
 	{
 		return;
 	}

@@ -52,7 +52,7 @@ void AGSPickup::NotifyActorBeginOverlap(AActor* Other)
 
 bool AGSPickup::CanBePickedUp(AGSCharacterBase* TestCharacter) const
 {
-	return bIsActive && TestCharacter && TestCharacter->IsAlive() && !IsPendingKill() && !TestCharacter->GetAbilitySystemComponent()->HasAnyMatchingGameplayTags(RestrictedPickupTags) && K2_CanBePickedUp(TestCharacter);
+	return bIsActive && TestCharacter && TestCharacter->IsAlive() && IsValid(this) && !TestCharacter->GetAbilitySystemComponent()->HasAnyMatchingGameplayTags(RestrictedPickupTags) && K2_CanBePickedUp(TestCharacter);
 }
 
 bool AGSPickup::K2_CanBePickedUp_Implementation(AGSCharacterBase* TestCharacter) const

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/WidgetComponent.h"
+#include "GameplayTagContainer.h"
 #include "GSDamageTextWidgetComponent.generated.h"
 
 /**

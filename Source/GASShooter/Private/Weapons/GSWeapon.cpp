@@ -133,7 +133,7 @@ void AGSWeapon::NotifyActorBeginOverlap(AActor* Other)
 {
 	Super::NotifyActorBeginOverlap(Other);
 
-	if (!IsPendingKill() && !OwningCharacter)
+	if (IsValid(this) && !OwningCharacter)
 	{
 		PickUpOnTouch(Cast<AGSHeroCharacter>(Other));
 	}
