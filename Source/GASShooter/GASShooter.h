@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 
-#define ACTOR_ROLE_FSTRING *FindObject<UEnum>(nullptr, TEXT("/Script/Engine.ENetRole"), true)->GetNameStringByValue(GetLocalRole())
-#define GET_ACTOR_ROLE_FSTRING(Actor) *FindObject<UEnum>(nullptr, TEXT("/Script/Engine.ENetRole"), true)->GetNameStringByValue(Actor->GetLocalRole())
+#define ACTOR_ROLE_FSTRING *(FindObject<UEnum>(nullptr, TEXT("/Script/Engine.ENetRole"), true)->GetNameStringByValue(GetLocalRole()))
+#define GET_ACTOR_ROLE_FSTRING(Actor) *(FindObject<UEnum>(nullptr, TEXT("/Script/Engine.ENetRole"), true)->GetNameStringByValue(Actor->GetLocalRole()))
 
 #define COLLISION_ABILITY						ECollisionChannel::ECC_GameTraceChannel1
 #define COLLISION_PROJECTILE					ECollisionChannel::ECC_GameTraceChannel2
