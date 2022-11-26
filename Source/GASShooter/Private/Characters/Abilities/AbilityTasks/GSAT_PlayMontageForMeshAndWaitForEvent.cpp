@@ -193,7 +193,7 @@ void UGSAT_PlayMontageForMeshAndWaitForEvent::Activate()
 
 void UGSAT_PlayMontageForMeshAndWaitForEvent::ExternalCancel()
 {
-	check(AbilitySystemComponent);
+	check(AbilitySystemComponent.IsValid());
 
 	OnAbilityCancelled();
 

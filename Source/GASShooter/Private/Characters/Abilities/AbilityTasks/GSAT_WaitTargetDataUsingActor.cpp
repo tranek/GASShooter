@@ -40,7 +40,7 @@ void UGSAT_WaitTargetDataUsingActor::Activate()
 
 void UGSAT_WaitTargetDataUsingActor::OnTargetDataReplicatedCallback(const FGameplayAbilityTargetDataHandle& Data, FGameplayTag ActivationTag)
 {
-	check(AbilitySystemComponent);
+	check(AbilitySystemComponent.IsValid());
 
 	FGameplayAbilityTargetDataHandle MutableData = Data;
 	AbilitySystemComponent->ConsumeClientReplicatedTargetData(GetAbilitySpecHandle(), GetActivationPredictionKey());
@@ -77,7 +77,7 @@ void UGSAT_WaitTargetDataUsingActor::OnTargetDataReplicatedCallback(const FGamep
 
 void UGSAT_WaitTargetDataUsingActor::OnTargetDataReplicatedCancelledCallback()
 {
-	check(AbilitySystemComponent);
+	check(AbilitySystemComponent.IsValid());
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
 		Cancelled.Broadcast(FGameplayAbilityTargetDataHandle());
@@ -87,13 +87,13 @@ void UGSAT_WaitTargetDataUsingActor::OnTargetDataReplicatedCancelledCallback()
 
 void UGSAT_WaitTargetDataUsingActor::OnTargetDataReadyCallback(const FGameplayAbilityTargetDataHandle& Data)
 {
-	check(AbilitySystemComponent);
+	check(AbilitySystemComponent.IsValid());
 	if (!Ability)
 	{
 		return;
 	}
 
-	FScopedPredictionWindow	ScopedPrediction(AbilitySystemComponent,
+	FScopedPredictionWindow	ScopedPrediction(AbilitySystemComponent.Get(),
 		ShouldReplicateDataToServer() && (bCreateKeyIfNotValidForMorePredicting && !AbilitySystemComponent->ScopedPredictionKey.IsValidForMorePrediction()));
 
 	const FGameplayAbilityActorInfo* Info = Ability->GetCurrentActorInfo();
@@ -124,9 +124,9 @@ void UGSAT_WaitTargetDataUsingActor::OnTargetDataReadyCallback(const FGameplayAb
 
 void UGSAT_WaitTargetDataUsingActor::OnTargetDataCancelledCallback(const FGameplayAbilityTargetDataHandle& Data)
 {
-	check(AbilitySystemComponent);
+	check(AbilitySystemComponent.IsValid());
 
-	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent, IsPredictingClient());
+	FScopedPredictionWindow ScopedPrediction(AbilitySystemComponent.Get(), IsPredictingClient());
 
 	if (IsPredictingClient())
 	{
@@ -146,7 +146,7 @@ void UGSAT_WaitTargetDataUsingActor::OnTargetDataCancelledCallback(const FGamepl
 
 void UGSAT_WaitTargetDataUsingActor::ExternalConfirm(bool bEndTask)
 {
-	check(AbilitySystemComponent);
+	check(AbilitySystemComponent.IsValid());
 	if (TargetActor)
 	{
 		if (TargetActor->ShouldProduceTargetData())
@@ -159,7 +159,7 @@ void UGSAT_WaitTargetDataUsingActor::ExternalConfirm(bool bEndTask)
 
 void UGSAT_WaitTargetDataUsingActor::ExternalCancel()
 {
-	check(AbilitySystemComponent);
+	check(AbilitySystemComponent.IsValid());
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
 		Cancelled.Broadcast(FGameplayAbilityTargetDataHandle());
@@ -172,7 +172,7 @@ void UGSAT_WaitTargetDataUsingActor::InitializeTargetActor() const
 	check(TargetActor);
 	check(Ability);
 
-	TargetActor->MasterPC = Ability->GetCurrentActorInfo()->PlayerController.Get();
+	TargetActor->PrimaryPC = Ability->GetCurrentActorInfo()->PlayerController.Get();
 
 	// If we spawned the target actor, always register the callbacks for when the data is ready.
 	TargetActor->TargetDataReadyDelegate.AddUObject(const_cast<UGSAT_WaitTargetDataUsingActor*>(this), &UGSAT_WaitTargetDataUsingActor::OnTargetDataReadyCallback);

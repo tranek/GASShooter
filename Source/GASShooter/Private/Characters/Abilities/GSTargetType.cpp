@@ -23,6 +23,6 @@ void UGSTargetType_UseEventData::GetTargets_Implementation(AGSCharacterBase* Tar
 	}
 	else if (EventData.Target)
 	{
-		OutActors.Add(const_cast<AActor*>(EventData.Target));
+		OutActors.Add(const_cast<AActor*>(EventData.Target.Get()));
 	}
 }

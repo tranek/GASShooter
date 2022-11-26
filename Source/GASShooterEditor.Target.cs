@@ -9,6 +9,7 @@ public class GASShooterEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		ExtraModuleNames.AddRange( new string[] { "GASShooter" } );
+        IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_1;
+        ExtraModuleNames.AddRange( new string[] { "GASShooter" } );
 	}
 }
