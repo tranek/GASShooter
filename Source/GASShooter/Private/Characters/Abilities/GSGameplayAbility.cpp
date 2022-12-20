@@ -39,7 +39,7 @@ void UGSGameplayAbility::OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo,
 
 	if (bActivateAbilityOnGranted)
 	{
-		bool ActivatedAbility = ActorInfo->AbilitySystemComponent->TryActivateAbility(Spec.Handle, false);
+		ActorInfo->AbilitySystemComponent->TryActivateAbility(Spec.Handle, false);
 	}
 }
 
