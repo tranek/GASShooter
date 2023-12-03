@@ -1,4 +1,4 @@
-// Copyright 2020 Dan Kestranek.
+// Copyright 2024 Dan Kestranek.
 
 
 #include "UI/GSHUDReticle.h"
