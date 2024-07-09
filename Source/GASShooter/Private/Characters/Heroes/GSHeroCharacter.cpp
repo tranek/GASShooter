@@ -811,13 +811,14 @@ void AGSHeroCharacter::InitializeFloatingStatusBar()
 			UIFloatingStatusBar = CreateWidget<UGSFloatingStatusBarWidget>(PC, UIFloatingStatusBarClass);
 			if (UIFloatingStatusBar && UIFloatingStatusBarComponent)
 			{
+				// Set owner before construction
+				UIFloatingStatusBar->OwningCharacter = this;
 				UIFloatingStatusBarComponent->SetWidget(UIFloatingStatusBar);
 
 				// Setup the floating status bar
 				UIFloatingStatusBar->SetHealthPercentage(GetHealth() / GetMaxHealth());
 				UIFloatingStatusBar->SetManaPercentage(GetMana() / GetMaxMana());
 				UIFloatingStatusBar->SetShieldPercentage(GetShield() / GetMaxShield());
-				UIFloatingStatusBar->OwningCharacter = this;
 				UIFloatingStatusBar->SetCharacterName(CharacterName);
 			}
 		}
