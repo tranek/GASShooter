@@ -79,3 +79,4 @@ DerivedDataCache/*
 
 # Rider user specific files
 .idea/
+*.sln.DotSettings.user
