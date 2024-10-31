@@ -22,7 +22,7 @@ AGSWeapon::AGSWeapon()
 
 	bReplicates = true;
 	bNetUseOwnerRelevancy = true;
-	NetUpdateFrequency = 100.0f; // Set this to a value that's appropriate for your game
+	SetNetUpdateFrequency(100.0f); // Set this to a value that's appropriate for your game
 	bSpawnWithCollision = true;
 	PrimaryClipAmmo = 0;
 	MaxPrimaryClipAmmo = 0;
