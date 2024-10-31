@@ -1145,7 +1145,7 @@ void AGSHeroCharacter::OnRep_Inventory()
 
 void AGSHeroCharacter::OnAbilityActivationFailed(const UGameplayAbility* FailedAbility, const FGameplayTagContainer& FailTags)
 {
-	if (FailedAbility && FailedAbility->AbilityTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChanging"))))
+	if (FailedAbility && FailedAbility->GetAssetTags().HasTagExact(FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChanging"))))
 	{
 		if (bChangedWeaponLocally)
 		{
