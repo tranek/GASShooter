@@ -3,14 +3,12 @@
 
 #include "Weapons/GSWeapon.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
-#include "Characters/Abilities/GSAbilitySystemGlobals.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "Characters/Abilities/GSGATA_LineTrace.h"
 #include "Characters/Abilities/GSGATA_SphereTrace.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "GSBlueprintFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/GSPlayerController.h"
 

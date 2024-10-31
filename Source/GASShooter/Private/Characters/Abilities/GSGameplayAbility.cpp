@@ -4,12 +4,10 @@
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "AbilitySystemComponent.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
-#include "Characters/Abilities/GSAbilitySystemGlobals.h"
 #include "Characters/Abilities/GSTargetType.h"
 #include "Characters/GSCharacterBase.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "GameplayTagContainer.h"
-#include "GSBlueprintFunctionLibrary.h"
 #include "Player/GSPlayerController.h"
 #include "Weapons/GSWeapon.h"
 

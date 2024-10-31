@@ -5,10 +5,8 @@
 #include "Characters/Abilities/AttributeSets/GSAmmoAttributeSet.h"
 #include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
-#include "Characters/Abilities/GSAbilitySystemGlobals.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Player/GSPlayerController.h"
-#include "UI/GSFloatingStatusBarWidget.h"
 #include "UI/GSHUDWidget.h"
 #include "Weapons/GSWeapon.h"
 
