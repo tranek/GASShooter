@@ -118,7 +118,14 @@ void UGSAbilitySystemComponent::AbilityLocalInputPressed(int32 InputID)
 					AbilitySpecInputPressed(Spec);
 
 					// Invoke the InputPressed event. This is not replicated here. If someone is listening, they may replicate the InputPressed event to the server.
-					InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, Spec.Handle, Spec.ActivationInfo.GetActivationPredictionKey());
+					TArray<UGameplayAbility*> Instances = Spec.GetAbilityInstances();
+					if (!Instances.IsEmpty() && IsValid(Instances[0]))
+					{
+						if (const UGSGameplayAbility* GA = Cast<UGSGameplayAbility>(Instances[0]))
+						{
+							InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, Spec.Handle, GA->GetCurrentActivationInfo().GetActivationPredictionKey());
+						}
+					}
 				}
 				else
 				{
