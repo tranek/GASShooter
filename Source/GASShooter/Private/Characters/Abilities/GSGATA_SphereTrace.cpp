@@ -4,6 +4,7 @@
 #include "Characters/Abilities/GSGATA_SphereTrace.h"
 #include "WorldCollision.h"
 #include "DrawDebugHelpers.h"
+#include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 
 AGSGATA_SphereTrace::AGSGATA_SphereTrace()

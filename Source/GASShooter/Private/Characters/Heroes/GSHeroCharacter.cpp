@@ -9,6 +9,8 @@
 #include "Characters/Abilities/GSAbilitySystemGlobals.h"
 #include "Characters/Abilities/AttributeSets/GSAmmoAttributeSet.h"
 #include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
+#include "Components/InputComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GASShooter/GASShooterGameModeBase.h"
@@ -21,6 +23,7 @@
 #include "Sound/SoundCue.h"
 #include "TimerManager.h"
 #include "UI/GSFloatingStatusBarWidget.h"
+#include "UObject/Package.h"
 #include "Weapons/GSWeapon.h"
 
 AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

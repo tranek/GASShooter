@@ -2,6 +2,7 @@
 
 
 #include "GSBlueprintFunctionLibrary.h"
+#include "Engine/World.h"
 
 FString UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(UWorld* World)
 {

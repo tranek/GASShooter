@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/Tasks/AbilityTask.h"
+#include "Animation/AnimInstance.h"
 #include "GSAT_PlayMontageForMeshAndWaitForEvent.generated.h"
 
 class UGSAbilitySystemComponent;
