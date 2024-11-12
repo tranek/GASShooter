@@ -40,6 +40,7 @@
 *.sdf
 *.VC.db
 *.VC.opendb
+.vsconfig
 
 # Precompiled Assets
 SourceArt/**/*.png
@@ -78,3 +79,4 @@ DerivedDataCache/*
 
 # Rider user specific files
 .idea/
+*.sln.DotSettings.user

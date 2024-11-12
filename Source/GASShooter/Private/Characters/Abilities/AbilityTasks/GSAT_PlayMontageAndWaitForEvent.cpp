@@ -5,6 +5,7 @@
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "GASShooter/GASShooter.h"

@@ -6,7 +6,9 @@
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemLog.h"
 #include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "GameplayCueManager.h"
 #include "GSBlueprintFunctionLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -118,7 +120,14 @@ void UGSAbilitySystemComponent::AbilityLocalInputPressed(int32 InputID)
 					AbilitySpecInputPressed(Spec);
 
 					// Invoke the InputPressed event. This is not replicated here. If someone is listening, they may replicate the InputPressed event to the server.
-					InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, Spec.Handle, Spec.ActivationInfo.GetActivationPredictionKey());
+					TArray<UGameplayAbility*> Instances = Spec.GetAbilityInstances();
+					if (!Instances.IsEmpty() && IsValid(Instances[0]))
+					{
+						if (const UGSGameplayAbility* GA = Cast<UGSGameplayAbility>(Instances[0]))
+						{
+							InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, Spec.Handle, GA->GetCurrentActivationInfo().GetActivationPredictionKey());
+						}
+					}
 				}
 				else
 				{
@@ -320,7 +329,7 @@ float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatin
 				{
 					// Those are static parameters, they are only set when the montage is played. They are not changed after that.
 					FGameplayAbilityRepAnimMontageForMesh& AbilityRepMontageInfo = GetGameplayAbilityRepAnimMontageForMesh(InMesh);
-					AbilityRepMontageInfo.RepMontageInfo.AnimMontage = NewAnimMontage;
+					AbilityRepMontageInfo.RepMontageInfo.Animation = NewAnimMontage;
 
 					// Update parameters that change during Montage life time.
 					AnimMontage_UpdateReplicatedDataForMesh(InMesh);
@@ -670,7 +679,7 @@ void UGSAbilitySystemComponent::AnimMontage_UpdateReplicatedDataForMesh(FGamepla
 
 	if (AnimInstance && AnimMontageInfo.LocalMontageInfo.AnimMontage)
 	{
-		OutRepAnimMontageInfo.RepMontageInfo.AnimMontage = AnimMontageInfo.LocalMontageInfo.AnimMontage;
+		OutRepAnimMontageInfo.RepMontageInfo.Animation = AnimMontageInfo.LocalMontageInfo.AnimMontage;
 
 		// Compressed Flags
 		bool bIsStopped = AnimInstance->Montage_GetIsStopped(AnimMontageInfo.LocalMontageInfo.AnimMontage);
@@ -758,7 +767,7 @@ void UGSAbilitySystemComponent::OnRep_ReplicatedAnimMontageForMesh()
 			{
 				ABILITY_LOG(Warning, TEXT("\n\nOnRep_ReplicatedAnimMontage, %s"), *GetNameSafe(this));
 				ABILITY_LOG(Warning, TEXT("\tAnimMontage: %s\n\tPlayRate: %f\n\tPosition: %f\n\tBlendTime: %f\n\tNextSectionID: %d\n\tIsStopped: %d"),
-					*GetNameSafe(NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage),
+					*GetNameSafe(NewRepMontageInfoForMesh.RepMontageInfo.GetAnimMontage()),
 					NewRepMontageInfoForMesh.RepMontageInfo.PlayRate,
 					NewRepMontageInfoForMesh.RepMontageInfo.Position,
 					NewRepMontageInfoForMesh.RepMontageInfo.BlendTime,
@@ -768,17 +777,17 @@ void UGSAbilitySystemComponent::OnRep_ReplicatedAnimMontageForMesh()
 					*GetNameSafe(AnimMontageInfo.LocalMontageInfo.AnimMontage), AnimInstance->Montage_GetPosition(AnimMontageInfo.LocalMontageInfo.AnimMontage));
 			}
 
-			if (NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage)
+			if (NewRepMontageInfoForMesh.RepMontageInfo.GetAnimMontage())
 			{
 				// New Montage to play
-				if ((AnimMontageInfo.LocalMontageInfo.AnimMontage != NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage))
+				if ((AnimMontageInfo.LocalMontageInfo.AnimMontage != NewRepMontageInfoForMesh.RepMontageInfo.GetAnimMontage()))
 				{
-					PlayMontageSimulatedForMesh(NewRepMontageInfoForMesh.Mesh, NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage, NewRepMontageInfoForMesh.RepMontageInfo.PlayRate);
+					PlayMontageSimulatedForMesh(NewRepMontageInfoForMesh.Mesh, NewRepMontageInfoForMesh.RepMontageInfo.GetAnimMontage(), NewRepMontageInfoForMesh.RepMontageInfo.PlayRate);
 				}
 
 				if (AnimMontageInfo.LocalMontageInfo.AnimMontage == nullptr)
 				{
-					ABILITY_LOG(Warning, TEXT("OnRep_ReplicatedAnimMontage: PlayMontageSimulated failed. Name: %s, AnimMontage: %s"), *GetNameSafe(this), *GetNameSafe(NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage));
+					ABILITY_LOG(Warning, TEXT("OnRep_ReplicatedAnimMontage: PlayMontageSimulated failed. Name: %s, AnimMontage: %s"), *GetNameSafe(this), *GetNameSafe(NewRepMontageInfoForMesh.RepMontageInfo.GetAnimMontage()));
 					return;
 				}
 
@@ -836,7 +845,7 @@ void UGSAbilitySystemComponent::OnRep_ReplicatedAnimMontageForMesh()
 					if ((CurrentSectionID == RepSectionID) && (FMath::Abs(DeltaPosition) > MONTAGE_REP_POS_ERR_THRESH) && (NewRepMontageInfoForMesh.RepMontageInfo.IsStopped == 0))
 					{
 						// fast forward to server position and trigger notifies
-						if (FAnimMontageInstance* MontageInstance = AnimInstance->GetActiveInstanceForMontage(NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage))
+						if (FAnimMontageInstance* MontageInstance = AnimInstance->GetActiveInstanceForMontage(NewRepMontageInfoForMesh.RepMontageInfo.GetAnimMontage()))
 						{
 							// Skip triggering notifies if we're going backwards in time, we've already triggered them.
 							const float DeltaTime = !FMath::IsNearlyZero(NewRepMontageInfoForMesh.RepMontageInfo.PlayRate) ? (DeltaPosition / NewRepMontageInfoForMesh.RepMontageInfo.PlayRate) : 0.f;

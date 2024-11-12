@@ -8,8 +8,10 @@
 UGSGA_CharacterJump::UGSGA_CharacterJump()
 {
 	AbilityInputID = EGSAbilityInputID::Jump;
-	InstancingPolicy = EGameplayAbilityInstancingPolicy::NonInstanced;
-	AbilityTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Jump")));
+	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
+	FGameplayTagContainer MyAssetTags = GetAssetTags();
+	MyAssetTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Ability.Jump")));
+	SetAssetTags(MyAssetTags);
 	ActivationOwnedTags.RemoveTag(FGameplayTag::RequestGameplayTag("Ability.BlocksInteraction"));
 }
 

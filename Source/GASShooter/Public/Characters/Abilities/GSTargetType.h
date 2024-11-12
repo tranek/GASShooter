@@ -2,7 +2,6 @@
 
 #pragma once
 
-#include "Abilities/GameplayAbilityTypes.h"
 #include "Characters/Abilities/GSAbilityTypes.h"
 #include "GSTargetType.generated.h"
 

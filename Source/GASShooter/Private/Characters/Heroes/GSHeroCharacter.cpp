@@ -6,9 +6,9 @@
 #include "AI/GSHeroAIController.h"
 #include "Camera/CameraComponent.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
-#include "Characters/Abilities/GSAbilitySystemGlobals.h"
 #include "Characters/Abilities/AttributeSets/GSAmmoAttributeSet.h"
-#include "Characters/Abilities/AttributeSets/GSAttributeSetBase.h"
+#include "Components/InputComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GASShooter/GASShooterGameModeBase.h"
@@ -21,6 +21,7 @@
 #include "Sound/SoundCue.h"
 #include "TimerManager.h"
 #include "UI/GSFloatingStatusBarWidget.h"
+#include "UObject/Package.h"
 #include "Weapons/GSWeapon.h"
 
 AGSHeroCharacter::AGSHeroCharacter(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -811,13 +812,14 @@ void AGSHeroCharacter::InitializeFloatingStatusBar()
 			UIFloatingStatusBar = CreateWidget<UGSFloatingStatusBarWidget>(PC, UIFloatingStatusBarClass);
 			if (UIFloatingStatusBar && UIFloatingStatusBarComponent)
 			{
+				// Set owner before construction
+				UIFloatingStatusBar->OwningCharacter = this;
 				UIFloatingStatusBarComponent->SetWidget(UIFloatingStatusBar);
 
 				// Setup the floating status bar
 				UIFloatingStatusBar->SetHealthPercentage(GetHealth() / GetMaxHealth());
 				UIFloatingStatusBar->SetManaPercentage(GetMana() / GetMaxMana());
 				UIFloatingStatusBar->SetShieldPercentage(GetShield() / GetMaxShield());
-				UIFloatingStatusBar->OwningCharacter = this;
 				UIFloatingStatusBar->SetCharacterName(CharacterName);
 			}
 		}
@@ -1145,7 +1147,7 @@ void AGSHeroCharacter::OnRep_Inventory()
 
 void AGSHeroCharacter::OnAbilityActivationFailed(const UGameplayAbility* FailedAbility, const FGameplayTagContainer& FailTags)
 {
-	if (FailedAbility && FailedAbility->AbilityTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChanging"))))
+	if (FailedAbility && FailedAbility->GetAssetTags().HasTagExact(FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChanging"))))
 	{
 		if (bChangedWeaponLocally)
 		{

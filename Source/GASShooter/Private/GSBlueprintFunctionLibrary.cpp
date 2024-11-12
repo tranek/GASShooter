@@ -2,6 +2,7 @@
 
 
 #include "GSBlueprintFunctionLibrary.h"
+#include "Engine/World.h"
 
 FString UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(UWorld* World)
 {
@@ -13,7 +14,7 @@ FString UGSBlueprintFunctionLibrary::GetPlayerEditorWindowRole(UWorld* World)
 			switch (World->GetNetMode())
 			{
 			case NM_Client:
-				Prefix = FString::Printf(TEXT("Client %d "), GPlayInEditorID - 1);
+				Prefix = FString::Printf(TEXT("Client %d "), UE::GetPlayInEditorID() - 1);
 				break;
 			case NM_DedicatedServer:
 			case NM_ListenServer:
