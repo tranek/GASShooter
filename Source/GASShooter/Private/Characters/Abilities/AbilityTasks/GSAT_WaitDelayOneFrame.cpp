@@ -2,6 +2,7 @@
 
 
 #include "Characters/Abilities/AbilityTasks/GSAT_WaitDelayOneFrame.h"
+#include "Engine/World.h"
 #include "TimerManager.h"
 
 UGSAT_WaitDelayOneFrame::UGSAT_WaitDelayOneFrame(const FObjectInitializer& ObjectInitializer)

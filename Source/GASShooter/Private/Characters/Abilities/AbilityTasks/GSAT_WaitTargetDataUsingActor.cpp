@@ -205,7 +205,7 @@ void UGSAT_WaitTargetDataUsingActor::FinalizeTargetActor() const
 
 void UGSAT_WaitTargetDataUsingActor::RegisterTargetDataCallbacks()
 {
-	if (!ensure(!IsValid(this)))
+	if (!ensure(IsValid(this)))
 	{
 		return;
 	}

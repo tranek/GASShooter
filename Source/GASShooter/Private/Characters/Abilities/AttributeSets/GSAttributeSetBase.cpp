@@ -7,6 +7,7 @@
 #include "GameplayEffectExtension.h"
 #include "Net/UnrealNetwork.h"
 #include "Player/GSPlayerController.h"
+#include "UObject/Package.h"
 
 UGSAttributeSetBase::UGSAttributeSetBase()
 {

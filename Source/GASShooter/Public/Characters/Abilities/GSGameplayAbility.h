@@ -40,6 +40,8 @@ class GASSHOOTER_API UGSGameplayAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
 
+	friend class UGSAbilitySystemComponent;
+
 public:
 	UGSGameplayAbility();
 

@@ -2,6 +2,7 @@
 
 
 #include "Characters/Animation/GSAnimNotify_PlaySoundForPerspective.h"
+#include "Audio.h"
 #include "Animation/AnimSequenceBase.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Components/SkeletalMeshComponent.h"

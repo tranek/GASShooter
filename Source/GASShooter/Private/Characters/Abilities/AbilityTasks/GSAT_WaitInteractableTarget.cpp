@@ -4,7 +4,9 @@
 #include "Characters/Abilities/AbilityTasks/GSAT_WaitInteractableTarget.h"
 #include "Characters/Abilities/GSInteractable.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Engine/World.h"
 #include "GSBlueprintFunctionLibrary.h"
 #include "TimerManager.h"
 

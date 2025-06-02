@@ -4,7 +4,6 @@
 #include "Characters/Abilities/GSInteractable.h"
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
-#include "AbilitySystemGlobals.h"
 
 bool IGSInteractable::IsAvailableForInteraction_Implementation(UPrimitiveComponent* InteractionComponent) const
 {

@@ -2,7 +2,6 @@
 
 
 #include "Characters/Abilities/GSAbilityTypes.h"
-#include "AbilitySystemGlobals.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 
 bool FGSGameplayEffectContainerSpec::HasValidEffects() const

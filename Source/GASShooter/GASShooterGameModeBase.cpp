@@ -5,7 +5,6 @@
 #include "Engine/World.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "Player/GSPlayerController.h"
-#include "Player/GSPlayerState.h"
 #include "GameFramework/SpectatorPawn.h"
 #include "Kismet/GameplayStatics.h"
 #include "TimerManager.h"

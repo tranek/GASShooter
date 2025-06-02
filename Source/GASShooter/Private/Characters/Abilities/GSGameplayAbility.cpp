@@ -4,12 +4,10 @@
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "AbilitySystemComponent.h"
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
-#include "Characters/Abilities/GSAbilitySystemGlobals.h"
 #include "Characters/Abilities/GSTargetType.h"
 #include "Characters/GSCharacterBase.h"
 #include "Characters/Heroes/GSHeroCharacter.h"
 #include "GameplayTagContainer.h"
-#include "GSBlueprintFunctionLibrary.h"
 #include "Player/GSPlayerController.h"
 #include "Weapons/GSWeapon.h"
 
@@ -300,7 +298,7 @@ void UGSGameplayAbility::MontageJumpToSectionForMesh(USkeletalMeshComponent* InM
 {
 	check(CurrentActorInfo);
 
-	UGSAbilitySystemComponent* const AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo_Checked());
+	UGSAbilitySystemComponent* const AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo_Ensured());
 	if (AbilitySystemComponent->IsAnimatingAbilityForAnyMesh(this))
 	{
 		AbilitySystemComponent->CurrentMontageJumpToSectionForMesh(InMesh, SectionName);
@@ -311,7 +309,7 @@ void UGSGameplayAbility::MontageSetNextSectionNameForMesh(USkeletalMeshComponent
 {
 	check(CurrentActorInfo);
 
-	UGSAbilitySystemComponent* const AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo_Checked());
+	UGSAbilitySystemComponent* const AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo_Ensured());
 	if (AbilitySystemComponent->IsAnimatingAbilityForAnyMesh(this))
 	{
 		AbilitySystemComponent->CurrentMontageSetNextSectionNameForMesh(InMesh, FromSectionName, ToSectionName);

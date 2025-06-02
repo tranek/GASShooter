@@ -4,6 +4,7 @@
 #include "Characters/Abilities/AbilityTasks/GSAT_MoveSceneCompRelLocation.h"
 #include "Curves/CurveFloat.h"
 #include "Curves/CurveVector.h"
+#include "Engine/World.h"
 
 UGSAT_MoveSceneCompRelLocation::UGSAT_MoveSceneCompRelLocation(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

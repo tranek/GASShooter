@@ -3,6 +3,7 @@
 
 #include "Characters/Abilities/AbilityTasks/GSAT_WaitInputPressWithTags.h"
 #include "AbilitySystemComponent.h"
+#include "Engine/World.h"
 
 UGSAT_WaitInputPressWithTags::UGSAT_WaitInputPressWithTags(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)

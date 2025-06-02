@@ -3,7 +3,6 @@
 
 #include "Characters/GSCharacterMovementComponent.h"
 #include "AbilitySystemComponent.h"
-#include "Characters/Abilities/GSAbilitySystemGlobals.h"
 #include "Characters/GSCharacterBase.h"
 #include "GameplayTagContainer.h"
 
