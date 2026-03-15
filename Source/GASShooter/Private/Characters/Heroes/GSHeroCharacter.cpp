@@ -1157,7 +1157,6 @@ void AGSHeroCharacter::OnAbilityActivationFailed(const UGameplayAbility* FailedA
 
 			ServerSyncCurrentWeapon();
 		}
-	}
 }
 
 void AGSHeroCharacter::ServerSyncCurrentWeapon_Implementation()

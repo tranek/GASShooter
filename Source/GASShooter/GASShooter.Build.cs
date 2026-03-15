@@ -14,6 +14,7 @@ public class GASShooter : ModuleRules
 			"Slate",
 			"SlateCore",
 			"UMG",
+			"NetCore",
 			"AIModule",
 			"GameplayAbilities",
 			"GameplayTags",

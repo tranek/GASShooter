@@ -117,7 +117,11 @@ void UGSAbilitySystemComponent::AbilityLocalInputPressed(int32 InputID)
 					AbilitySpecInputPressed(Spec);
 
 					// Invoke the InputPressed event. This is not replicated here. If someone is listening, they may replicate the InputPressed event to the server.
-					InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, Spec.Handle, Spec.ActivationInfo.GetActivationPredictionKey());
+					TArray<UGameplayAbility*> Instances = Spec.GetAbilityInstances();
+PRAGMA_DISABLE_DEPRECATION_WARNINGS
+					const FGameplayAbilityActivationInfo& ActivationInfo = Instances.IsEmpty() ? Spec.ActivationInfo : Instances.Last()->GetCurrentActivationInfoRef();
+PRAGMA_ENABLE_DEPRECATION_WARNINGS
+					InvokeReplicatedEvent(EAbilityGenericReplicatedEvent::InputPressed, Spec.Handle, ActivationInfo.GetActivationPredictionKey());
 				}
 				else
 				{
@@ -270,13 +274,6 @@ FActiveGameplayEffectHandle UGSAbilitySystemComponent::BP_ApplyGameplayEffectToT
 
 float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatingAbility, USkeletalMeshComponent* InMesh, FGameplayAbilityActivationInfo ActivationInfo, UAnimMontage* NewAnimMontage, float InPlayRate, FName StartSectionName, bool bReplicateMontage)
 {
-	// TODO: UE 5.7 - This function needs refactoring for new FGameplayAbilityRepAnimMontage API
-	// The struct members AnimMontage, ForcePlayBit, and PlayBit have been changed/removed
-	// New API uses Animation (TObjectPtr<UAnimSequenceBase>), PlayInstanceId, and different replication mechanism
-	UE_LOG(LogAbilitySystem, Warning, TEXT("PlayMontageForMesh is disabled - needs UE 5.7 API refactor"));
-	return -1.f;
-	
-	/* DISABLED FOR UE 5.7 MIGRATION
 	UGSGameplayAbility* InAbility = Cast<UGSGameplayAbility>(InAnimatingAbility);
 
 	float Duration = -1.f;
@@ -307,7 +304,7 @@ float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatin
 
 			AnimMontageInfo.LocalMontageInfo.AnimMontage = NewAnimMontage;
 			AnimMontageInfo.LocalMontageInfo.AnimatingAbility = InAnimatingAbility;
-			AnimMontageInfo.LocalMontageInfo.PlayBit = !AnimMontageInfo.LocalMontageInfo.PlayBit;
+			AnimMontageInfo.LocalMontageInfo.PlayInstanceId = (AnimMontageInfo.LocalMontageInfo.PlayInstanceId < UINT8_MAX ? AnimMontageInfo.LocalMontageInfo.PlayInstanceId + 1 : 0);
 			
 			if (InAbility)
 			{
@@ -327,8 +324,8 @@ float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatin
 				{
 					// Those are static parameters, they are only set when the montage is played. They are not changed after that.
 					FGameplayAbilityRepAnimMontageForMesh& AbilityRepMontageInfo = GetGameplayAbilityRepAnimMontageForMesh(InMesh);
-					AbilityRepMontageInfo.RepMontageInfo.AnimMontage = NewAnimMontage;
-					AbilityRepMontageInfo.RepMontageInfo.ForcePlayBit = !bool(AbilityRepMontageInfo.RepMontageInfo.ForcePlayBit);
+					AbilityRepMontageInfo.RepMontageInfo.Animation = NewAnimMontage;
+					AbilityRepMontageInfo.RepMontageInfo.PlayInstanceId = (AbilityRepMontageInfo.RepMontageInfo.PlayInstanceId < UINT8_MAX ? AbilityRepMontageInfo.RepMontageInfo.PlayInstanceId + 1 : 0);
 
 					// Update parameters that change during Montage life time.
 					AnimMontage_UpdateReplicatedDataForMesh(InMesh);
@@ -353,7 +350,6 @@ float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatin
 	}
 
 	return Duration;
-	*/
 }
 
 float UGSAbilitySystemComponent::PlayMontageSimulatedForMesh(USkeletalMeshComponent* InMesh, UAnimMontage* NewAnimMontage, float InPlayRate, FName StartSectionName)
@@ -673,18 +669,22 @@ void UGSAbilitySystemComponent::AnimMontage_UpdateReplicatedDataForMesh(USkeleta
 
 void UGSAbilitySystemComponent::AnimMontage_UpdateReplicatedDataForMesh(FGameplayAbilityRepAnimMontageForMesh& OutRepAnimMontageInfo)
 {
-	// TODO: UE 5.7 - This function needs refactoring for new FGameplayAbilityRepAnimMontage API
-	UE_LOG(LogAbilitySystem, Warning, TEXT("AnimMontage_UpdateReplicatedDataForMesh is disabled - needs UE 5.7 API refactor"));
-	return;
-	
-	/* DISABLED FOR UE 5.7 MIGRATION
 	UAnimInstance* AnimInstance = IsValid(OutRepAnimMontageInfo.Mesh) && OutRepAnimMontageInfo.Mesh->GetOwner() 
 		== AbilityActorInfo->AvatarActor ? OutRepAnimMontageInfo.Mesh->GetAnimInstance() : nullptr;
 	FGameplayAbilityLocalAnimMontageForMesh& AnimMontageInfo = GetLocalAnimMontageInfoForMesh(OutRepAnimMontageInfo.Mesh);
 
 	if (AnimInstance && AnimMontageInfo.LocalMontageInfo.AnimMontage)
 	{
-		OutRepAnimMontageInfo.RepMontageInfo.AnimMontage = AnimMontageInfo.LocalMontageInfo.AnimMontage;
+		if (AnimMontageInfo.LocalMontageInfo.AnimMontage->IsDynamicMontage())
+		{
+			OutRepAnimMontageInfo.RepMontageInfo.Animation = AnimMontageInfo.LocalMontageInfo.AnimMontage->GetFirstAnimReference();
+			OutRepAnimMontageInfo.RepMontageInfo.BlendOutTime = AnimMontageInfo.LocalMontageInfo.AnimMontage->GetDefaultBlendOutTime();
+		}
+		else
+		{
+			OutRepAnimMontageInfo.RepMontageInfo.Animation = AnimMontageInfo.LocalMontageInfo.AnimMontage;
+			OutRepAnimMontageInfo.RepMontageInfo.BlendOutTime = 0.0f;
+		}
 
 		// Compressed Flags
 		bool bIsStopped = AnimInstance->Montage_GetIsStopped(AnimMontageInfo.LocalMontageInfo.AnimMontage);
@@ -730,26 +730,17 @@ void UGSAbilitySystemComponent::AnimMontage_UpdateReplicatedDataForMesh(FGamepla
 			OutRepAnimMontageInfo.RepMontageInfo.NextSectionID = 0;
 		}
 	}
-	*/
 }
 
 void UGSAbilitySystemComponent::AnimMontage_UpdateForcedPlayFlagsForMesh(FGameplayAbilityRepAnimMontageForMesh& OutRepAnimMontageInfo)
 {
-	// TODO: UE 5.7 - This function needs refactoring for new API (PlayBit/ForcePlayBit removed)
-	UE_LOG(LogAbilitySystem, Warning, TEXT("AnimMontage_UpdateForcedPlayFlagsForMesh is disabled - needs UE 5.7 API refactor"));
-	/* DISABLED FOR UE 5.7 MIGRATION
 	FGameplayAbilityLocalAnimMontageForMesh& AnimMontageInfo = GetLocalAnimMontageInfoForMesh(OutRepAnimMontageInfo.Mesh);
-	OutRepAnimMontageInfo.RepMontageInfo.ForcePlayBit = AnimMontageInfo.LocalMontageInfo.PlayBit;
-	*/
+
+	OutRepAnimMontageInfo.RepMontageInfo.PlayInstanceId = AnimMontageInfo.LocalMontageInfo.PlayInstanceId;
 }
 
 void UGSAbilitySystemComponent::OnRep_ReplicatedAnimMontageForMesh()
 {
-	// TODO: UE 5.7 - This function needs refactoring for new FGameplayAbilityRepAnimMontage API
-	UE_LOG(LogAbilitySystem, Warning, TEXT("OnRep_ReplicatedAnimMontageForMesh is disabled - needs UE 5.7 API refactor"));
-	return;
-	
-	/* DISABLED FOR UE 5.7 MIGRATION
 	for (FGameplayAbilityRepAnimMontageForMesh& NewRepMontageInfoForMesh : RepAnimMontageInfoForMeshes)
 	{
 		FGameplayAbilityLocalAnimMontageForMesh& AnimMontageInfo = GetLocalAnimMontageInfoForMesh(NewRepMontageInfoForMesh.Mesh);
@@ -782,31 +773,32 @@ void UGSAbilitySystemComponent::OnRep_ReplicatedAnimMontageForMesh()
 			if (DebugMontage)
 			{
 				ABILITY_LOG(Warning, TEXT("\n\nOnRep_ReplicatedAnimMontage, %s"), *GetNameSafe(this));
-				ABILITY_LOG(Warning, TEXT("\tAnimMontage: %s\n\tPlayRate: %f\n\tPosition: %f\n\tBlendTime: %f\n\tNextSectionID: %d\n\tIsStopped: %d\n\tForcePlayBit: %d"),
-					*GetNameSafe(NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage),
+				ABILITY_LOG(Warning, TEXT("\tAnimMontage: %s\n\tPlayRate: %f\n\tPosition: %f\n\tBlendTime: %f\n\tNextSectionID: %d\n\tIsStopped: %d\n\tPlayInstanceId: %d"),
+					*GetNameSafe(NewRepMontageInfoForMesh.RepMontageInfo.GetAnimMontage()),
 					NewRepMontageInfoForMesh.RepMontageInfo.PlayRate,
 					NewRepMontageInfoForMesh.RepMontageInfo.Position,
 					NewRepMontageInfoForMesh.RepMontageInfo.BlendTime,
 					NewRepMontageInfoForMesh.RepMontageInfo.NextSectionID,
 					NewRepMontageInfoForMesh.RepMontageInfo.IsStopped,
-					NewRepMontageInfoForMesh.RepMontageInfo.ForcePlayBit);
+				NewRepMontageInfoForMesh.RepMontageInfo.PlayInstanceId);
 				ABILITY_LOG(Warning, TEXT("\tLocalAnimMontageInfo.AnimMontage: %s\n\tPosition: %f"),
 					*GetNameSafe(AnimMontageInfo.LocalMontageInfo.AnimMontage), AnimInstance->Montage_GetPosition(AnimMontageInfo.LocalMontageInfo.AnimMontage));
 			}
 
-			if (NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage)
+			if (NewRepMontageInfoForMesh.RepMontageInfo.Animation)
 			{
+				UAnimMontage* RepAnimMontage = NewRepMontageInfoForMesh.RepMontageInfo.GetAnimMontage();
+
 				// New Montage to play
-				const bool ReplicatedPlayBit = bool(NewRepMontageInfoForMesh.RepMontageInfo.ForcePlayBit);
-				if ((AnimMontageInfo.LocalMontageInfo.AnimMontage != NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage) || (AnimMontageInfo.LocalMontageInfo.PlayBit != ReplicatedPlayBit))
+				if ((AnimMontageInfo.LocalMontageInfo.AnimMontage != RepAnimMontage) || (AnimMontageInfo.LocalMontageInfo.PlayInstanceId != NewRepMontageInfoForMesh.RepMontageInfo.PlayInstanceId))
 				{
-					AnimMontageInfo.LocalMontageInfo.PlayBit = ReplicatedPlayBit;
-					PlayMontageSimulatedForMesh(NewRepMontageInfoForMesh.Mesh, NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage, NewRepMontageInfoForMesh.RepMontageInfo.PlayRate);
+					AnimMontageInfo.LocalMontageInfo.PlayInstanceId = NewRepMontageInfoForMesh.RepMontageInfo.PlayInstanceId;
+					PlayMontageSimulatedForMesh(NewRepMontageInfoForMesh.Mesh, RepAnimMontage, NewRepMontageInfoForMesh.RepMontageInfo.PlayRate);
 				}
 
 				if (AnimMontageInfo.LocalMontageInfo.AnimMontage == nullptr)
 				{
-					ABILITY_LOG(Warning, TEXT("OnRep_ReplicatedAnimMontage: PlayMontageSimulated failed. Name: %s, AnimMontage: %s"), *GetNameSafe(this), *GetNameSafe(NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage));
+					ABILITY_LOG(Warning, TEXT("OnRep_ReplicatedAnimMontage: PlayMontageSimulated failed. Name: %s, AnimMontage: %s"), *GetNameSafe(this), *GetNameSafe(RepAnimMontage));
 					return;
 				}
 
@@ -864,7 +856,7 @@ void UGSAbilitySystemComponent::OnRep_ReplicatedAnimMontageForMesh()
 					if ((CurrentSectionID == RepSectionID) && (FMath::Abs(DeltaPosition) > MONTAGE_REP_POS_ERR_THRESH) && (NewRepMontageInfoForMesh.RepMontageInfo.IsStopped == 0))
 					{
 						// fast forward to server position and trigger notifies
-						if (FAnimMontageInstance* MontageInstance = AnimInstance->GetActiveInstanceForMontage(NewRepMontageInfoForMesh.RepMontageInfo.AnimMontage))
+						if (FAnimMontageInstance* MontageInstance = AnimInstance->GetActiveInstanceForMontage(AnimMontageInfo.LocalMontageInfo.AnimMontage))
 						{
 							// Skip triggering notifies if we're going backwards in time, we've already triggered them.
 							const float DeltaTime = !FMath::IsNearlyZero(NewRepMontageInfoForMesh.RepMontageInfo.PlayRate) ? (DeltaPosition / NewRepMontageInfoForMesh.RepMontageInfo.PlayRate) : 0.f;
@@ -881,7 +873,6 @@ void UGSAbilitySystemComponent::OnRep_ReplicatedAnimMontageForMesh()
 			}
 		}
 	}
-	*/
 }
 
 bool UGSAbilitySystemComponent::IsReadyForReplicatedMontageForMesh()
