@@ -300,7 +300,7 @@ void UGSGameplayAbility::MontageJumpToSectionForMesh(USkeletalMeshComponent* InM
 {
 	check(CurrentActorInfo);
 
-	UGSAbilitySystemComponent* const AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo_Checked());
+	UGSAbilitySystemComponent* const AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo_Ensured());
 	if (AbilitySystemComponent->IsAnimatingAbilityForAnyMesh(this))
 	{
 		AbilitySystemComponent->CurrentMontageJumpToSectionForMesh(InMesh, SectionName);
@@ -311,7 +311,7 @@ void UGSGameplayAbility::MontageSetNextSectionNameForMesh(USkeletalMeshComponent
 {
 	check(CurrentActorInfo);
 
-	UGSAbilitySystemComponent* const AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo_Checked());
+	UGSAbilitySystemComponent* const AbilitySystemComponent = Cast<UGSAbilitySystemComponent>(GetAbilitySystemComponentFromActorInfo_Ensured());
 	if (AbilitySystemComponent->IsAnimatingAbilityForAnyMesh(this))
 	{
 		AbilitySystemComponent->CurrentMontageSetNextSectionNameForMesh(InMesh, FromSectionName, ToSectionName);

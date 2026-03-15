@@ -99,8 +99,14 @@ void AGSWeapon::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracke
 {
 	Super::PreReplication(ChangedPropertyTracker);
 
+	// TODO: UE 5.7 - DOREPLIFETIME_ACTIVE_OVERRIDE uses deprecated FNetPropertyConditionManager API
+	// Need to update to new UE 5.7 replication condition API
+	UE_LOG(LogTemp, Warning, TEXT("AGSWeapon::PreReplication - DOREPLIFETIME_ACTIVE_OVERRIDE disabled, needs UE 5.7 API refactor"));
+	
+	/* DISABLED FOR UE 5.7 MIGRATION
 	DOREPLIFETIME_ACTIVE_OVERRIDE(AGSWeapon, PrimaryClipAmmo, (IsValid(AbilitySystemComponent) && !AbilitySystemComponent->HasMatchingGameplayTag(WeaponIsFiringTag)));
 	DOREPLIFETIME_ACTIVE_OVERRIDE(AGSWeapon, SecondaryClipAmmo, (IsValid(AbilitySystemComponent) && !AbilitySystemComponent->HasMatchingGameplayTag(WeaponIsFiringTag)));
+	*/
 }
 
 void AGSWeapon::SetOwningCharacter(AGSHeroCharacter* InOwningCharacter)

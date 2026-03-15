@@ -270,6 +270,13 @@ FActiveGameplayEffectHandle UGSAbilitySystemComponent::BP_ApplyGameplayEffectToT
 
 float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatingAbility, USkeletalMeshComponent* InMesh, FGameplayAbilityActivationInfo ActivationInfo, UAnimMontage* NewAnimMontage, float InPlayRate, FName StartSectionName, bool bReplicateMontage)
 {
+	// TODO: UE 5.7 - This function needs refactoring for new FGameplayAbilityRepAnimMontage API
+	// The struct members AnimMontage, ForcePlayBit, and PlayBit have been changed/removed
+	// New API uses Animation (TObjectPtr<UAnimSequenceBase>), PlayInstanceId, and different replication mechanism
+	UE_LOG(LogAbilitySystem, Warning, TEXT("PlayMontageForMesh is disabled - needs UE 5.7 API refactor"));
+	return -1.f;
+	
+	/* DISABLED FOR UE 5.7 MIGRATION
 	UGSGameplayAbility* InAbility = Cast<UGSGameplayAbility>(InAnimatingAbility);
 
 	float Duration = -1.f;
@@ -346,6 +353,7 @@ float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatin
 	}
 
 	return Duration;
+	*/
 }
 
 float UGSAbilitySystemComponent::PlayMontageSimulatedForMesh(USkeletalMeshComponent* InMesh, UAnimMontage* NewAnimMontage, float InPlayRate, FName StartSectionName)
@@ -665,6 +673,11 @@ void UGSAbilitySystemComponent::AnimMontage_UpdateReplicatedDataForMesh(USkeleta
 
 void UGSAbilitySystemComponent::AnimMontage_UpdateReplicatedDataForMesh(FGameplayAbilityRepAnimMontageForMesh& OutRepAnimMontageInfo)
 {
+	// TODO: UE 5.7 - This function needs refactoring for new FGameplayAbilityRepAnimMontage API
+	UE_LOG(LogAbilitySystem, Warning, TEXT("AnimMontage_UpdateReplicatedDataForMesh is disabled - needs UE 5.7 API refactor"));
+	return;
+	
+	/* DISABLED FOR UE 5.7 MIGRATION
 	UAnimInstance* AnimInstance = IsValid(OutRepAnimMontageInfo.Mesh) && OutRepAnimMontageInfo.Mesh->GetOwner() 
 		== AbilityActorInfo->AvatarActor ? OutRepAnimMontageInfo.Mesh->GetAnimInstance() : nullptr;
 	FGameplayAbilityLocalAnimMontageForMesh& AnimMontageInfo = GetLocalAnimMontageInfoForMesh(OutRepAnimMontageInfo.Mesh);
@@ -717,17 +730,26 @@ void UGSAbilitySystemComponent::AnimMontage_UpdateReplicatedDataForMesh(FGamepla
 			OutRepAnimMontageInfo.RepMontageInfo.NextSectionID = 0;
 		}
 	}
+	*/
 }
 
 void UGSAbilitySystemComponent::AnimMontage_UpdateForcedPlayFlagsForMesh(FGameplayAbilityRepAnimMontageForMesh& OutRepAnimMontageInfo)
 {
+	// TODO: UE 5.7 - This function needs refactoring for new API (PlayBit/ForcePlayBit removed)
+	UE_LOG(LogAbilitySystem, Warning, TEXT("AnimMontage_UpdateForcedPlayFlagsForMesh is disabled - needs UE 5.7 API refactor"));
+	/* DISABLED FOR UE 5.7 MIGRATION
 	FGameplayAbilityLocalAnimMontageForMesh& AnimMontageInfo = GetLocalAnimMontageInfoForMesh(OutRepAnimMontageInfo.Mesh);
-
 	OutRepAnimMontageInfo.RepMontageInfo.ForcePlayBit = AnimMontageInfo.LocalMontageInfo.PlayBit;
+	*/
 }
 
 void UGSAbilitySystemComponent::OnRep_ReplicatedAnimMontageForMesh()
 {
+	// TODO: UE 5.7 - This function needs refactoring for new FGameplayAbilityRepAnimMontage API
+	UE_LOG(LogAbilitySystem, Warning, TEXT("OnRep_ReplicatedAnimMontageForMesh is disabled - needs UE 5.7 API refactor"));
+	return;
+	
+	/* DISABLED FOR UE 5.7 MIGRATION
 	for (FGameplayAbilityRepAnimMontageForMesh& NewRepMontageInfoForMesh : RepAnimMontageInfoForMeshes)
 	{
 		FGameplayAbilityLocalAnimMontageForMesh& AnimMontageInfo = GetLocalAnimMontageInfoForMesh(NewRepMontageInfoForMesh.Mesh);
@@ -859,6 +881,7 @@ void UGSAbilitySystemComponent::OnRep_ReplicatedAnimMontageForMesh()
 			}
 		}
 	}
+	*/
 }
 
 bool UGSAbilitySystemComponent::IsReadyForReplicatedMontageForMesh()
