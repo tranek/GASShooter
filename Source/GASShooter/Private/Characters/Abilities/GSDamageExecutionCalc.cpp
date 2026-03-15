@@ -77,7 +77,7 @@ void UGSDamageExecutionCalc::Execute_Implementation(const FGameplayEffectCustomE
 	{
 		UnmitigatedDamage *= HeadShotMultiplier;
 		FGameplayEffectSpec* MutableSpec = ExecutionParams.GetOwningSpecForPreExecuteMod();
-		MutableSpec->DynamicAssetTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Effect.Damage.HeadShot")));
+		MutableSpec->AddDynamicAssetTag(FGameplayTag::RequestGameplayTag(FName("Effect.Damage.HeadShot")));
 	}
 
 	float MitigatedDamage = (UnmitigatedDamage) * (100 / (100 + Armor));
