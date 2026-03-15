@@ -13,6 +13,7 @@ public class GASShooter : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] {
 			"Slate",
 			"SlateCore",
+			"UMG",
 			"AIModule",
 			"GameplayAbilities",
 			"GameplayTags",

@@ -586,12 +586,12 @@ float UGSAbilitySystemComponent::GetCurrentMontageSectionLengthForMesh(USkeletal
 			// Otherwise we are the last section, so take delta with Montage total time.
 			else
 			{
-				return (CurrentAnimMontage->SequenceLength - CompositeSections[CurrentSectionID].GetTime());
+				return (CurrentAnimMontage->GetPlayLength() - CompositeSections[CurrentSectionID].GetTime());
 			}
 		}
 
 		// if we have no sections, just return total length of Montage.
-		return CurrentAnimMontage->SequenceLength;
+		return CurrentAnimMontage->GetPlayLength();
 	}
 
 	return 0.f;

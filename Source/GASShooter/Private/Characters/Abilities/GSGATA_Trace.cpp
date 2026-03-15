@@ -3,6 +3,7 @@
 
 #include "Characters/Abilities/GSGATA_Trace.h"
 #include "AbilitySystemComponent.h"
+#include "AbilitySystemLog.h"
 #include "DrawDebugHelpers.h"
 #include "GameFramework/PlayerController.h"
 #include "GameplayAbilitySpec.h"
