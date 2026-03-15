@@ -3,6 +3,7 @@
 
 #include "Characters/Abilities/GSAbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
+#include "AbilitySystemLog.h"
 #include "Animation/AnimInstance.h"
 #include "Characters/Abilities/GSGameplayAbility.h"
 #include "GameplayCueManager.h"
@@ -281,7 +282,7 @@ float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatin
 		{
 			FGameplayAbilityLocalAnimMontageForMesh& AnimMontageInfo = GetLocalAnimMontageInfoForMesh(InMesh);
 
-			if (AnimMontageInfo.LocalMontageInfo.AnimatingAbility && AnimMontageInfo.LocalMontageInfo.AnimatingAbility != InAnimatingAbility)
+			if (AnimMontageInfo.LocalMontageInfo.AnimatingAbility.IsValid() && AnimMontageInfo.LocalMontageInfo.AnimatingAbility.Get() != InAnimatingAbility)
 			{
 				// The ability that was previously animating will have already gotten the 'interrupted' callback.
 				// It may be a good idea to make this a global policy and 'cancel' the ability.
@@ -326,7 +327,7 @@ float UGSAbilitySystemComponent::PlayMontageForMesh(UGameplayAbility* InAnimatin
 					AnimMontage_UpdateReplicatedDataForMesh(InMesh);
 
 					// Force net update on our avatar actor
-					if (AbilityActorInfo->AvatarActor != nullptr)
+					if (AbilityActorInfo->AvatarActor.IsValid())
 					{
 						AbilityActorInfo->AvatarActor->ForceNetUpdate();
 					}
@@ -406,7 +407,7 @@ void UGSAbilitySystemComponent::ClearAnimatingAbilityForAllMeshes(UGameplayAbili
 	UGSGameplayAbility* GSAbility = Cast<UGSGameplayAbility>(Ability);
 	for (FGameplayAbilityLocalAnimMontageForMesh& GameplayAbilityLocalAnimMontageForMesh : LocalAnimMontageInfoForMeshes)
 	{
-		if (GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility == Ability)
+		if (GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility.Get() == Ability)
 		{
 			GSAbility->SetCurrentMontageForMesh(GameplayAbilityLocalAnimMontageForMesh.Mesh, nullptr);
 			GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility = nullptr;
@@ -479,7 +480,7 @@ bool UGSAbilitySystemComponent::IsAnimatingAbilityForAnyMesh(UGameplayAbility* I
 {
 	for (FGameplayAbilityLocalAnimMontageForMesh GameplayAbilityLocalAnimMontageForMesh : LocalAnimMontageInfoForMeshes)
 	{
-		if (GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility == InAbility)
+		if (GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility.Get() == InAbility)
 		{
 			return true;
 		}
@@ -493,9 +494,9 @@ UGameplayAbility* UGSAbilitySystemComponent::GetAnimatingAbilityFromAnyMesh()
 	// Only one ability can be animating for all meshes
 	for (FGameplayAbilityLocalAnimMontageForMesh& GameplayAbilityLocalAnimMontageForMesh : LocalAnimMontageInfoForMeshes)
 	{
-		if (GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility)
+		if (GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility.IsValid())
 		{
-			return GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility;
+			return GameplayAbilityLocalAnimMontageForMesh.LocalMontageInfo.AnimatingAbility.Get();
 		}
 	}
 
@@ -688,7 +689,7 @@ void UGSAbilitySystemComponent::AnimMontage_UpdateReplicatedDataForMesh(FGamepla
 			OutRepAnimMontageInfo.RepMontageInfo.IsStopped = bIsStopped;
 
 			// When we start or stop an animation, update the clients right away for the Avatar Actor
-			if (AbilityActorInfo->AvatarActor != nullptr)
+			if (AbilityActorInfo->AvatarActor.IsValid())
 			{
 				AbilityActorInfo->AvatarActor->ForceNetUpdate();
 			}
