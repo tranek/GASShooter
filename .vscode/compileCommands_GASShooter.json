@@ -1,0 +1,730 @@
+[
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\GASShooter.Build.cs",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\GASShooter.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\GASShooter.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\GASShooterGameModeBase.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\GASShooterGameModeBase.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\AI\\GSHeroAIController.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\AbilityTasks\\GSAT_MoveSceneCompRelLocation.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\AbilityTasks\\GSAT_PlayMontageAndWaitForEvent.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\AbilityTasks\\GSAT_PlayMontageForMeshAndWaitForEvent.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\AbilityTasks\\GSAT_ServerWaitForClientTargetData.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\AbilityTasks\\GSAT_WaitChangeFOV.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\AbilityTasks\\GSAT_WaitDelayOneFrame.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\AbilityTasks\\GSAT_WaitInputPressWithTags.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\AbilityTasks\\GSAT_WaitInteractableTarget.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\AbilityTasks\\GSAT_WaitTargetDataUsingActor.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\AsyncTaskAttributeChanged.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\AsyncTaskGameplayTagAddedRemoved.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\AttributeSets\\GSAmmoAttributeSet.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\AttributeSets\\GSAttributeSetBase.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\GSAbilitySystemComponent.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\GSAbilitySystemGlobals.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\GSAbilityTypes.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\GSDamageExecutionCalc.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\GSGATA_LineTrace.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\GSGATA_SphereTrace.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\GSGATA_Trace.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\GSGA_CharacterJump.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\GSGameplayAbility.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\GSGameplayCueManager.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\GSGameplayEffectTypes.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\GSInteractable.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Abilities\\GSTargetType.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Animation\\GSAnimNotify_PlaySoundForPerspective.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\GSASCActorBase.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\GSCharacterBase.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\GSCharacterMovementComponent.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Characters\\Heroes\\GSHeroCharacter.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\GSBlueprintFunctionLibrary.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\GSEngineSubsystem.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Items\\Pickups\\GSPickup.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Player\\GSPlayerController.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Player\\GSPlayerState.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\UI\\GSDamageTextWidgetComponent.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\UI\\GSFloatingStatusBarWidget.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\UI\\GSHUDReticle.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\UI\\GSHUDWidget.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Weapons\\GSProjectile.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Private\\Weapons\\GSWeapon.cpp",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\AI\\GSHeroAIController.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\AbilityTasks\\GSAT_MoveSceneCompRelLocation.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\AbilityTasks\\GSAT_PlayMontageAndWaitForEvent.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\AbilityTasks\\GSAT_PlayMontageForMeshAndWaitForEvent.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\AbilityTasks\\GSAT_ServerWaitForClientTargetData.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\AbilityTasks\\GSAT_WaitChangeFOV.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\AbilityTasks\\GSAT_WaitDelayOneFrame.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\AbilityTasks\\GSAT_WaitInputPressWithTags.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\AbilityTasks\\GSAT_WaitInteractableTarget.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\AbilityTasks\\GSAT_WaitTargetDataUsingActor.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\AsyncTaskAttributeChanged.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\AsyncTaskGameplayTagAddedRemoved.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\AttributeSets\\GSAmmoAttributeSet.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\AttributeSets\\GSAttributeSetBase.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\GSAbilitySystemComponent.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\GSAbilitySystemGlobals.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\GSAbilityTypes.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\GSDamageExecutionCalc.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\GSGATA_LineTrace.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\GSGATA_SphereTrace.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\GSGATA_Trace.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\GSGA_CharacterJump.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\GSGameplayAbility.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\GSGameplayCueManager.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\GSGameplayEffectTypes.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\GSInteractable.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Abilities\\GSTargetType.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Animation\\GSAnimNotify_PlaySoundForPerspective.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\GSASCActorBase.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\GSCharacterBase.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\GSCharacterMovementComponent.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Characters\\Heroes\\GSHeroCharacter.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\GSBlueprintFunctionLibrary.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\GSEngineSubsystem.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Items\\Pickups\\GSPickup.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Player\\GSPlayerController.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Player\\GSPlayerState.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\UI\\GSDamageTextWidgetComponent.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\UI\\GSFloatingStatusBarWidget.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\UI\\GSHUDReticle.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\UI\\GSHUDWidget.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Weapons\\GSProjectile.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	},
+	{
+		"file": "E:\\Projects\\GASShooter\\Source\\GASShooter\\Public\\Weapons\\GSWeapon.h",
+		"arguments": [
+			"C:\\Program Files\\Microsoft Visual Studio\\2022\\Community\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe",
+			"@E:\\Projects\\GASShooter\\.vscode\\compileCommands_GASShooter\\GASShooter.1.rsp"
+		],
+		"directory": "E:\\UE_5.7\\Engine\\Source"
+	}
+]
