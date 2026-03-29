@@ -72,9 +72,9 @@ void AGSGATA_LineTrace::ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDebu
 	{
 		FVector ViewStart = StartLocation.GetTargetingTransform().GetLocation();
 		FRotator ViewRot;
-		if (MasterPC && bTraceFromPlayerViewPoint)
+		if (PrimaryPC && bTraceFromPlayerViewPoint)
 		{
-			MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
+			PrimaryPC->GetPlayerViewPoint(ViewStart, ViewRot);
 		}
 
 		FVector TraceEnd = HitResults[0].TraceEnd;

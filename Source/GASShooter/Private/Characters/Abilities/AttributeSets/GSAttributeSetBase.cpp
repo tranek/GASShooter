@@ -144,7 +144,7 @@ void UGSAttributeSetBase::PostGameplayEffectExecute(const FGameplayEffectModCall
 					{
 						FGameplayTagContainer DamageNumberTags;
 
-						if (Data.EffectSpec.DynamicAssetTags.HasTag(HeadShotTag))
+						if (Data.EffectSpec.GetDynamicAssetTags().HasTag(HeadShotTag))
 						{
 							DamageNumberTags.AddTagFast(HeadShotTag);
 						}

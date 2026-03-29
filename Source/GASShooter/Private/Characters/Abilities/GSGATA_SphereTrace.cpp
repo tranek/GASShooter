@@ -80,7 +80,7 @@ void AGSGATA_SphereTrace::SphereTraceWithFilter(TArray<FHitResult>& OutHitResult
 	{
 		FHitResult& Hit = HitResults[HitIdx];
 
-		if (!Hit.Actor.IsValid() || FilterHandle.FilterPassesForActor(Hit.Actor))
+		if (!Hit.GetActor() || FilterHandle.FilterPassesForActor(Hit.GetActor()))
 		{
 			Hit.TraceStart = TraceStart;
 			Hit.TraceEnd = End;
@@ -106,9 +106,9 @@ void AGSGATA_SphereTrace::ShowDebugTrace(TArray<FHitResult>& HitResults, EDrawDe
 	{
 		FVector ViewStart = StartLocation.GetTargetingTransform().GetLocation();
 		FRotator ViewRot;
-		if (MasterPC && bTraceFromPlayerViewPoint)
+		if (PrimaryPC && bTraceFromPlayerViewPoint)
 		{
-			MasterPC->GetPlayerViewPoint(ViewStart, ViewRot);
+			PrimaryPC->GetPlayerViewPoint(ViewStart, ViewRot);
 		}
 
 		FVector TraceEnd = HitResults[0].TraceEnd;

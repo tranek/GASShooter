@@ -902,7 +902,11 @@ void AGSHeroCharacter::BindASCInput()
 	if (!bASCInputBound && IsValid(AbilitySystemComponent) && IsValid(InputComponent))
 	{
 		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"),
-			FString("CancelTarget"), FString("EGSAbilityInputID"), static_cast<int32>(EGSAbilityInputID::Confirm), static_cast<int32>(EGSAbilityInputID::Cancel)));
+			FString("CancelTarget"),
+			FTopLevelAssetPath(TEXT("/Script/GASShooter"), TEXT("EGSAbilityInputID")),
+			static_cast<int32>(EGSAbilityInputID::Confirm),
+			static_cast<int32>(EGSAbilityInputID::Cancel))
+		);
 
 		bASCInputBound = true;
 	}
@@ -1144,8 +1148,7 @@ void AGSHeroCharacter::OnRep_Inventory()
 
 void AGSHeroCharacter::OnAbilityActivationFailed(const UGameplayAbility* FailedAbility, const FGameplayTagContainer& FailTags)
 {
-	if (FailedAbility && FailedAbility->AbilityTags.HasTagExact(FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChanging"))))
-	{
+	if (FailedAbility && FailedAbility->GetAssetTags().HasTagExact(FGameplayTag::RequestGameplayTag(FName("Ability.Weapon.IsChanging"))))
 		if (bChangedWeaponLocally)
 		{
 			// Ask the Server to resync the CurrentWeapon that we predictively changed
@@ -1154,7 +1157,6 @@ void AGSHeroCharacter::OnAbilityActivationFailed(const UGameplayAbility* FailedA
 
 			ServerSyncCurrentWeapon();
 		}
-	}
 }
 
 void AGSHeroCharacter::ServerSyncCurrentWeapon_Implementation()
